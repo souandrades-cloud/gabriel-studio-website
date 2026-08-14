@@ -44,8 +44,11 @@ const LANDING_PAGES: LandingPageDemo[] = [
   {
     icon: Scale,
     segment: "Advocacia",
-    title: "Advocacia",
-    description: "Landing page conceitual para escritórios de advocacia.",
+    title: "Toledo Prado Advogados",
+    description:
+      "Identidade visual e landing page demonstrativa para um escritório de advocacia estratégica.",
+    image: "/images/projects/landing-pages/lp-advocacia-toledo-prado.png",
+    url: "https://portfolio-lp-advocacia.vercel.app",
   },
   {
     icon: Building2,
