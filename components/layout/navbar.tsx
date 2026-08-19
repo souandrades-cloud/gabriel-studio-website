@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@vercel/analytics";
 import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
@@ -7,6 +8,7 @@ import { useEffect, useState } from "react";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
+import { WHATSAPP_URL } from "@/lib/contact";
 import { cn } from "@/lib/utils";
 import type { NavLink } from "@/types/nav";
 
@@ -77,7 +79,13 @@ function Navbar() {
             </ul>
 
             <div className="flex items-center gap-2">
-              <Link href="#contato" className={cn(buttonVariants({ variant: "brand" }))}>
+              <Link
+                href={WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => track("contact_whatsapp_navbar")}
+                className={cn(buttonVariants({ variant: "brand" }))}
+              >
                 Solicitar orçamento
               </Link>
 

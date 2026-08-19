@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@vercel/analytics";
 import { ArrowRight } from "lucide-react";
 import { MotionConfig, motion } from "framer-motion";
 import Link from "next/link";
@@ -11,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { Section } from "@/components/ui/section";
+import { WHATSAPP_URL } from "@/lib/contact";
 import { cn } from "@/lib/utils";
 
 function FinalCta() {
@@ -59,7 +61,10 @@ function FinalCta() {
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Link
-              href="#contato"
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => track("contact_whatsapp_final_cta")}
               className={cn(buttonVariants({ variant: "brand", size: "xl" }), "group")}
             >
               Solicitar orçamento

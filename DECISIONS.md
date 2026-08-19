@@ -65,3 +65,55 @@ Motivo:
 Navbar mobile corrigida (16.1), Footer semanticamente corrigido (16.1), Atlas/FIS removidos da vitrine pública e Projetos reconstruída em torno do showcase de landing pages (16.2), auditoria full-page sem achados bloqueantes (16.3). Não havia razão para adiar o fechamento.
 
 Os links de contato do Footer (WhatsApp, E-mail, LinkedIn, GitHub) permanecem `href="#"` — placeholders deliberados desde a Sprint 11, pois os destinos reais não estão documentados no projeto. Isso não bloqueia esta publicação; fica registrado como pendência para quando os destinos reais forem definidos.
+
+---
+
+## 2026-08-19 (Sprint 16.5 — Desbloqueio de conversão + Analytics)
+
+Decisão:
+
+A auditoria comercial final (Finalization 001) identificou um bloqueador P0: nenhum CTA do site levava a um canal de contato real — o botão "Solicitar orçamento" do CTA final apontava para `#contato`, ou seja, para a própria seção onde ele mora. Corrigido: Navbar, Final CTA e Footer agora abrem WhatsApp real (`https://wa.me/5527981122262`, com mensagem pré-preenchida via `?text=`) em nova aba (`target="_blank" rel="noopener noreferrer"`). Footer também ganhou `mailto:sou.andrades@gmail.com` real. `lib/contact.ts` centraliza os dois valores para evitar divergência entre os três pontos de uso.
+
+Motivo:
+
+Dados de contato autorizados explicitamente pelo Gabriel Studio nesta Sprint. Centralizar em `lib/contact.ts` (em vez de repetir a URL codificada em 3 arquivos) evita que uma futura alteração do número/e-mail precise ser feita em múltiplos lugares e evite divergência acidental.
+
+---
+
+### LinkedIn/GitHub removidos do Footer (não substituídos)
+
+Decisão:
+
+Os itens "LinkedIn" e "GitHub" do Footer foram removidos — não receberam URL nenhuma, real ou provisória.
+
+Motivo:
+
+Instrução explícita: nenhum perfil real foi definido para esses dois canais nesta Sprint, e a alternativa (inventar uma URL) violaria a regra permanente do projeto de nunca fabricar destino. Um elemento clicável sem destino real é pior que a ausência do elemento — a coluna "Contato" do Footer agora lista apenas os dois canais genuinamente utilizáveis.
+
+---
+
+### `Footer` virou Client Component
+
+Decisão:
+
+`components/sections/footer.tsx` ganhou `"use client"` — deixou de ser Server Component.
+
+Motivo:
+
+Necessidade real e nova: os links de WhatsApp/E-mail agora disparam `track()` (Vercel Analytics) em `onClick`, o que exige um Client Component. Antes desta Sprint o Footer não tinha nenhum estado/interação e por isso era corretamente um Server Component — a mudança é consequência direta de um requisito novo, não uma reversão de uma decisão anterior por conveniência.
+
+---
+
+### Vercel Web Analytics — `@vercel/analytics`
+
+Decisão:
+
+Instalado `@vercel/analytics` (única dependência nova desta Sprint). `<Analytics />` (de `@vercel/analytics/next`) adicionado ao `RootLayout`, dentro de `<body>`, fora do `ThemeProvider`. `track()` (do pacote base `@vercel/analytics`) chamado em 4 eventos: `contact_whatsapp_navbar`, `contact_whatsapp_final_cta`, `contact_whatsapp_footer`, `contact_email_footer` — nenhuma propriedade de evento além do nome (sem telefone, e-mail ou texto).
+
+`npm install` reportou 1 vulnerabilidade "high" transitiva (`nanoid`, DoS teórico só explorável com `customAlphabet(alphabet, 0)` — não é um padrão de uso presente em `@vercel/analytics`). Resolvida via `npm audit fix` antes de prosseguir — `npm audit` limpo.
+
+Motivo:
+
+`/next` é o entry point oficial da Vercel para Next.js App Router (confirmado via `.d.ts` do pacote instalado antes de escrever código — mesma disciplina de nunca assumir uma API sem checar o pacote real). Nenhum outro analytics (GA, Meta Pixel, Hotjar, Clarity) foi adicionado — instrução explícita de usar somente Vercel Web Analytics nesta Sprint, sem cookie próprio nem banner de consentimento artificial.
+
+Localmente (`next start`, fora da infraestrutura da Vercel), o script `/_vercel/insights/script.js` retorna 404 — comportamento esperado: esse endpoint só existe quando servido pela própria Vercel em produção. Confirmado que o `<Analytics />` injeta a tag `<script>` corretamente no HTML; a coleta de dados real só é validável após o deploy.

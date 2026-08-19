@@ -494,3 +494,28 @@ Fechar tecnicamente a V3: documentação final, limpeza, QA de produção, commi
 - [x] Deploy em produção via projeto Vercel existente
 
 V3 publicada. Aguardar autorização para Peça 05 (SaaS B2B) ou Peça 06 (Estética).
+
+---
+
+# Sprint 16.5 — Desbloqueio de Conversão + Analytics
+
+## Objetivo
+
+A auditoria comercial final (Finalization 001) encontrou um bloqueador P0: nenhum CTA do site levava a um canal de contato real. Esta Sprint conecta Navbar, Final CTA e Footer ao WhatsApp/e-mail reais, remove os canais sem destino (LinkedIn/GitHub) e instala Vercel Web Analytics.
+
+## TASK 16.5 — Conversão real
+
+- [x] `lib/contact.ts` criado — fonte única para `WHATSAPP_URL` (com mensagem pré-preenchida) e `EMAIL_URL`
+- [x] Navbar: CTA "Solicitar orçamento" (desktop e mobile — mesmo elemento) aponta para WhatsApp real, `target="_blank" rel="noopener noreferrer"`, evento `contact_whatsapp_navbar`
+- [x] Final CTA: botão que antes apontava para si mesmo (`#contato`) agora aponta para WhatsApp real, evento `contact_whatsapp_final_cta`
+- [x] Footer: WhatsApp e E-mail com destinos reais (eventos `contact_whatsapp_footer`/`contact_email_footer`); LinkedIn e GitHub **removidos** (sem destino real, não substituídos por URL inventada)
+- [x] `components/sections/footer.tsx` virou Client Component (necessário para `onClick`/`track()`)
+- [x] `@vercel/analytics` instalado (`npm audit` limpo — 1 vulnerabilidade transitiva de `nanoid` corrigida via `npm audit fix`), `<Analytics />` no `RootLayout`
+- [x] Varredura global: zero `href="#"` restante no código (só a menção em comentário/DECISIONS.md); âncoras internas legítimas (`#servicos`, `#projetos`, `#sobre`, nav "Contato"→`#contato`) preservadas
+- [x] QA por clique real: Navbar desktop, Navbar mobile, Final CTA e Footer WhatsApp confirmados abrindo `api.whatsapp.com` com o número e a mensagem corretos; Footer E-mail confirmado com `mailto:` correto
+- [x] Regressão: menu mobile, landmarks (`nav:2`), heading hierarchy (`h1:1`), overflow em 5 breakpoints — sem mudança
+- [x] `npm run lint` e `npm run build` limpos
+
+## Resultado
+
+Todo caminho de intenção de compra agora chega a um canal real. Nenhuma seção redesenhada, nenhum layout alterado.

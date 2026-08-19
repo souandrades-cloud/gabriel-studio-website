@@ -1,8 +1,12 @@
+"use client";
+
+import { track } from "@vercel/analytics";
 import Link from "next/link";
 
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 import { sectionVariants } from "@/components/ui/section";
+import { EMAIL_ADDRESS, EMAIL_URL, WHATSAPP_URL } from "@/lib/contact";
 import { cn } from "@/lib/utils";
 import type { NavLink } from "@/types/nav";
 
@@ -17,11 +21,19 @@ const NAV_LINKS: NavLink[] = [
   { label: "Contato", href: "#contato" },
 ];
 
-const CONTACT_LINKS: NavLink[] = [
-  { label: "WhatsApp", href: "#" },
-  { label: "E-mail", href: "#" },
-  { label: "LinkedIn", href: "#" },
-  { label: "GitHub", href: "#" },
+/*
+ * Apenas canais realmente utilizáveis. LinkedIn e GitHub foram removidos
+ * (não havia destino real, só `href="#"`) — ver DECISIONS.md. Nenhum
+ * perfil foi inventado para preencher o espaço.
+ */
+interface ContactLink extends NavLink {
+  external?: boolean;
+  event: string;
+}
+
+const CONTACT_LINKS: ContactLink[] = [
+  { label: "WhatsApp", href: WHATSAPP_URL, external: true, event: "contact_whatsapp_footer" },
+  { label: "E-mail", href: EMAIL_URL, event: "contact_email_footer" },
 ];
 
 const linkClassName = "hover:text-brand text-sm transition-colors";
@@ -63,7 +75,14 @@ function Footer() {
             <ul className="mt-4 flex flex-col gap-3">
               {CONTACT_LINKS.map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href} className={cn(linkClassName, "text-muted-foreground")}>
+                  <Link
+                    href={link.href}
+                    target={link.external ? "_blank" : undefined}
+                    rel={link.external ? "noopener noreferrer" : undefined}
+                    aria-label={link.label === "E-mail" ? `Enviar e-mail para ${EMAIL_ADDRESS}` : undefined}
+                    onClick={() => track(link.event)}
+                    className={cn(linkClassName, "text-muted-foreground")}
+                  >
                     {link.label}
                   </Link>
                 </li>
