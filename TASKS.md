@@ -420,3 +420,77 @@ Implementar o Footer oficial — última seção da Landing Page V1. Organizaç�
 - Reutiliza `Container`, `sectionVariants` (do `Section`) e `Heading`.
 
 Landing Page V1 completa. Aguardar revisão geral antes de qualquer nova implementação.
+
+---
+
+# Sprints 12–16 — Evolução V3 (registro retrospectivo)
+
+## Nota
+
+Este período não foi documentado tarefa a tarefa em tempo real — este é o débito documental identificado na auditoria da Sprint 16.3 e fechado agora, na Sprint 16.4. Os marcos abaixo são sustentados pelo histórico real (`git log`, `DECISIONS.md`, estado do código), sem numeração individual de Sprint por marco.
+
+## Marcos
+
+- **Showcase de Landing Pages (pós-V1):** integração de casos reais ao `LandingPagesShowcase` conforme cada Landing Page Lab foi publicada — Clínica Cora e Toledo Prado Advogados (commits `01e0809`, `413b936`), depois Vão e Lume (Sprint de integração do portfólio, nesta sessão).
+- **Sprint 16 — V3 (direção visual escura):** aplicação da classe `.dark` diretamente em seções específicas (Hero, Navbar, Processo, Projetos, Tecnologias, Sobre, CTA Final, Footer), reaproveitando os tokens `.dark` de `globals.css` já existentes desde a Sprint 01 — decisão registrada em `DECISIONS.md` (2026-08-10). Introduzido o sistema de componentes ambientes (`components/shared/`: `AmbientGlow`, `AmbientLines`, `EdgeFade`, `TechGrid`, `FloatingBadge`, `BrowserFrame`, `TechPlaceholder`), documentado em `docs/foundation.md`.
+- **Seção About:** nova seção `components/sections/about.tsx` (`id="sobre"`), com foto do fundador, parallax discreto e reveals em sequência.
+- **Sprint 16.1 — Correções cirúrgicas:** Navbar mobile funcional (menu, ARIA, teclado, fecha em resize/Esc/seleção de link) e Footer com `<nav aria-label="Rodapé">` semanticamente correto.
+- **Sprint 16.2 — Reconstrução da seção Projetos:** Atlas e FIS removidos da vitrine pública; `LandingPagesShowcase` promovido a conteúdo central da seção (detalhes abaixo).
+- **Sprint 16.3 — Auditoria final:** revisão completa do site como produto único (visual, acessibilidade, performance, conteúdo, código morto, documentação). Classificação: READY FOR CLOSURE, zero bloqueante/importante.
+- **Sprint 16.4 — Fechamento V3:** documentação final, QA, versionamento e publicação em produção (este registro).
+
+---
+
+# Sprint 16.2 — Reconstrução da Seção Projetos (V3)
+
+## Objetivo
+
+Remover Atlas e FIS da apresentação pública e reconstruir `#projetos` para que o `LandingPagesShowcase` (Cora, Toledo Prado, Vão, Lume) deixe de ser um apêndice e passe a ser o conteúdo central da seção.
+
+## TASK 16.2 — Projects
+
+- [x] Removidos `FEATURED_PROJECT` (Atlas), `SECONDARY_PROJECT` (FIS/"Dashboard de Prospecção"), `WEBSITE_PROJECT` ("Gabriel Estúdio Website") e `NEXT_PROJECT` ("Seu próximo projeto") de `components/sections/projects.tsx`
+- [x] Removidos imports/helpers sem consumidor (`ProjectScreenshot`, `ProjectVisual`, ícones, `scaleIn`, `motion`/`MotionConfig`, `Image`, `BrowserFrame`)
+- [x] Assets órfãos removidos: `public/images/projects/atlas.png`, `fis-dashboard.png` (sem outro consumidor no código)
+- [x] `LandingPagesShowcase` promovido a conteúdo principal, logo após o título/intro da seção — reposicionado (`mt-24` → `mt-16`, intro centralizada), cards/marquee/scroll mobile/reduced-motion não alterados
+- [x] `DECISIONS.md` atualizado com a decisão e o motivo
+
+## Resultado
+
+- Altura de `#projetos` em 1440px: 2244px → 1174px (~48%)
+- `npm run lint` e `npm run build` sem erros
+- Zero regressão nas demais seções, landmarks, heading hierarchy e acessibilidade do showcase
+
+---
+
+# Sprint 16.3 — Auditoria Final da V3
+
+## Objetivo
+
+Auditar o site completo (Navbar → Footer) como produto final antes do fechamento: coerência visual, hierarquia, ritmo, responsividade, acessibilidade, performance, conteúdo e estado técnico do repositório.
+
+## Resultado
+
+- Nenhum problema bloqueante ou importante encontrado
+- Removidos 2 screenshots de QA órfãos esquecidos na raiz do repositório
+- Mapeada (não corrigida ainda) a documentação desatualizada — endereçada na Sprint 16.4
+- Classificação: **READY FOR CLOSURE**
+
+---
+
+# Sprint 16.4 — Fechamento, Versionamento e Deploy V3
+
+## Objetivo
+
+Fechar tecnicamente a V3: documentação final, limpeza, QA de produção, commit, e deploy no projeto Vercel já existente (`gabriel-studio-website`).
+
+## TASK 16.4 — Closure
+
+- [x] `README.md`, `PROJECT.md`, `docs/foundation.md`, `TASKS.md`, `DECISIONS.md` atualizados
+- [x] Links placeholder do Footer preservados (destinos reais não documentados) — registrados como pendência, não bloqueiam a publicação
+- [x] QA final contra build de produção (390/768/1024/1440/1920)
+- [x] `npm run lint` e `npm run build` limpos
+- [x] Commit de fechamento da V3
+- [x] Deploy em produção via projeto Vercel existente
+
+V3 publicada. Aguardar autorização para Peça 05 (SaaS B2B) ou Peça 06 (Estética).

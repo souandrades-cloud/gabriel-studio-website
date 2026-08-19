@@ -8,7 +8,7 @@
 
 **Tipo:** Site Institucional (Template Base)
 
-**Status:** Em desenvolvimento
+**Status:** V3 concluída e publicada em produção (fechamento técnico na Sprint 16.4). Landing Page V1 publicada anteriormente na Sprint 11.
 
 ---
 

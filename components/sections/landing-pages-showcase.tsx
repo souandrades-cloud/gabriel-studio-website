@@ -53,14 +53,18 @@ const LANDING_PAGES: LandingPageDemo[] = [
   {
     icon: Building2,
     segment: "Imobiliária",
-    title: "Imobiliária",
-    description: "Landing page conceitual para lançamentos imobiliários.",
+    title: "Vão",
+    description: "Identidade visual e landing page demonstrativa para uma curadoria imobiliária fictícia.",
+    image: "/images/projects/landing-pages/lp-imobiliaria-vao.png",
+    url: "https://portfolio-lp-imobiliaria.vercel.app",
   },
   {
     icon: UtensilsCrossed,
     segment: "Restaurante",
-    title: "Restaurante",
-    description: "Landing page conceitual para reservas e delivery.",
+    title: "Lume",
+    description: "Identidade visual e landing page demonstrativa para um restaurante contemporâneo fictício.",
+    image: "/images/projects/landing-pages/lp-restaurante-lume.png",
+    url: "https://portfolio-lp-restaurante.vercel.app",
   },
   {
     icon: Layers,
@@ -145,15 +149,15 @@ function LandingPageCard({
 
 function LandingPagesShowcase() {
   return (
-    <div className="mt-24">
-      <div className="max-w-2xl">
+    <div className="mt-16">
+      <div className="mx-auto max-w-2xl text-center">
         <Badge variant="outline" className="tracking-wide uppercase">
           Landing Pages
         </Badge>
         <Heading as="h3" size="h2" className="mt-6">
           Experiências digitais criadas para diferentes negócios.
         </Heading>
-        <p className="text-muted-foreground mt-4 text-lg text-balance">
+        <p className="text-muted-foreground mx-auto mt-4 max-w-xl text-lg text-balance">
           Uma seleção de projetos demonstrativos explorando diferentes mercados, linguagens
           visuais e objetivos de conversão.
         </p>

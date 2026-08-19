@@ -54,7 +54,7 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
+  --background: oklch(0.9911 0.0013 106.42);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -141,6 +141,8 @@
   }
   html {
     @apply scroll-smooth font-sans;
+    /* Compensa a Navbar fixed (h-16) para âncoras não ficarem escondidas atrás dela. */
+    scroll-padding-top: 4rem;
   }
   h1,
   h2,
@@ -149,5 +151,167 @@
   h5,
   h6 {
     @apply font-heading font-semibold tracking-tight text-balance;
+  }
+}
+
+@layer utilities {
+  /* Esconde a barra de scroll em áreas de scroll horizontal manual (ex:
+     carrossel de landing pages no mobile), mantendo o swipe funcional. */
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Extremely discreet technical grid texture, used behind dark hero/CTA
+     surfaces. Reuses the border token so it stays in sync with the theme. */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, var(--color-border) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-border) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .marquee-track {
+    animation: marquee 50s linear infinite;
+  }
+
+  .marquee-track:hover,
+  .marquee-track:focus-within {
+    animation-play-state: paused;
+  }
+
+  /* Linhas horizontais finas, usadas como "infraestrutura" atrás do marquee
+     de tecnologias. Deriva bem mais lenta e em sentido oposto ao marquee,
+     criando profundidade por diferença de velocidade. */
+  .bg-lines {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      var(--color-border) 0,
+      var(--color-border) 1px,
+      transparent 1px,
+      transparent 64px
+    );
+  }
+
+  @keyframes lines-drift {
+    from {
+      transform: translateX(-5%);
+    }
+    to {
+      transform: translateX(5%);
+    }
+  }
+
+  .lines-drift {
+    animation: lines-drift 40s ease-in-out infinite alternate;
+  }
+
+  /* Deriva lenta de elementos ambiente (glows, grid). Roda no compositor via
+     CSS puro — evitar Framer Motion aqui, já que várias instâncias tocando
+     ao mesmo tempo em toda a página têm custo real de JS por frame.
+     --drift-x / --drift-y / --drift-duration controlam por instância. */
+  @keyframes ambient-drift {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    50% {
+      transform: translate(var(--drift-x, 20px), var(--drift-y, -12px));
+    }
+  }
+
+  .ambient-drift {
+    animation: ambient-drift var(--drift-duration, 18s) ease-in-out infinite;
+  }
+
+  @keyframes ambient-breathe {
+    0%,
+    100% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  .ambient-breathe {
+    animation: ambient-breathe var(--drift-duration, 18s) ease-in-out infinite;
+  }
+
+  @keyframes ambient-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(var(--float-y, -3px));
+    }
+  }
+
+  .ambient-float {
+    animation: ambient-float var(--float-duration, 3s) ease-in-out infinite;
+    animation-delay: var(--float-delay, 0s);
+  }
+
+  @keyframes ambient-pulse {
+    0%,
+    100% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  .ambient-pulse {
+    animation: ambient-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes hero-image-glow {
+    0%,
+    100% {
+      opacity: 0.15;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+
+  .hero-image-glow {
+    animation: hero-image-glow 6s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lines-drift {
+    animation: none;
+  }
+
+  .marquee-track {
+    animation: none;
+  }
+
+  .ambient-drift,
+  .ambient-breathe,
+  .ambient-float,
+  .ambient-pulse {
+    animation: none;
+  }
+
+  .hero-image-glow {
+    animation: none;
+    opacity: 0.2;
   }
 }

@@ -1,3 +1,4 @@
+import { About } from "@/components/sections/about";
 import { Differentials } from "@/components/sections/differentials";
 import { Faq } from "@/components/sections/faq";
 import { FinalCta } from "@/components/sections/final-cta";
@@ -17,6 +18,7 @@ export default function Home() {
       <Projects />
       <Technologies />
       <Differentials />
+      <About />
       <Faq />
       <FinalCta />
       <Footer />

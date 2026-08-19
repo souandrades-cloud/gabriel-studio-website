@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://gabrielstudio.com.br";
-const TITLE = "Gabriel Studio";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://gabrielestudio.com.br";
+const TITLE = "Gabriel Estúdio";
 const DESCRIPTION = "Sites institucionais, landing pages e interfaces web premium.";
 
 export const metadata: Metadata = {

@@ -12,6 +12,7 @@ const NAV_LINKS: NavLink[] = [
   { label: "Projetos", href: "#projetos" },
   { label: "Tecnologias", href: "#tecnologias" },
   { label: "Diferenciais", href: "#diferenciais" },
+  { label: "Sobre", href: "#sobre" },
   { label: "FAQ", href: "#faq" },
   { label: "Contato", href: "#contato" },
 ];
@@ -23,22 +24,24 @@ const CONTACT_LINKS: NavLink[] = [
   { label: "GitHub", href: "#" },
 ];
 
-const linkClassName = "hover:text-foreground text-sm transition-colors";
+const linkClassName = "hover:text-brand text-sm transition-colors";
 
 function Footer() {
   return (
-    <footer className={sectionVariants({ background: "default" })}>
+    <footer className={cn(sectionVariants({ background: "muted" }), "dark bg-muted")}>
       <Container>
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-8">
           <div>
-            <span className="text-base font-semibold tracking-tight">Gabriel Studio</span>
+            <span className="text-foreground text-base font-semibold tracking-tight">
+              Gabriel Estúdio
+            </span>
             <p className="text-muted-foreground mt-3 max-w-xs text-sm text-balance">
               Desenvolvimento de software, sites, automações e Inteligência Artificial para
               empresas.
             </p>
           </div>
 
-          <div>
+          <nav aria-label="Rodapé">
             <Heading as="h3" size="h5" className="font-semibold">
               Navegação
             </Heading>
@@ -51,7 +54,7 @@ function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
 
           <div>
             <Heading as="h3" size="h5" className="font-semibold">
@@ -71,7 +74,7 @@ function Footer() {
 
         <div className="border-border mt-16 flex flex-col items-center gap-4 border-t pt-8 text-sm sm:flex-row sm:justify-between">
           <p className="text-muted-foreground">
-            © 2026 Gabriel Studio. Todos os direitos reservados.
+            © 2026 Gabriel Estúdio. Todos os direitos reservados.
           </p>
           <p className="text-muted-foreground">Desenvolvido com Next.js + TypeScript.</p>
         </div>

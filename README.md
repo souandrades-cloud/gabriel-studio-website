@@ -66,27 +66,27 @@ docs/
 
 ## Organização
 
-Cada seção da Home deve ser um componente independente.
+Cada seção da Home é um componente independente em `components/sections/`.
 
-Exemplo:
+Fluxo real da página (`app/page.tsx`):
 
 ```
 Navbar
 
 Hero
-
 Services
-
 Process
-
-Projects
-
+Projects (Landing Pages Showcase)
+Technologies
+Differentials
 About
-
-CTA
+Faq
+FinalCta
 
 Footer
 ```
+
+Sistema visual V3 (superfícies escuras por seção, componentes ambientes de `components/shared/`) documentado em `docs/foundation.md`.
 
 ---
 
