@@ -3,6 +3,7 @@
 import { track } from "@vercel/analytics";
 import Link from "next/link";
 
+import { EdgeFade } from "@/components/shared/edge-fade";
 import { Container } from "@/components/ui/container";
 import { Heading } from "@/components/ui/heading";
 import { sectionVariants } from "@/components/ui/section";
@@ -14,6 +15,7 @@ const NAV_LINKS: NavLink[] = [
   { label: "Serviços", href: "#servicos" },
   { label: "Processo", href: "#processo" },
   { label: "Projetos", href: "#projetos" },
+  { label: "Sistemas", href: "#sistemas" },
   { label: "Tecnologias", href: "#tecnologias" },
   { label: "Diferenciais", href: "#diferenciais" },
   { label: "Sobre", href: "#sobre" },
@@ -40,12 +42,16 @@ const linkClassName = "hover:text-brand text-sm transition-colors";
 
 function Footer() {
   return (
-    <footer className={cn(sectionVariants({ background: "muted" }), "dark bg-muted")}>
+    <footer className={cn(sectionVariants({ background: "muted" }), "dark bg-muted relative overflow-hidden")}>
+      {/* CTA → Footer era o único corte seco entre seções (auditado na
+          Sprint 3O) — mesmo tom escuro dos dois lados, então a dissolução é
+          sutil, mas existe: sem ela, o glow verde do CTA parava de golpe. */}
+      <EdgeFade tone="dark" />
       <Container>
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-8">
           <div>
             <span className="text-foreground text-base font-semibold tracking-tight">
-              Gabriel Estúdio
+              Gabriel Studio
             </span>
             <p className="text-muted-foreground mt-3 max-w-xs text-sm text-balance">
               Desenvolvimento de software, sites, automações e Inteligência Artificial para
@@ -93,7 +99,7 @@ function Footer() {
 
         <div className="border-border mt-16 flex flex-col items-center gap-4 border-t pt-8 text-sm sm:flex-row sm:justify-between">
           <p className="text-muted-foreground">
-            © 2026 Gabriel Estúdio. Todos os direitos reservados.
+            © 2026 Gabriel Studio. Todos os direitos reservados.
           </p>
           <p className="text-muted-foreground">Desenvolvido com Next.js + TypeScript.</p>
         </div>

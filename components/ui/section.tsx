@@ -4,7 +4,17 @@ import type { HTMLAttributes } from "react";
 import { Container } from "@/components/ui/container";
 import { cn } from "@/lib/utils";
 
-const sectionVariants = cva("w-full py-16 sm:py-20 lg:py-28", {
+/**
+ * `isolate` estabelece um stacking context próprio em toda seção (Sprint
+ * 3L). Sem isso, um filho com z-index negativo — como o rim de luz de
+ * `<AmbientGlow>` ou a dissolução de `<EdgeFade>` — escapa para o contexto do
+ * documento inteiro, e o próprio background-color da seção acaba pintando
+ * por cima dele: o sintoma era um corte seco entre seções em vez da
+ * dissolução pretendida (achado ao integrar a Hero 3D na Sprint 3K, corrigido
+ * caso a caso ali; movido para cá na 3L para valer em toda seção, presente ou
+ * futura, sem precisar lembrar de repetir `isolate` manualmente).
+ */
+const sectionVariants = cva("w-full py-16 sm:py-20 lg:py-28 isolate", {
   variants: {
     background: {
       default: "bg-background",

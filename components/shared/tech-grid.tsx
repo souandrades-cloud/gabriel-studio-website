@@ -6,6 +6,8 @@ interface TechGridProps {
   className?: string;
   /** Deriva extremamente lenta do grid, para não parecer papel quadriculado parado. */
   drift?: boolean;
+  /** Tamanho da célula em px (padrão 44). Um valor maior lê como "plano distante" ao lado de um grid padrão — profundidade por diferença de escala, não só de opacidade. */
+  size?: number;
 }
 
 /**
@@ -13,10 +15,11 @@ interface TechGridProps {
  * maior que o container para que o drift nunca revele uma borda. Deriva via
  * CSS puro (compositor thread), não Framer Motion — ver `AmbientGlow`.
  */
-function TechGrid({ className, drift = false }: TechGridProps) {
-  const style = drift
-    ? ({ "--drift-x": "-10px", "--drift-y": "8px", "--drift-duration": "34s" } as CSSProperties)
-    : undefined;
+function TechGrid({ className, drift = false, size }: TechGridProps) {
+  const style = {
+    ...(drift ? { "--drift-x": "-10px", "--drift-y": "8px", "--drift-duration": "34s" } : {}),
+    ...(size ? { "--grid-size": `${size}px` } : {}),
+  } as CSSProperties;
 
   return (
     <div

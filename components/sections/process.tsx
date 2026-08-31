@@ -1,14 +1,17 @@
 "use client";
 
-import { MotionConfig, motion } from "framer-motion";
+import { MotionConfig, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
+import { useRef } from "react";
 
 import { AmbientGlow } from "@/components/shared/ambient-glow";
 import { EdgeFade } from "@/components/shared/edge-fade";
+import { GrainTexture } from "@/components/shared/grain-texture";
 import { TechGrid } from "@/components/shared/tech-grid";
 import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/ui/heading";
 import { Section } from "@/components/ui/section";
+import { useMounted } from "@/hooks/use-mounted";
 import { scaleIn } from "@/lib/motion";
 
 interface ProcessStep {
@@ -48,11 +51,25 @@ const PROCESS_STEPS: ProcessStep[] = [
 const SCALE_IN = scaleIn();
 
 function Process() {
+  // `mounted` é o que evita o mismatch de hidratação: `useReducedMotion()`
+  // pode resolver de forma síncrona e diferente entre servidor e primeiro
+  // paint do cliente (foi exatamente isso que quebrou em reduced-motion na
+  // 3L — bug real, achado pela própria QA). Mesmo padrão já usado na Hero.
+  const mounted = useMounted();
+  const prefersReducedMotion = useReducedMotion();
+  const ambientActive = mounted && !prefersReducedMotion;
+
+  const imageRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: imageRef, offset: ["start end", "end start"] });
+  const imageParallaxRaw = useTransform(scrollYProgress, [0, 1], [-16, 16]);
+  const imageParallax = ambientActive ? imageParallaxRaw : 0;
+
   return (
     <MotionConfig reducedMotion="user">
       <Section id="processo" background="muted" className="dark bg-muted relative overflow-hidden">
         <EdgeFade tone="light" />
         <TechGrid className="-z-10 opacity-[0.04]" />
+        <GrainTexture className="-z-10" />
         <AmbientGlow
           className="top-1/2 left-1/2 -z-10 hidden h-[520px] w-[720px] -translate-x-1/2 -translate-y-1/2 opacity-[0.06] sm:block"
           amplitude={20}
@@ -74,10 +91,12 @@ function Process() {
           </div>
 
           <motion.div
+            ref={imageRef}
             initial={{ opacity: 0, scale: 0.97 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6, ease: "easeOut" }}
+            style={{ y: imageParallax }}
             className="border-border relative aspect-[3/2] w-full overflow-hidden rounded-3xl border shadow-[0_30px_80px_-30px_rgba(34,181,115,0.25)]"
           >
             <Image
@@ -88,6 +107,10 @@ function Process() {
               sizes="(min-width: 1024px) 45vw, 100vw"
               className="object-cover"
             />
+            {/* Cantos técnicos: marcam a imagem como artefato do sistema em vez
+                de foto solta numa moldura — sem texto novo, só geometria. */}
+            <div aria-hidden="true" className="border-brand/40 absolute top-4 left-4 size-5 border-t-2 border-l-2" />
+            <div aria-hidden="true" className="border-brand/40 absolute right-4 bottom-4 size-5 border-r-2 border-b-2" />
           </motion.div>
         </div>
 
@@ -118,6 +141,30 @@ function Process() {
             transition={{ duration: 1.1, ease: "easeInOut" }}
           />
 
+          {/* Movimento ambiental quase imperceptível (§Motion da 3L): depois da
+              revelação, um segundo pulso — bem mais fraco e bem mais lento —
+              continua percorrendo a linha em loop, para o processo parecer um
+              sistema vivo e não um diagrama estático. Só roda se o motion
+              estiver ativo; nunca compete com o pulso de revelação. */}
+          {ambientActive && (
+            <>
+              <motion.span
+                aria-hidden="true"
+                className="bg-brand pointer-events-none absolute z-10 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0 blur-[0.5px] lg:hidden"
+                animate={{ top: ["1.25rem", "calc(100% - 1.25rem)"], opacity: [0, 0.35, 0.35, 0] }}
+                transition={{ duration: 3.2, repeat: Infinity, repeatDelay: 4.5, delay: 2, ease: "easeInOut" }}
+                style={{ left: "1.25rem" }}
+              />
+              <motion.span
+                aria-hidden="true"
+                className="bg-brand pointer-events-none absolute z-10 hidden size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0 blur-[0.5px] lg:block"
+                animate={{ left: ["0%", "100%"], opacity: [0, 0.35, 0.35, 0] }}
+                transition={{ duration: 3.2, repeat: Infinity, repeatDelay: 4.5, delay: 2, ease: "easeInOut" }}
+                style={{ top: "1.25rem" }}
+              />
+            </>
+          )}
+
           {PROCESS_STEPS.map((step, index) => (
             <motion.li
               key={step.number}
@@ -126,9 +173,9 @@ function Process() {
               viewport={{ once: true, margin: "-80px" }}
               custom={index}
               variants={SCALE_IN}
-              className="relative flex items-start gap-4 lg:flex-1 lg:flex-col lg:items-center lg:text-center"
+              className="group relative flex items-start gap-4 lg:flex-1 lg:flex-col lg:items-center lg:text-center"
             >
-              <span className="border-brand/30 bg-background text-brand relative z-10 flex size-11 shrink-0 items-center justify-center rounded-full border text-base font-semibold">
+              <span className="border-brand/30 bg-background text-brand relative z-10 flex size-11 shrink-0 items-center justify-center rounded-full border text-base font-semibold transition-all duration-300 group-hover:border-brand group-hover:scale-110 group-hover:shadow-[0_0_0_5px_rgba(34,181,115,0.12)]">
                 {step.number}
               </span>
               <div className="lg:mt-2">

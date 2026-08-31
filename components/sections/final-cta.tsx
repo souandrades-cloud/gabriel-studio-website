@@ -4,6 +4,7 @@ import { track } from "@vercel/analytics";
 import { ArrowRight } from "lucide-react";
 import { MotionConfig, motion } from "framer-motion";
 import Link from "next/link";
+import type { PointerEvent } from "react";
 
 import { AmbientGlow } from "@/components/shared/ambient-glow";
 import { AmbientLines } from "@/components/shared/ambient-lines";
@@ -12,10 +13,19 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { Section } from "@/components/ui/section";
+import { usePointerFine } from "@/hooks/use-pointer-fine";
 import { WHATSAPP_URL } from "@/lib/contact";
 import { cn } from "@/lib/utils";
 
+/** Mesmo padrão de spotlight de Serviços — restrito a ponteiro fino (desktop). */
+function handleSpotlight(event: PointerEvent<HTMLElement>) {
+  const rect = event.currentTarget.getBoundingClientRect();
+  event.currentTarget.style.setProperty("--x", `${event.clientX - rect.left}px`);
+  event.currentTarget.style.setProperty("--y", `${event.clientY - rect.top}px`);
+}
+
 function FinalCta() {
+  const pointerFine = usePointerFine();
   return (
     <MotionConfig reducedMotion="user">
       <Section id="contato" background="default" className="dark relative overflow-hidden">
@@ -43,8 +53,35 @@ function FinalCta() {
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="relative mx-auto max-w-3xl text-center"
+          onPointerMove={pointerFine ? handleSpotlight : undefined}
+          className="group relative mx-auto max-w-3xl py-6 text-center"
         >
+          {/* Resposta sutil ao cursor (desktop only) — mesmo padrão de
+              Serviços, aqui numa escala maior para fechar a experiência sem
+              copiar a Hero. */}
+          {pointerFine && (
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -inset-10 rounded-[3rem] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+              style={{
+                background:
+                  "radial-gradient(360px circle at var(--x, 50%) var(--y, 50%), color-mix(in oklch, var(--color-brand) 14%, transparent) 0%, transparent 70%)",
+              }}
+            />
+          )}
+          {/* Cantos fora da caixa de texto (offset negativo, como em
+              Serviços/Processo/Sobre/Diferenciais) — não reduzem a largura
+              disponível para o título, então a quebra de linha do heading
+              não muda. */}
+          <div
+            aria-hidden="true"
+            className="border-brand/40 absolute -top-6 -left-6 size-6 border-t-2 border-l-2 sm:-top-8 sm:-left-8"
+          />
+          <div
+            aria-hidden="true"
+            className="border-brand/40 absolute -right-6 -bottom-6 size-6 border-r-2 border-b-2 sm:-right-8 sm:-bottom-8"
+          />
+
           <Badge variant="outline" className="tracking-wide uppercase">
             Vamos conversar
           </Badge>

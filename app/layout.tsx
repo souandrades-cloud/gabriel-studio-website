@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://gabrielestudio.com.br";
-const TITLE = "Gabriel Estúdio";
+const TITLE = "Gabriel Studio";
 const DESCRIPTION = "Sites institucionais, landing pages e interfaces web premium.";
 
 export const metadata: Metadata = {
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     url: "/",
     siteName: TITLE,
-    images: [{ url: "/images/010-resultado.png" }],
+    images: [{ url: "/images/og-cover.jpg", width: 1200, height: 630 }],
     locale: "pt_BR",
     type: "website",
   },
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/images/010-resultado.png"],
+    images: ["/images/og-cover.jpg"],
   },
 };
 

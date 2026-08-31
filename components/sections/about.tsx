@@ -56,18 +56,33 @@ function About() {
               amplitude={10}
               duration={13}
             />
-            <div className="border-border relative aspect-[4/5] w-full overflow-hidden rounded-3xl border shadow-[0_30px_80px_-30px_rgba(34,181,115,0.2)]">
+            <div className="border-border relative aspect-[2/3] w-full overflow-hidden rounded-3xl border shadow-[0_30px_80px_-30px_rgba(34,181,115,0.2)]">
               <Image
-                src="/images/011-sobre.jpg"
-                alt="Gabriel, fundador da Gabriel Estúdio"
+                src="/images/gabriel-sobre.jpeg"
+                alt="Gabriel, fundador da Gabriel Studio"
                 fill
                 sizes="(min-width: 1024px) 45vw, 100vw"
                 className="object-cover"
+                style={{ objectPosition: "100% 20%" }}
               />
             </div>
-            <div className="border-border hover:border-brand/30 bg-background absolute -bottom-6 left-6 rounded-2xl border px-5 py-4 shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl sm:left-8">
+            {/* Cantos técnicos: mesmo vocabulário de Serviços/Processo/Projetos
+                (Sprint 3L/3M) — marca a foto como parte do mesmo sistema
+                visual, não uma peça isolada. */}
+            <div
+              aria-hidden="true"
+              className="border-brand/40 absolute -top-2.5 -left-2.5 size-5 border-t-2 border-l-2"
+            />
+            <div
+              aria-hidden="true"
+              className="border-brand/40 absolute -right-2.5 -bottom-2.5 size-5 border-r-2 border-b-2"
+            />
+            <div className="border-border hover:border-brand/30 bg-background absolute -bottom-6 left-6 overflow-hidden rounded-2xl border px-5 py-4 shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl sm:left-8">
+              <div aria-hidden="true" className="bg-brand absolute inset-x-0 top-0 h-0.5" />
               <p className="font-heading text-sm font-semibold">Gabriel</p>
-              <p className="text-muted-foreground mt-0.5 text-xs">Fundador da Gabriel Estúdio</p>
+              <p className="text-muted-foreground mt-1 font-mono text-[11px] tracking-wider uppercase">
+                Fundador · Gabriel Studio
+              </p>
             </div>
           </motion.div>
 
@@ -104,7 +119,7 @@ function About() {
               variants={FADE_UP}
               className="text-muted-foreground mt-6 text-lg text-balance"
             >
-              Sou Gabriel, fundador da Gabriel Estúdio. Trabalho na construção de soluções digitais
+              Sou Gabriel, fundador da Gabriel Studio. Trabalho na construção de soluções digitais
               que unem software, automação e inteligência artificial para resolver problemas reais
               de empresas.
             </motion.p>
@@ -130,7 +145,7 @@ function About() {
               variants={FADE_UP}
               className="text-muted-foreground mt-4 text-balance"
             >
-              A Gabriel Estúdio nasce dessa visão — usar tecnologia de forma prática para construir
+              A Gabriel Studio nasce dessa visão — usar tecnologia de forma prática para construir
               soluções que façam sentido para o negócio.
             </motion.p>
           </div>

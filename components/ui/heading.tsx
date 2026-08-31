@@ -1,5 +1,5 @@
 import { cva, type VariantProps } from "class-variance-authority";
-import type { ElementType, HTMLAttributes } from "react";
+import type { HTMLAttributes } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -31,7 +31,11 @@ interface HeadingProps
 }
 
 function Heading({ as, size, className, ...props }: HeadingProps) {
-  const Comp = (as ?? "h2") as ElementType;
+  // Tipado como o union pequeno de HeadingLevel (não `ElementType`): com o
+  // react-three-fiber instalado, `ElementType` passa a cobrir centenas de
+  // tags three.js globais junto das HTML, e a interseção de props de um
+  // union tão amplo colapsa `data-slot` para `never`.
+  const Comp = as ?? "h2";
   return (
     <Comp data-slot="heading" className={cn(headingVariants({ size }), className)} {...props} />
   );

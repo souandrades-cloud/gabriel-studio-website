@@ -62,7 +62,7 @@ function Navbar() {
         <Container>
           <nav className="flex h-16 items-center justify-between" aria-label="Principal">
             <Link href="/" className="text-foreground text-base font-semibold tracking-tight">
-              Gabriel Estúdio
+              Gabriel Studio
             </Link>
 
             <ul className="text-muted-foreground hidden items-center gap-8 text-sm font-medium md:flex">

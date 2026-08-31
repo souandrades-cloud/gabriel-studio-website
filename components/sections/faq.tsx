@@ -90,8 +90,19 @@ function Faq() {
                     index !== FAQ_ITEMS.length - 1 ? "border-border border-b" : undefined
                   }
                 >
-                  <AccordionTrigger className="text-base">{item.question}</AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground text-base">
+                  {/* Índice mono (mesmo vocabulário de Serviços/Diferenciais/Projetos)
+                      + cor de marca quando aberto — deixa o estado de
+                      expansão/contração óbvio sem precisar de mais motion
+                      (pedido explícito da 3O: clareza acima de efeito). */}
+                  <AccordionTrigger className="aria-expanded:text-brand py-4 text-base">
+                    <span className="flex items-baseline gap-3">
+                      <span className="text-muted-foreground/50 font-mono text-xs tracking-wider">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      {item.question}
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pl-8 text-base">
                     {item.answer}
                   </AccordionContent>
                 </AccordionItem>

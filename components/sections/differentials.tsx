@@ -2,14 +2,16 @@
 
 import { MotionConfig, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 import { AmbientGlow } from "@/components/shared/ambient-glow";
 import { EdgeFade } from "@/components/shared/edge-fade";
+import { TechGrid } from "@/components/shared/tech-grid";
 import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/ui/heading";
 import { Section } from "@/components/ui/section";
 import { useMounted } from "@/hooks/use-mounted";
+import { cn } from "@/lib/utils";
 
 interface Differential {
   title: string;
@@ -80,10 +82,23 @@ function Differentials() {
   const glowOpacityRaw = useTransform(scrollYProgress, [0, 0.5, 1], [0.04, 0.12, 0.04]);
   const glowOpacity = mounted && !prefersReducedMotion ? glowOpacityRaw : 0.08;
 
+  // Item sob o cursor/foco na lista realça a moldura do visual técnico —
+  // liga a "lista de capacidades" ao "sistema funcionando" ao lado (pedido
+  // explícito da 3O: "relação entre item ativo e visual técnico"), sem
+  // inventar uma segunda animação — é a mesma borda que já existe.
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
   return (
     <MotionConfig reducedMotion="user">
       <Section id="diferenciais" background="default" className="relative overflow-hidden">
         <EdgeFade tone="dark" />
+        {/* Camada técnica extremamente discreta (Sprint 3P) — a seção inteira
+            era texto+imagem+lista sobre fundo liso, sem nenhuma textura
+            própria (diferente de Serviços/Processo/Projetos/Tecnologias, que
+            já usam <TechGrid>). Opacidade bem abaixo do padrão dessas seções
+            (0.035 vs ~0.04) porque aqui o fundo é claro, não escuro — o grid
+            fica mais perceptível sobre claro à mesma opacidade. */}
+        <TechGrid className="-z-10 opacity-[0.035]" />
 
         <div ref={sectionRef} className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
@@ -113,7 +128,10 @@ function Differentials() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.6, ease: "easeOut" }}
-              className="border-border relative aspect-[3/2] w-full overflow-hidden rounded-3xl border shadow-[0_30px_80px_-30px_rgba(34,181,115,0.2)]"
+              className={cn(
+                "relative aspect-[3/2] w-full overflow-hidden rounded-3xl border shadow-[0_30px_80px_-30px_rgba(34,181,115,0.2)] transition-colors duration-500",
+                activeIndex !== null ? "border-brand/40" : "border-border",
+              )}
             >
               <Image
                 src="/images/014-diferenciais.png"
@@ -124,14 +142,35 @@ function Differentials() {
                 className="object-cover"
               />
             </motion.div>
+            <div
+              aria-hidden="true"
+              className="border-brand/40 absolute -top-2.5 -left-2.5 size-5 border-t-2 border-l-2"
+            />
+            <div
+              aria-hidden="true"
+              className="border-brand/40 absolute -right-2.5 -bottom-2.5 size-5 border-r-2 border-b-2"
+            />
           </motion.div>
         </div>
 
-        <ol className="border-border mx-auto mt-16 max-w-3xl divide-y border-t">
+        {/* Grid 2×2 com divisórias internas (Sprint 3O) — antes era uma
+            lista empilhada de linha única, com muito vazio entre 4 itens
+            curtos. Como grid, os 4 princípios leem como um SISTEMA (uma
+            grade técnica), não uma lista de texto solta; hover em qualquer
+            item também realça a moldura do visual ao lado. */}
+        <ol className="border-border mx-auto mt-16 grid max-w-3xl grid-cols-1 border-t border-l sm:grid-cols-2">
           {DIFFERENTIALS.map((item, index) => (
             <li
               key={item.title}
-              className="group flex flex-col gap-2 py-8 sm:flex-row sm:items-baseline sm:gap-10"
+              // tabIndex torna o item real destino de Tab: sem ele, onFocus
+              // nunca dispararia (um <li> sem conteúdo focável não recebe
+              // foco), e o realce da moldura ficaria mouse-only.
+              tabIndex={0}
+              onMouseEnter={() => setActiveIndex(index)}
+              onMouseLeave={() => setActiveIndex(null)}
+              onFocus={() => setActiveIndex(index)}
+              onBlur={() => setActiveIndex(null)}
+              className="group border-border hover:bg-muted/50 focus-visible:bg-muted/50 flex flex-col gap-2 border-r border-b px-6 py-8 outline-none transition-colors duration-300 focus-visible:ring-3 focus-visible:ring-brand/50 focus-visible:ring-inset sm:px-8"
             >
               <motion.span
                 initial="hidden"
@@ -139,7 +178,7 @@ function Differentials() {
                 viewport={{ once: true, margin: "-80px" }}
                 custom={index}
                 variants={NUMBER_REVEAL}
-                className="font-heading text-muted-foreground/30 group-hover:text-brand/50 text-5xl font-semibold tabular-nums transition-colors duration-300 sm:w-20 sm:shrink-0 sm:text-6xl"
+                className="font-heading text-muted-foreground/30 group-hover:text-brand/50 group-focus-visible:text-brand/50 text-5xl font-semibold tabular-nums transition-colors duration-300"
               >
                 {String(index + 1).padStart(2, "0")}
               </motion.span>
@@ -151,7 +190,7 @@ function Differentials() {
                   viewport={{ once: true, margin: "-80px" }}
                   custom={index}
                   variants={LINE_GROW}
-                  className="bg-brand/40 mb-3 h-px w-10 origin-left"
+                  className="bg-brand/40 mt-3 mb-3 h-px w-10 origin-left"
                 />
                 <motion.div
                   initial="hidden"

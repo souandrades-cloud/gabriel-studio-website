@@ -171,7 +171,7 @@
     background-image:
       linear-gradient(to right, var(--color-border) 1px, transparent 1px),
       linear-gradient(to bottom, var(--color-border) 1px, transparent 1px);
-    background-size: 44px 44px;
+    background-size: var(--grid-size, 44px) var(--grid-size, 44px);
   }
 
   @keyframes marquee {
@@ -292,6 +292,52 @@
   .hero-image-glow {
     animation: hero-image-glow 6s ease-in-out infinite;
   }
+
+  /* Grão fotográfico estático (sem animação) — ruído fractal inline via SVG,
+     usado por `GrainTexture` como camada final de atmosfera sobre dark. */
+  .bg-grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 140px 140px;
+  }
+
+  /* Feixe de luz técnica cruzando lentamente uma superfície dark — sugere
+     fluxo/sistema em atividade, nunca "loading". translateX no compositor;
+     a máscara desvanece as quatro bordas para não parecer uma barra. */
+  .tech-flow {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in oklch, var(--color-brand) 85%, transparent) 50%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(to bottom, transparent, black 35%, black 65%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 35%, black 65%, transparent);
+    animation: tech-flow-sweep 22s linear infinite;
+  }
+
+  @keyframes tech-flow-sweep {
+    from {
+      transform: translateX(-30%);
+    }
+    to {
+      transform: translateX(30%);
+    }
+  }
+
+  /* Variante de faixa curta: mantém o pico do gradiente majoritariamente
+     dentro da viewport em vez de percorrer toda a largura do elemento. */
+  .tech-flow-narrow {
+    animation-name: tech-flow-sweep-narrow;
+  }
+
+  @keyframes tech-flow-sweep-narrow {
+    from {
+      transform: translateX(-8%);
+    }
+    to {
+      transform: translateX(8%);
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -313,5 +359,10 @@
   .hero-image-glow {
     animation: none;
     opacity: 0.2;
+  }
+
+  .tech-flow {
+    animation: none;
+    opacity: 0.08;
   }
 }
