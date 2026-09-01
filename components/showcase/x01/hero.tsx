@@ -32,6 +32,13 @@ function Hero() {
   const balanceRef = useRef<HTMLDivElement>(null);
   const mounted = useMounted();
   const prefersReducedMotion = useReducedMotion();
+  /**
+   * See index-catalog.tsx / closing.tsx for the full rationale: gating
+   * behind `mounted` keeps server + first client paint identical, so the
+   * jump to the reduced-motion instant state only happens from the next
+   * render onward (no hydration mismatch).
+   */
+  const reducedMotionReady = mounted && prefersReducedMotion;
 
   useEffect(() => {
     if (!mounted || prefersReducedMotion) return;
@@ -50,6 +57,30 @@ function Hero() {
     }, section);
 
     return () => ctx.revert();
+  }, [mounted, prefersReducedMotion]);
+
+  /**
+   * § Microinteração: reação de poucos pixels ao mouse, só desktop
+   * (`pointer: fine`, nunca em touch) e só fora de reduced-motion. `x` fica
+   * livre para isso porque o scroll-linked tween acima só escreve `y` — GSAP
+   * combina os dois numa única transform sem conflito. Sem cursor
+   * customizado, glow, trail ou magnetismo (proibido no briefing).
+   */
+  useEffect(() => {
+    if (!mounted || prefersReducedMotion) return;
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+
+    const moveBalance = gsap.quickTo(balanceRef.current, "x", { duration: 0.7, ease: "power3.out" });
+    const moveTension = gsap.quickTo(tensionRef.current, "x", { duration: 0.9, ease: "power3.out" });
+
+    const handleMove = (event: MouseEvent) => {
+      const nx = event.clientX / window.innerWidth - 0.5;
+      moveBalance(nx * 10);
+      moveTension(nx * -5);
+    };
+
+    window.addEventListener("mousemove", handleMove);
+    return () => window.removeEventListener("mousemove", handleMove);
   }, [mounted, prefersReducedMotion]);
 
   return (
@@ -81,7 +112,7 @@ function Hero() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
+          transition={reducedMotionReady ? { duration: 0 } : { duration: 0.5, delay: 0.9 }}
           className="x01-container x01-mono relative z-30 mt-3 flex items-start justify-between text-[10.5px] leading-relaxed tracking-[0.06em] uppercase sm:mt-4 sm:text-[12px]"
         >
           <div style={{ color: "var(--x01-ink-soft)" }}>
@@ -99,14 +130,19 @@ function Hero() {
           curto via clip-path (entrance), depois GSAP assume o deslocamento
           de scroll no mesmo nó — a animação de entrada já terminou e não
           volta a escrever nesse elemento, então não há disputa entre as
-          duas libs (ver comentário na seção SCROLL do briefing). */}
+          duas libs (ver comentário na seção SCROLL do briefing). Delay 0.55:
+          revela DEPOIS de BALANCE se assentar, seguindo a sequência
+          cinematográfica pedida (node → linha → BALANCE → TENSION →
+          estabilização, § Hero / Initial Load). */}
       <motion.div
         ref={tensionRef}
         aria-hidden="true"
         data-x01-motion
         initial={{ clipPath: "inset(0 0 0 100%)" }}
         animate={{ clipPath: "inset(0 0 0 0%)" }}
-        transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+        transition={
+          reducedMotionReady ? { duration: 0 } : { duration: 0.6, delay: 0.55, ease: [0.22, 1, 0.36, 1] }
+        }
         className="x01-display pointer-events-none absolute top-[30vh] left-[-1vw] z-10 select-none whitespace-nowrap sm:top-[33vh]"
         style={{ fontSize: "clamp(96px, 20vw, 328px)" }}
       >
@@ -115,7 +151,7 @@ function Hero() {
       {/* H1 real e acessível — a versão gigante acima é puramente decorativa/clipada. */}
       <h1 className="sr-only">Tension / 01 — Archive of Unstable Objects</h1>
 
-      <TensionLine sectionRef={sectionRef} keyframes={HERO_LINE_KEYFRAMES} nodeT={0.86} />
+      <TensionLine sectionRef={sectionRef} keyframes={HERO_LINE_KEYFRAMES} nodeT={0.86} entrance />
 
       {/* BALANCE — aumentado e movido para dentro da composição (Correction
           Pass 001 §Hero): altura 66–74vh, centro X ~68–72vw, para que a
@@ -128,7 +164,9 @@ function Hero() {
         data-x01-motion
         initial={{ opacity: 0, y: 26 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        transition={
+          reducedMotionReady ? { duration: 0 } : { duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }
+        }
         className="pointer-events-none absolute right-[6vw] bottom-[5vh] z-20 aspect-[1122/1402] h-[66vh] sm:right-[23.5vw] sm:h-[74vh]"
       >
         <Image

@@ -1,7 +1,16 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
+import { useEffect, useRef } from "react";
+
+import { useMounted } from "@/hooks/use-mounted";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 /**
  * Sem <TensionLine> aqui — de propósito, não um esquecimento. § Pressure /
@@ -9,13 +18,45 @@ import Image from "next/image";
  * por consistência visual. Aqui a tensão está no material." A ausência é o
  * ponto de virada depois de Object 001 → Veil → Pendulum, todos com linha.
  *
- * Também sem GSAP: Pressure não tem coreografia scroll-linked — é uma
- * interrupção de escala (imagem full-bleed + microtipografia), não mais um
- * capítulo com drift/parallax (§ Pressure / Função).
+ * A imagem ganha um scale de compressão extremamente contido, ligado ao
+ * scroll (§ Pressure / Movimento: "clímax físico... sensação de
+ * compressão") — aplicado num wrapper interno, nunca no mesmo nó que o
+ * framer-motion anima (o fade de entrada abaixo), para as duas libs não
+ * disputarem a mesma `transform`. `overflow-hidden` no pai contém o scale
+ * sem gerar overflow horizontal.
  */
 function Pressure() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
+  const mounted = useMounted();
+  const prefersReducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (!mounted || prefersReducedMotion) return;
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const ctx = gsap.context(() => {
+      // 1.05 → 1: a imagem se "comprime" levemente contra a moldura ao
+      // longo da seção — nunca bloqueia o scroll, só altera a leitura de
+      // peso/velocidade da passagem.
+      gsap.fromTo(
+        imageRef.current,
+        { scale: 1.05 },
+        {
+          scale: 1,
+          ease: "none",
+          scrollTrigger: { trigger: section, start: "top bottom", end: "bottom top", scrub: 0.6 },
+        },
+      );
+    }, section);
+
+    return () => ctx.revert();
+  }, [mounted, prefersReducedMotion]);
+
   return (
     <section
+      ref={sectionRef}
       id="pressure"
       data-x01-motion
       className="relative isolate"
@@ -31,14 +72,16 @@ function Pressure() {
         transition={{ duration: 0.7 }}
         className="relative h-[65svh] w-full overflow-hidden sm:h-[92vh]"
       >
-        <Image
-          src="/images/x01/X01-A06.png"
-          alt="Material macro study for Pressure — close, cropped detail of the archive's material surface under compression."
-          fill
-          priority={false}
-          sizes="100vw"
-          className="object-cover object-center"
-        />
+        <div ref={imageRef} className="relative h-full w-full">
+          <Image
+            src="/images/x01/X01-A06.png"
+            alt="Material macro study for Pressure — close, cropped detail of the archive's material surface under compression."
+            fill
+            priority={false}
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+        </div>
       </motion.div>
 
       {/* Tipografia invertida: microescala, fora da imagem (contraste

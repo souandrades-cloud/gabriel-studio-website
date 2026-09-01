@@ -38,6 +38,14 @@ interface TensionLineProps {
   start?: string;
   end?: string;
   className?: string;
+  /**
+   * Plays a one-time entrance on mount instead of being instantly present:
+   * node grows in first, the line fades in just after (§ Hero / Initial
+   * Load — "pequeno Signal Orange node aparece; Tension Line começa a se
+   * formar"). Only Hero opts in — every other section keeps the instant
+   * baseline, since the brief only asks for this choreography on first load.
+   */
+  entrance?: boolean;
 }
 
 /**
@@ -59,6 +67,7 @@ function TensionLine({
   start = "top bottom",
   end = "bottom top",
   className,
+  entrance = false,
 }: TensionLineProps) {
   const lineRef = useRef<SVGLineElement>(null);
   const nodeRef = useRef<SVGCircleElement>(null);
@@ -115,6 +124,16 @@ function TensionLine({
     }
 
     apply(0);
+
+    let introTl: gsap.core.Timeline | undefined;
+    if (entrance) {
+      gsap.set(node, { attr: { r: 0 } });
+      gsap.set(line, { opacity: 0 });
+      introTl = gsap.timeline()
+        .to(node, { attr: { r: 3.5 }, duration: 0.3, ease: "back.out(1.8)" })
+        .to(line, { opacity: 1, duration: 0.45, ease: "power2.out" }, 0.15);
+    }
+
     const st = ScrollTrigger.create({
       trigger: section,
       start,
@@ -123,8 +142,11 @@ function TensionLine({
       onUpdate: (self) => apply(self.progress),
     });
 
-    return () => st.kill();
-  }, [mounted, box, keyframes, nodeT, prefersReducedMotion, sectionRef, start, end, scrub]);
+    return () => {
+      introTl?.kill();
+      st.kill();
+    };
+  }, [mounted, box, keyframes, nodeT, prefersReducedMotion, sectionRef, start, end, scrub, entrance]);
 
   return (
     <svg

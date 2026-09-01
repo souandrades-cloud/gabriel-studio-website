@@ -19,11 +19,15 @@ if (typeof window !== "undefined") {
  * inteiramente na Tension Line: o ponto `a` fica fixo (pivô), o ponto `b`
  * descreve um arco controlado esquerda → centro → direita → centro
  * conforme o scroll avança. É a própria linha que "balança", não o objeto.
+ * Amplitude decrescente ao final (§ Pendulum / Motion: "tensão → oscilação
+ * → equilíbrio") — o swing esquerda→centro→direita completa em amplitude
+ * plena (14), depois um segundo swing bem menor (5) antes de assentar,
+ * lendo como energia se dissipando em vez de um metrônomo constante.
  */
 const PENDULUM_LINE_KEYFRAMES: Segment[] = [
   { a: { x: 48, y: 4 }, b: { x: 34, y: 48 } },
-  { a: { x: 48, y: 4 }, b: { x: 48, y: 52 } },
   { a: { x: 48, y: 4 }, b: { x: 62, y: 48 } },
+  { a: { x: 48, y: 4 }, b: { x: 43, y: 50 } },
   { a: { x: 48, y: 4 }, b: { x: 48, y: 52 } },
 ];
 
