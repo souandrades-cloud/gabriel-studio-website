@@ -1,0 +1,86 @@
+/*
+ * Design tokens do X01 — TENSION / 01. Escopados sob `.x01-root` de propósito:
+ * o showcase vive num namespace visual totalmente separado do site
+ * institucional (paleta, tipografia e vocabulário de motion diferentes) e
+ * não deve herdar nem contaminar os tokens globais em app/globals.css.
+ */
+.x01-root {
+  --x01-bone: #e9e6de;
+  --x01-ink: #14120f;
+  --x01-ink-soft: rgba(20, 18, 15, 0.62);
+  --x01-ink-faint: rgba(20, 18, 15, 0.32);
+  --x01-hairline: rgba(20, 18, 15, 0.14);
+  --x01-signal: #ff4d1c;
+
+  --x01-gutter: clamp(16px, 2.4vw, 32px);
+  --x01-margin: clamp(20px, 4vw, 64px);
+
+  background: var(--x01-bone);
+  color: var(--x01-ink);
+  font-family: var(--font-x01-mono), ui-monospace, monospace;
+  -webkit-font-smoothing: antialiased;
+}
+
+.x01-root * {
+  box-sizing: border-box;
+}
+
+.x01-display {
+  font-family: var(--font-x01-display), "Arial Narrow", sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+.x01-mono {
+  font-family: var(--font-x01-mono), ui-monospace, monospace;
+  letter-spacing: 0.03em;
+}
+
+.x01-container {
+  width: 100%;
+  padding-inline: var(--x01-margin);
+}
+
+.x01-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--x01-gutter);
+}
+
+/* Grão mineral extremamente discreto — mesma técnica de app/globals.css
+   (.bg-grain), reaproveitada aqui para não depender do CSS institucional. */
+.x01-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 140px 140px;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
+}
+
+/**
+ * Tamanho por linha do Manifesto, escalado por --fs (ver Field em
+ * manifesto.tsx). Permite hierarquia BALANCE > IS NOT > REST /
+ * CONDITION > TENSION > IS THE sem precisar de classes Tailwind
+ * arbitrárias aninhando calc()/var() (frágil de escrever/ler).
+ */
+.x01-field-line {
+  font-size: clamp(calc(54px * var(--fs, 1)), calc(17vw * var(--fs, 1)), calc(88px * var(--fs, 1)));
+}
+@media (min-width: 640px) {
+  .x01-field-line {
+    font-size: clamp(calc(72px * var(--fs, 1)), calc(9vw * var(--fs, 1)), calc(144px * var(--fs, 1)));
+  }
+}
+
+.x01-focus:focus-visible {
+  outline: 1.5px solid var(--x01-signal);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .x01-root [data-x01-motion] {
+    transition: none !important;
+    animation: none !important;
+  }
+}
