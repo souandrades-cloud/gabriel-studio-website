@@ -4,7 +4,7 @@ import { useFrame } from "@react-three/fiber";
 import type { RefObject } from "react";
 import * as THREE from "three";
 
-import { perceptionProgress, routeReveal } from "./constants";
+import { routeOpacity, routeSweep } from "./constants";
 import { ROUTE_SAMPLES } from "./route";
 
 const SAMPLE_Y = 0.04;
@@ -28,25 +28,27 @@ const ROUTE_LINE = new THREE.Line(LINE_GEOMETRY, LINE_MATERIAL);
 /**
  * Ground-projected route: discrete spatial samples + a thin connecting
  * line, both quiet and neutral (no laser, no glow) — "planned movement",
- * not a special effect. Only exists on the machine side of the
- * transformation, so its own opacity is driven by the combined
- * reveal × perception signal (fades out for free as the return
- * transition brings perception back toward human).
+ * not a special effect. Only appears once the space already reads as
+ * measured + classified (PERCEPTUAL ITERATION 001 — "the route is a
+ * consequence, not a thing that just appears"). `routeSweep` draws the
+ * samples in once and never un-draws them; `routeOpacity` is the whole
+ * route's rise/hold/fall envelope, so RETURN reads as a clean
+ * disappearance rather than a reverse animation.
  */
 function RoutePath({ scrollRef }: { scrollRef: RefObject<number> }) {
   useFrame(() => {
     const t = scrollRef.current ?? 0;
-    const reveal = routeReveal(t);
-    const opacity = reveal * perceptionProgress(t);
+    const sweep = routeSweep(t);
+    const opacity = routeOpacity(t);
     const total = ROUTE_SAMPLES.length;
 
     DOT_MATERIALS.forEach((material, i) => {
-      const front = reveal * total - i;
+      const front = sweep * total - i;
       const perDot = Math.min(1, Math.max(0, front * 2));
       material.opacity = opacity * perDot;
     });
 
-    LINE_MATERIAL.opacity = opacity * Math.min(1, Math.max(0, reveal * 1.4)) * 0.5;
+    LINE_MATERIAL.opacity = opacity * Math.min(1, Math.max(0, sweep * 1.4)) * 0.5;
   });
 
   return (

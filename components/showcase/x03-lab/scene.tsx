@@ -44,7 +44,7 @@ function X03Scene({
     >
       <color attach="background" args={["#232527"]} />
 
-      <CameraRig mobile={mobile} scrollRef={scrollRef} />
+      <CameraRig mobile={mobile} />
       <SceneObjects scrollRef={scrollRef} />
       <RoutePath scrollRef={scrollRef} />
       {debug && <DebugReporter scrollRef={scrollRef} contextLost={contextLost} />}

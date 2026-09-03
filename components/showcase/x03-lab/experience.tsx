@@ -10,17 +10,20 @@ import { useIsMobileViewport } from "@/hooks/use-is-mobile-viewport";
 import { useMounted } from "@/hooks/use-mounted";
 import { useWebglSupport } from "@/hooks/use-webgl-support";
 
-import { REDUCED_STOPS, stageLabel } from "./constants";
+import { REDUCED_STOPS } from "./constants";
 import { DebugOverlay } from "./debug-hud";
 
 const X03Scene = dynamic(() => import("./scene").then((m) => m.X03Scene), { ssr: false });
 
-/** Real runway for the scroll-driven journey — long enough for a
- *  deliberate transformation, short enough to stay a focused test, not a
- *  full showcase. Reduced-motion keeps real scroll space to move between
- *  the 5 discrete stops (never zero — a locked reduced-motion track would
- *  strand the visitor on HUMAN forever). */
-const TRACK_VH = 460;
+/** Real runway for the scroll-driven journey. PERCEPTUAL ITERATION 001
+ *  widened this from 460vh: the timeline now carries 8 distinct causal
+ *  boundaries (see constants.ts) instead of 6, and each needs enough
+ *  scroll distance to read as deliberate rather than rushed — including
+ *  a real hold on the full machine state before RETURN begins.
+ *  Reduced-motion keeps real scroll space to move between the 5 discrete
+ *  stops (never zero — a locked reduced-motion track would strand the
+ *  visitor on HUMAN forever). */
+const TRACK_VH = 560;
 const REDUCED_TRACK_VH = 260;
 
 function StaticFallback() {
@@ -38,7 +41,6 @@ function X03Experience() {
   const webglSupported = useWebglSupport();
   const debug = useDebugMode();
   const [contextLost, setContextLost] = useState(false);
-  const [label, setLabel] = useState("Human view");
 
   const motionActive = mounted && !prefersReducedMotion;
 
@@ -48,17 +50,19 @@ function X03Experience() {
   // Single scroll signal feeds camera, perception and route together (see
   // constants.ts) — reduced motion changes only which values `scrollRef`
   // can land on (hard cuts between REDUCED_STOPS), never what the value
-  // means downstream.
+  // means downstream. Read directly by the Canvas layer every frame — no
+  // React state here, so scrolling never triggers a re-render (the
+  // visible caption below is intentionally static, see PERCEPTUAL
+  // ITERATION 001: the mechanism must read from the image, not from a
+  // stage label the visitor can read instead of looking).
   const scrollRef = useRef(0);
   useMotionValueEvent(scrollYProgress, "change", (v) => {
     if (motionActive) {
       scrollRef.current = v;
-      setLabel(stageLabel(v));
       return;
     }
     const band = Math.min(REDUCED_STOPS.length - 1, Math.floor(Math.max(0, Math.min(1, v)) * REDUCED_STOPS.length));
     scrollRef.current = REDUCED_STOPS[band];
-    setLabel(stageLabel(scrollRef.current));
   });
 
   const resetScroll = useCallback((event: React.KeyboardEvent) => {
@@ -94,7 +98,6 @@ function X03Experience() {
 
       <div className="x03-caption" aria-hidden="true">
         <span className="x03-caption-tag">X03 — Proprio / Perception Rig</span>
-        <span className="x03-caption-state">{label}</span>
         {motionActive && <span className="x03-caption-hint">Scroll to perceive</span>}
       </div>
 
