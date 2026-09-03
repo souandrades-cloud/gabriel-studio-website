@@ -22,7 +22,7 @@ export function X03Experience() {
   const [assetsReady, setAssetsReady] = useState(false);
   const onReady = useCallback(() => setAssetsReady(true), []);
 
-  const { state, frame, label, announce, actionable, showHint, reducedMotion, session, primary, reset } =
+  const { state, frame, label, overlay, announce, actionable, hint, reducedMotion, session, primary, reset } =
     useX03Experience(assetsReady);
 
   const handleKeyDown = useCallback(
@@ -41,6 +41,9 @@ export function X03Experience() {
 
   const inTrial = state.phase === "trialA" || state.phase === "trialB";
   const trialIndex = inTrial ? state.index : state.phase === "interTrial" ? state.nextIndex - 1 : -1;
+  // O índice numérico discreto só aparece quando a pausa NÃO carrega um beat
+  // tipográfico (ver overlay) — os dois nunca competem pela mesma atenção.
+  const showIndex = state.phase === "interTrial" && !state.label && trialIndex >= 0;
 
   return (
     <div className="x03-root">
@@ -50,7 +53,9 @@ export function X03Experience() {
         <p className="x03-arrival-line">EVERY CUT CHANGES WHAT COMES AFTER.</p>
       )}
 
-      {state.phase === "interTrial" && trialIndex >= 0 && (
+      {overlay && <p className="x03-beat-line">{overlay}</p>}
+
+      {showIndex && (
         <span className="x03-index" aria-hidden="true">
           {String(trialIndex + 1).padStart(2, "0")} / {String(TRIAL_COUNT).padStart(2, "0")}
         </span>
@@ -60,7 +65,14 @@ export function X03Experience() {
 
       {state.phase === "aftermath" && <Aftermath step={state.step} />}
 
-      <span className={"x03-hint" + (showHint ? " x03-hint--on" : "")} aria-hidden="true" />
+      {hint.on &&
+        (hint.text ? (
+          <p className="x03-hint-text" aria-hidden="true">
+            {hint.text}
+          </p>
+        ) : (
+          <span className="x03-hint x03-hint--on" aria-hidden="true" />
+        ))}
 
       <div
         className="x03-input-layer"

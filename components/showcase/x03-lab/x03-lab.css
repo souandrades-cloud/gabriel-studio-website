@@ -77,10 +77,14 @@
   background: var(--x03-bone);
 }
 
-/* --- ARRIVAL ------------------------------------------------------------
+/* --- ARRIVAL / BEATS NARRATIVOS -----------------------------------------
  * "Cinema esperando começar", não landing page carregando: uma linha só,
- * copy não congelada. */
-.x03-arrival-line {
+ * copy não congelada. `.x03-beat-line` reaproveita o mesmo tratamento para
+ * os beats tipográficos dos Movimentos I e III (WHAT COMES BEFORE MATTERS.
+ * / BEFORE. / AGAIN. / ONCE MORE.) — mesma posição, mesma discrição, nunca
+ * chega perto de parecer instrução de onboarding. */
+.x03-arrival-line,
+.x03-beat-line {
   position: absolute;
   left: 50%;
   bottom: clamp(28px, 8vh, 88px);
@@ -96,7 +100,8 @@
   max-width: 80vw;
 }
 
-/* --- ACT 03 — accumulation index, visível só na pausa entre trials ----- */
+/* --- MOVEMENT III — accumulation index, visível só na pausa entre
+ * intervals quando ela NÃO carrega um beat (ver showIndex em experience.tsx) ----- */
 .x03-index {
   position: absolute;
   right: clamp(16px, 4vw, 32px);
@@ -138,6 +143,22 @@
   50% {
     opacity: 1;
   }
+}
+
+/* Hint COM texto — só nas 2 primeiras oportunidades de corte, ensina
+ * "click/tap = cut" e depois some para sempre (ver TIMING.hintTextCutBudget). */
+.x03-hint-text {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(20px, 6vh, 56px);
+  transform: translateX(-50%);
+  z-index: 15;
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--x03-ink-quiet);
+  pointer-events: none;
 }
 
 /* --- input layer: alvo único de clique/toque/teclado -------------------- */
@@ -188,7 +209,7 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 22vmin;
+  width: 26vmin;
   height: auto;
   aspect-ratio: 16 / 9;
   object-fit: cover;
@@ -197,15 +218,36 @@
   opacity: var(--x03-opacity, 0);
   transform: translate(-50%, -50%) translate(var(--x03-tx, 0), var(--x03-ty, 0)) scale(var(--x03-scale, 1));
   transition:
-    transform 900ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1000ms cubic-bezier(0.22, 1, 0.36, 1),
     opacity 500ms ease;
   transition-delay: var(--x03-delay, 0ms);
   pointer-events: none;
   user-select: none;
 }
 
+/* Marca de registro — sublinha a sobreposição/convergência sem virar HUD:
+ * um contorno fino, não crosshairs, não cor de destaque. Visível só durante
+ * converge/settle (ver showRegistration em reveal.tsx), quando os B's já
+ * estão exatamente um sobre o outro. */
+.x03-reveal-registration {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(26vmin * 2.1 + 10px);
+  aspect-ratio: 16 / 9;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--x03-ink-quiet);
+  opacity: 0;
+  transition: opacity 600ms ease 300ms;
+  pointer-events: none;
+}
+.x03-reveal-registration--on {
+  opacity: 1;
+}
+
 /* reduced motion: mesmos 4 estados, como saltos discretos — não animação */
-.x03-reveal--still .x03-reveal-copy {
+.x03-reveal--still .x03-reveal-copy,
+.x03-reveal--still .x03-reveal-registration {
   transition: none !important;
 }
 
@@ -220,13 +262,25 @@
   text-transform: uppercase;
   text-align: center;
   color: var(--x03-ink);
+}
+
+/* Duas linhas em sequência — identidade primeiro, interpretação depois.
+ * "SAME FRAME." aparece de imediato quando o step chega a "copy"; a 2ª
+ * linha só depois de TIMING.copyLine2Delay. */
+.x03-reveal-copy-text-line1,
+.x03-reveal-copy-text-line2 {
   opacity: 0;
   transition: opacity 700ms ease;
 }
-.x03-reveal-copy-text--on {
+.x03-reveal-copy-text--on .x03-reveal-copy-text-line1 {
   opacity: 1;
 }
-.x03-reveal--still .x03-reveal-copy-text {
+.x03-reveal-copy-text--on .x03-reveal-copy-text-line2 {
+  opacity: 1;
+  transition-delay: 1000ms;
+}
+.x03-reveal--still .x03-reveal-copy-text-line1,
+.x03-reveal--still .x03-reveal-copy-text-line2 {
   transition: none;
 }
 
@@ -243,6 +297,9 @@
   background: var(--x03-bone);
 }
 
+/* Quatro beats em sequência — delays espelham TIMING.aftermathLineDelays
+ * em constants.ts ([0, 1100, 2400, 3100]). Mudar um sem o outro desalinha
+ * o ritmo do que o motor considera "tudo visível" (aftermathLineHold). */
 .x03-aftermath-line {
   margin: 0;
   font-size: 12px;
@@ -250,10 +307,23 @@
   text-transform: uppercase;
   color: var(--x03-ink);
   opacity: 0;
-  transition: opacity 900ms ease;
+  transition: opacity 700ms ease;
 }
-.x03-aftermath-line--on {
+.x03-aftermath-line-3 {
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  color: var(--x03-ink-quiet);
+}
+.x03-aftermath--on .x03-aftermath-line-1 {
   opacity: 1;
+}
+.x03-aftermath--on .x03-aftermath-line-2 {
+  opacity: 1;
+  transition-delay: 1100ms;
+}
+.x03-aftermath--on .x03-aftermath-line-3 {
+  opacity: 1;
+  transition-delay: 2400ms;
 }
 
 .x03-aftermath-replay {
@@ -261,15 +331,18 @@
   letter-spacing: 0.22em;
   color: var(--x03-ink-quiet);
   opacity: 0;
-  transition: opacity 700ms ease 300ms;
+  transition: opacity 700ms ease;
 }
-.x03-aftermath-replay--on {
+.x03-aftermath--on .x03-aftermath-replay {
   opacity: 1;
+  transition-delay: 3100ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .x03-reveal-copy,
-  .x03-reveal-copy-text,
+  .x03-reveal-copy-text-line1,
+  .x03-reveal-copy-text-line2,
+  .x03-reveal-registration,
   .x03-aftermath-line,
   .x03-aftermath-replay {
     transition: none !important;

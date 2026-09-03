@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 
-import { CALIBRATION_KEY, TRIAL_ORDER, type FrameName } from "./constants";
+import { CALIBRATION_KEY, TIMING, TRIAL_ORDER, type FrameName } from "./constants";
 import { autoDelayFor, initialState, minHoldFor, reduce, TRIAL_COUNT, type ExperienceState } from "./state-machine";
 import { aHoldOf, bHoldOf, createTrialRecord, type TrialRecord } from "./session-memory";
 
@@ -10,9 +10,12 @@ function now() {
   return typeof performance !== "undefined" ? performance.now() : Date.now();
 }
 
-/** Frame visível no palco durante fases fora da Reveal. `null` = neutro (sem imagem). */
+/** Frame visível no palco fora da Reveal. `null` = neutro (sem imagem). */
 export function frameForState(state: ExperienceState): FrameName | null {
   switch (state.phase) {
+    case "frame":
+      // MOVEMENT I — B sozinha, antes de qualquer contexto A existir.
+      return "B";
     case "calibrationA":
       return CALIBRATION_KEY;
     case "calibrationB":
@@ -23,6 +26,11 @@ export function frameForState(state: ExperienceState): FrameName | null {
     default:
       return null;
   }
+}
+
+/** Fase em que a ação primária corresponde a um CORTE (vs. um avanço). */
+function isCutPhase(state: ExperienceState): boolean {
+  return state.phase === "calibrationA" || state.phase === "trialA";
 }
 
 /** Rótulo acessível da ação primária corrente. Neutro — nunca nomeia B=B. */
@@ -46,21 +54,35 @@ function labelForState(state: ExperienceState, actionable: boolean): string {
   }
 }
 
-/** Anúncio de aria-live por fase — curto, neutro, sem spoiler. */
+/**
+ * Texto visível de narrativa (Movimentos I–III) — não é o hint de input,
+ * é o beat tipográfico da encenação (ver INTERVAL_LABELS/RECALL_LABEL em
+ * constants.ts). `null` quando a fase atual não carrega nenhum.
+ */
+function overlayForState(state: ExperienceState): string | null {
+  if (state.phase === "frame" && state.step === "beat") return "WHAT COMES BEFORE MATTERS.";
+  if (state.phase === "interTrial" && state.label) return state.label;
+  if (state.phase === "recall" && state.label) return state.label;
+  return null;
+}
+
+/** Anúncio de aria-live por fase — curto, neutro, sem spoiler de B=B. */
 function announceForState(state: ExperienceState): string {
   switch (state.phase) {
     case "arrival":
       return "Início.";
+    case "frame":
+      return state.step === "look" ? "Retrato." : "WHAT COMES BEFORE MATTERS.";
     case "calibrationA":
       return "Cena de calibração.";
     case "calibrationB":
       return "Corte.";
     case "trialA":
-      return `Cena ${state.index + 1} de ${TRIAL_COUNT}.`;
+      return `Interval ${state.index + 1} de ${TRIAL_COUNT}.`;
     case "trialB":
       return "Corte.";
     case "recall":
-      return "Pausa.";
+      return state.label ?? "Pausa.";
     case "reveal":
       return state.step === "copy" ? "Revelação." : "Revelando.";
     case "aftermath":
@@ -70,14 +92,20 @@ function announceForState(state: ExperienceState): string {
   }
 }
 
+export type HintState = { on: boolean; text: string | null };
+
 export function useX03Experience(assetsReady: boolean) {
   const [state, dispatch] = useReducer(reduce, undefined, () => initialState(now()));
-  const [showHint, setShowHint] = useState(false);
+  const [hint, setHint] = useState<HintState>({ on: false, text: null });
   const [reducedMotion, setReducedMotion] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
+  const [isTouch] = useState(
+    () => typeof window !== "undefined" && ("ontouchstart" in window || navigator.maxTouchPoints > 0),
+  );
   const sessionRef = useRef<TrialRecord[]>([]);
   const [sessionSnapshot, setSessionSnapshot] = useState<TrialRecord[]>([]);
+  const cutCountRef = useRef(0);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -89,7 +117,7 @@ export function useX03Experience(assetsReady: boolean) {
   const hold = minHoldFor(state);
   const actionable = assetsReady && hold !== null;
 
-  // Session Choreography — abre/fecha registros nos limites de cada trial.
+  // Session Choreography — abre/fecha registros nos limites de cada interval.
   // Ver session-memory.ts: nunca sai do dispositivo, nunca vira analytics.
   useEffect(() => {
     if (state.phase === "trialA") {
@@ -110,7 +138,15 @@ export function useX03Experience(assetsReady: boolean) {
     if (state.phase === "arrival") {
       sessionRef.current = [];
       setSessionSnapshot([]);
+      cutCountRef.current = 0;
     }
+  }, [state]);
+
+  // Conta oportunidades de CORTE encontradas nesta sessão — usado só para
+  // decidir se o hint ainda precisa de texto (ver efeito de hint abaixo).
+  // Mutação de ref, não setState: seguro dentro do corpo do effect.
+  useEffect(() => {
+    if (isCutPhase(state)) cutCountRef.current += 1;
   }, [state]);
 
   // AUTO transitions — controladas pelo estúdio, não pelo visitante.
@@ -122,13 +158,21 @@ export function useX03Experience(assetsReady: boolean) {
   }, [state]);
 
   // Hint mínimo — só quando a fase aceita PRIMARY e o visitante hesita.
+  // Nas 2 primeiras oportunidades de CORTE, o hint vem com texto
+  // ("CLICK TO CUT" / "TAP TO CUT") para ensinar a gramática; depois disso,
+  // e para avanços (não-corte), é só o ponto discreto de sempre.
   useEffect(() => {
-    const t = actionable ? window.setTimeout(() => setShowHint(true), 2600) : null;
+    if (!actionable) {
+      return () => setHint({ on: false, text: null });
+    }
+    const showText = isCutPhase(state) && cutCountRef.current <= TIMING.hintTextCutBudget;
+    const text = showText ? (isTouch ? "TAP TO CUT" : "CLICK TO CUT") : null;
+    const t = window.setTimeout(() => setHint({ on: true, text }), TIMING.hintDelay);
     return () => {
-      if (t !== null) window.clearTimeout(t);
-      setShowHint(false);
+      window.clearTimeout(t);
+      setHint({ on: false, text: null });
     };
-  }, [state, actionable]);
+  }, [state, actionable, isTouch]);
 
   const primary = useCallback(() => {
     if (!actionable) return;
@@ -139,15 +183,17 @@ export function useX03Experience(assetsReady: boolean) {
 
   const frame = useMemo(() => frameForState(state), [state]);
   const label = useMemo(() => labelForState(state, actionable), [state, actionable]);
+  const overlay = useMemo(() => overlayForState(state), [state]);
   const announce = useMemo(() => announceForState(state), [state]);
 
   return {
     state,
     frame,
     label,
+    overlay,
     announce,
     actionable,
-    showHint,
+    hint,
     reducedMotion,
     session: sessionSnapshot,
     trialOrder: TRIAL_ORDER,

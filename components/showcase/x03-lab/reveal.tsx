@@ -1,9 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
-
 import { FRAME_SRC, TIMING } from "./constants";
-import { deriveRevealStagger, type TrialRecord } from "./session-memory";
+import type { TrialRecord } from "./session-memory";
 import type { RevealStep } from "./state-machine";
 
 type RevealProps = {
@@ -13,26 +11,32 @@ type RevealProps = {
 };
 
 /**
- * ACT 04 — B = B. A imagem prova primeiro, a copy nomeia depois.
+ * MOVEMENT IV — SAME. A imagem prova identidade primeiro, a copy nomeia a
+ * interpretação depois.
  *
- * `grid`     — os B's da sessão reaparecem espalhados, cada um no atraso
- *              vindo da Session Choreography (deriveRevealStagger) — não um
- *              stagger genérico, um ritmo que pertence a esta sessão.
- * `converge` — todos os offsets colapsam para o mesmo centro. Como todos são
- *              literalmente `frames/B.jpg` (mesmo arquivo, sem cache
- *              compartilhado forçado), a convergência não é um efeito —
- *              é a prova: eles sempre couberam exatamente um sobre o outro.
+ * `grid`     — os B's da sessão reaparecem UM POR VEZ, na ordem em que
+ *              ocorreram (stagger simples por índice — CLARITY > cleverness:
+ *              um ritmo modulado pelos tempos do visitante já foi tentado e
+ *              achado ilegível no QA humano; a ordem em que as coisas
+ *              aconteceram já é, por si só, a informação que importa aqui).
+ * `converge` — todos os offsets colapsam para o mesmo centro: não é um
+ *              encolhimento, é uma SOBREPOSIÇÃO — como todos são
+ *              literalmente `frames/B.jpg`, eles sempre couberam exatamente
+ *              um sobre o outro. Uma marca de registro (ver
+ *              .x03-reveal-registration) sublinha essa precisão sem virar
+ *              HUD.
  * `settle`   — hold em silêncio, identidade pixel-a-pixel já visível.
- * `copy`     — só agora o texto nomeia o que a imagem já provou.
+ * `copy`     — duas linhas, em sequência: "SAME FRAME." (identidade, o que
+ *              a imagem já provou) e só depois "DIFFERENT CONTEXT."
+ *              (interpretação). Nunca ao mesmo tempo.
  *
  * Reduced motion: sem transição (ver .x03-reveal--still em x03-lab.css) —
  * os mesmos quatro estados, mas como saltos discretos, não animação.
  */
 export function Reveal({ step, session, reducedMotion }: RevealProps) {
   const n = Math.max(session.length, 1);
-  const delays = useMemo(() => deriveRevealStagger(session, TIMING.alignStagger), [session]);
-
   const spread = step === "grid";
+  const showRegistration = step === "converge" || step === "settle";
 
   return (
     <div className={"x03-reveal" + (reducedMotion ? " x03-reveal--still" : "")}>
@@ -40,14 +44,15 @@ export function Reveal({ step, session, reducedMotion }: RevealProps) {
         {session.map((record, i) => {
           const slot = i - (n - 1) / 2;
           const style = {
-            "--x03-tx": spread ? `${slot * 24}vmin` : "0vmin",
-            "--x03-ty": spread ? "0vmin" : "0vmin",
-            "--x03-scale": spread ? "1" : "1.9",
-            "--x03-delay": `${delays[i] ?? 0}ms`,
+            "--x03-tx": spread ? `${slot * 30}vmin` : "0vmin",
+            "--x03-ty": "0vmin",
+            "--x03-scale": spread ? "1" : "2.1",
+            "--x03-delay": `${i * TIMING.alignStagger}ms`,
             "--x03-opacity": step === "grid" || step === "converge" || step === "settle" || step === "copy" ? 1 : 0,
           } as React.CSSProperties;
           return <img key={record.index} src={FRAME_SRC.B} alt="" draggable={false} className="x03-reveal-copy" style={style} />;
         })}
+        <div className={"x03-reveal-registration" + (showRegistration ? " x03-reveal-registration--on" : "")} />
       </div>
 
       {/* aria-hidden até o step "copy": opacity:0 sozinho não tira o texto da
@@ -57,8 +62,8 @@ export function Reveal({ step, session, reducedMotion }: RevealProps) {
         className={"x03-reveal-copy-text" + (step === "copy" ? " x03-reveal-copy-text--on" : "")}
         aria-hidden={step !== "copy"}
       >
-        <span>THE IMAGE NEVER CHANGED.</span>
-        <span>THE INTERVAL DID.</span>
+        <span className="x03-reveal-copy-text-line1">SAME FRAME.</span>
+        <span className="x03-reveal-copy-text-line2">DIFFERENT CONTEXT.</span>
       </p>
     </div>
   );
