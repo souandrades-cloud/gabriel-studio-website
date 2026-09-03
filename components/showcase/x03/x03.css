@@ -1,0 +1,43 @@
+/*
+ * Design tokens do X03 — PROPRIO. Escopados sob `.x03-root`, isolados do
+ * site institucional e dos outros showcases (mesmo padrão de x01.css /
+ * x02.css — ver docs/foundation.md). Paleta derivada do A-001 (PL-1 master
+ * reference): grafite industrial + bone neutro do estúdio fotográfico;
+ * `--x03-accent` é o âmbar do próprio adesivo de alerta do chassi — não é
+ * uma cor de marca inventada, é a única cor que o produto já carrega.
+ */
+.x03-root {
+  --x03-graphite: #201e1c;
+  --x03-ink: #f2efe9;
+  --x03-ink-soft: rgba(242, 239, 233, 0.68);
+  --x03-accent: #c99a3f;
+
+  --x03-margin: clamp(20px, 4vw, 64px);
+
+  background: var(--x03-graphite);
+  color: var(--x03-ink);
+  font-family: var(--font-x03-mono), ui-monospace, monospace;
+  -webkit-font-smoothing: antialiased;
+}
+
+.x03-root * {
+  box-sizing: border-box;
+}
+
+.x03-display {
+  font-family: var(--font-x03-display), "Arial Narrow", sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 0.92;
+  text-transform: uppercase;
+}
+
+.x03-mono {
+  font-family: var(--font-x03-mono), ui-monospace, monospace;
+  letter-spacing: 0.08em;
+}
+
+.x03-container {
+  width: 100%;
+  padding-inline: var(--x03-margin);
+}
