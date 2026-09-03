@@ -95,6 +95,13 @@ export function FrameStage({ visible, onReady }: FrameStageProps) {
           }
         />
       ))}
+      {/* Cobertura opaca durante o warm-up: o loop acima passa por cada um
+          dos 8 frames reais (visibility:visible) para forçar decode/raster
+          antes da experiência começar — sem isto, esse ciclo pinta as 8
+          fotos em tela cheia, em sequência, visível ao usuário (era este o
+          bug: a "sequência rodando sozinha" era o warm-up, não a state
+          machine). Mesmo papel do #warm em player.html. */}
+      {!warm && <div className="x03-warm-cover" />}
     </div>
   );
 }

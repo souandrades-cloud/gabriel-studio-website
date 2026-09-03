@@ -67,6 +67,16 @@
   }
 }
 
+/* Cobertura opaca do warm-up — ver frame-stage.tsx. z-index explícito
+ * garante que pinta acima dos frames (z-index:auto) independente da ordem
+ * no DOM. */
+.x03-warm-cover {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  background: var(--x03-bone);
+}
+
 /* --- ARRIVAL ------------------------------------------------------------
  * "Cinema esperando começar", não landing page carregando: uma linha só,
  * copy não congelada. */
