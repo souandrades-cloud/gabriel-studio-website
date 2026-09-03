@@ -1,92 +1,112 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useMotionValueEvent, useReducedMotion, useScroll } from "framer-motion";
+import dynamic from "next/dynamic";
+import { useCallback, useRef, useState } from "react";
 
-import { Aftermath } from "./aftermath";
-import { TRIAL_COUNT } from "./state-machine";
-import { FrameStage } from "./frame-stage";
-import { Reveal } from "./reveal";
-import { useX03Experience } from "./use-x03-experience";
+import { CanvasErrorBoundary } from "@/components/three/canvas-error-boundary";
+import { useDebugMode } from "@/hooks/use-debug-mode";
+import { useIsMobileViewport } from "@/hooks/use-is-mobile-viewport";
+import { useMounted } from "@/hooks/use-mounted";
+import { useWebglSupport } from "@/hooks/use-webgl-support";
 
-/**
- * X03 — INTERVAL / 03, Phase B. Root da experiência.
- *
- * Input model (GUIDED TEMPORAL FREEDOM): o estúdio controla a sequência
- * macro, os holds mínimos e o reveal (ver state-machine.ts); o visitante
- * controla o momento do corte dentro da janela válida, quanto tempo observa
- * e quando avança — um único gesto (`primary`) reaproveitado em toda a
- * experiência: clique, toque, Espaço ou Enter. Não há scrubber, não há
- * carrossel, não há botões permanentes grandes.
- */
-export function X03Experience() {
-  const [assetsReady, setAssetsReady] = useState(false);
-  const onReady = useCallback(() => setAssetsReady(true), []);
+import { REDUCED_STOPS, stageLabel } from "./constants";
+import { DebugOverlay } from "./debug-hud";
 
-  const { state, frame, label, overlay, announce, actionable, hint, reducedMotion, session, primary, reset } =
-    useX03Experience(assetsReady);
+const X03Scene = dynamic(() => import("./scene").then((m) => m.X03Scene), { ssr: false });
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Escape") {
-        reset();
-        return;
-      }
-      if (e.key === " " || e.key === "Enter") {
-        e.preventDefault();
-        primary();
-      }
-    },
-    [primary, reset],
-  );
+/** Real runway for the scroll-driven journey — long enough for a
+ *  deliberate transformation, short enough to stay a focused test, not a
+ *  full showcase. Reduced-motion keeps real scroll space to move between
+ *  the 5 discrete stops (never zero — a locked reduced-motion track would
+ *  strand the visitor on HUMAN forever). */
+const TRACK_VH = 460;
+const REDUCED_TRACK_VH = 260;
 
-  const inTrial = state.phase === "trialA" || state.phase === "trialB";
-  const trialIndex = inTrial ? state.index : state.phase === "interTrial" ? state.nextIndex - 1 : -1;
-  // O índice numérico discreto só aparece quando a pausa NÃO carrega um beat
-  // tipográfico (ver overlay) — os dois nunca competem pela mesma atenção.
-  const showIndex = state.phase === "interTrial" && !state.label && trialIndex >= 0;
-
+function StaticFallback() {
   return (
-    <div className="x03-root">
-      <FrameStage visible={frame} onReady={onReady} />
-
-      {state.phase === "arrival" && (
-        <p className="x03-arrival-line">EVERY CUT CHANGES WHAT COMES AFTER.</p>
-      )}
-
-      {overlay && <p className="x03-beat-line">{overlay}</p>}
-
-      {showIndex && (
-        <span className="x03-index" aria-hidden="true">
-          {String(trialIndex + 1).padStart(2, "0")} / {String(TRIAL_COUNT).padStart(2, "0")}
-        </span>
-      )}
-
-      {state.phase === "reveal" && <Reveal step={state.step} session={session} reducedMotion={reducedMotion} />}
-
-      {state.phase === "aftermath" && <Aftermath step={state.step} />}
-
-      {hint.on &&
-        (hint.text ? (
-          <p className="x03-hint-text" aria-hidden="true">
-            {hint.text}
-          </p>
-        ) : (
-          <span className="x03-hint x03-hint--on" aria-hidden="true" />
-        ))}
-
-      <div
-        className="x03-input-layer"
-        role="button"
-        tabIndex={0}
-        aria-label={label || undefined}
-        aria-disabled={!actionable}
-        onClick={primary}
-        onKeyDown={handleKeyDown}
-      />
-
-      <span className="x03-sr-only" role="status" aria-live="polite">
-        {announce}
-      </span>
+    <div className="x03-fallback" aria-hidden="true">
+      X03 — WebGL indisponível neste dispositivo
     </div>
   );
 }
+
+function X03Experience() {
+  const mounted = useMounted();
+  const prefersReducedMotion = useReducedMotion();
+  const isMobile = useIsMobileViewport();
+  const webglSupported = useWebglSupport();
+  const debug = useDebugMode();
+  const [contextLost, setContextLost] = useState(false);
+  const [label, setLabel] = useState("Human view");
+
+  const motionActive = mounted && !prefersReducedMotion;
+
+  const trackRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: trackRef, offset: ["start start", "end end"] });
+
+  // Single scroll signal feeds camera, perception and route together (see
+  // constants.ts) — reduced motion changes only which values `scrollRef`
+  // can land on (hard cuts between REDUCED_STOPS), never what the value
+  // means downstream.
+  const scrollRef = useRef(0);
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    if (motionActive) {
+      scrollRef.current = v;
+      setLabel(stageLabel(v));
+      return;
+    }
+    const band = Math.min(REDUCED_STOPS.length - 1, Math.floor(Math.max(0, Math.min(1, v)) * REDUCED_STOPS.length));
+    scrollRef.current = REDUCED_STOPS[band];
+    setLabel(stageLabel(scrollRef.current));
+  });
+
+  const resetScroll = useCallback((event: React.KeyboardEvent) => {
+    if (event.key !== "Escape") return;
+    window.scrollTo({ top: 0, behavior: motionActive ? "smooth" : "auto" });
+  }, [motionActive]);
+
+  const showScene = mounted && webglSupported && !contextLost;
+  const showFallback = mounted && (!webglSupported || contextLost);
+
+  return (
+    <div className="x03-viewport" onKeyDown={resetScroll} tabIndex={-1}>
+      <h1 className="sr-only">
+        X03 Lab — Proprio. Perception Rig prototype. Role a página para ver o mesmo espaço mudar da
+        visão humana para a interpretação da máquina.
+      </h1>
+
+      <div className="x03-canvas-layer">
+        {showScene ? (
+          <CanvasErrorBoundary fallback={<StaticFallback />}>
+            <X03Scene
+              mobile={isMobile}
+              scrollRef={scrollRef}
+              debug={debug}
+              contextLost={contextLost}
+              onContextLost={() => setContextLost(true)}
+            />
+          </CanvasErrorBoundary>
+        ) : (
+          showFallback && <StaticFallback />
+        )}
+      </div>
+
+      <div className="x03-caption" aria-hidden="true">
+        <span className="x03-caption-tag">X03 — Proprio / Perception Rig</span>
+        <span className="x03-caption-state">{label}</span>
+        {motionActive && <span className="x03-caption-hint">Scroll to perceive</span>}
+      </div>
+
+      {debug && <DebugOverlay />}
+
+      <div
+        ref={trackRef}
+        aria-hidden="true"
+        style={{ height: motionActive ? `${TRACK_VH}vh` : `${REDUCED_TRACK_VH}vh` }}
+      />
+    </div>
+  );
+}
+
+export { X03Experience };
