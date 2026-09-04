@@ -6,6 +6,7 @@ import { useRef } from "react";
 
 import { useIsMobileViewport } from "@/hooks/use-is-mobile-viewport";
 import { useMounted } from "@/hooks/use-mounted";
+import { piecewiseLerp } from "@/lib/x03/piecewise-lerp";
 
 /**
  * Director Iteration 002: Iteration 001 verified correct end-to-end (the
@@ -73,20 +74,6 @@ const MOBILE_TRACK_VH = 130;
 const TIMELINE = [0, 0.25, 0.5, 0.75, 1];
 const WORDMARK_RANGE: [number, number] = [0.7, 0.95];
 const SCRIM_RANGE: [number, number] = [0.55, 0.85];
-
-/** Clamped piecewise-linear interpolation — `input` must be ascending. */
-function piecewiseLerp(value: number, input: number[], output: number[]): number {
-  if (value <= input[0]) return output[0];
-  const last = input.length - 1;
-  if (value >= input[last]) return output[last];
-  for (let i = 1; i <= last; i++) {
-    if (value <= input[i]) {
-      const t = (value - input[i - 1]) / (input[i] - input[i - 1]);
-      return output[i - 1] + t * (output[i] - output[i - 1]);
-    }
-  }
-  return output[last];
-}
 
 function Hero() {
   const mounted = useMounted();
@@ -217,11 +204,6 @@ function Hero() {
           </motion.div>
         </section>
       </div>
-
-      {/* Next-act edge — proves the sticky Hero releases cleanly into the
-          document. Deliberately empty: no Gate 02 content, no copy about
-          what's next, just the seam. */}
-      <div aria-hidden="true" className="min-h-[50vh] w-full border-t" style={{ borderColor: "var(--x03-hairline)" }} />
     </MotionConfig>
   );
 }
