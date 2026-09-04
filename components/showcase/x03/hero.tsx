@@ -8,15 +8,20 @@ import { useIsMobileViewport } from "@/hooks/use-is-mobile-viewport";
 import { useMounted } from "@/hooks/use-mounted";
 
 /**
- * Director Iteration 001: the shot sequence is now driven by scroll, not
- * autoplay. A tall track (TRACK_VH) holds a sticky 100svh stage; scrolling
- * through the track maps scrollYProgress (0→1) onto the same camera move
- * over the single A-001 photograph — object-position stays fixed, only
- * scale/translate change, exactly as in Gate 01, just re-parented onto
- * scroll instead of a timer. TIMELINE below is the six-point map: HOLD is
- * held from 0→0.18 (an arrival beat, not a move), then REVEAL, PRESENCE
- * and IDENTITY LOCK each get their own window, then 0.88→1 holds the
- * resolved composition (RESOLUTION/RELEASE) so the ending doesn't drift.
+ * Director Iteration 002: Iteration 001 verified correct end-to-end (the
+ * computed transform on the camera layer matched the interpolation math at
+ * every checkpoint — not a binding bug) but was perceptually flat. Measured
+ * cause: one normal wheel tick (deltaY 100) from the top produced a scale
+ * delta of exactly 0 — the first 18% and last 12% of the track were flat
+ * holds (0.6, ~30% of the whole track, moved nothing), so the very first
+ * thing every visitor did — scroll down from the top — gave zero feedback.
+ * TIMELINE is now 5 points with no repeated/held values: every quarter of
+ * the track moves. Amplitude and TRACK_VH both came down/up together — a
+ * shorter track spreads the same (now larger) range over less scroll
+ * distance, so a normal wheel tick reads as a visible change throughout,
+ * not just mid-track. See `piecewiseLerp` for how a value between points
+ * is resolved — linear per segment, no easing (a scroll-scrubbed value
+ * should track scroll position 1:1; easing belongs on time-based motion).
  *
  * Every scroll-linked value below is ONE `useTransform` call whose function
  * branches on `useScrollSequence` internally (piecewiseLerp / a fallback
@@ -45,26 +50,29 @@ interface Shot {
   y: number; // percent
 }
 
+// 5 shots, one per checkpoint (0/25/50/75/100%) — no held/repeated values,
+// so every quarter of the track visibly moves the frame.
 const DESKTOP_SHOTS: Shot[] = [
-  { scale: 2.15, x: 21, y: -19 }, // HOLD: gripper/joint macro detail, abstract
-  { scale: 1.55, x: 12, y: -11 }, // REVEAL: arm + sensor head, still ambiguous
-  { scale: 1.1, x: 2, y: -2 }, // PRODUCT PRESENCE: full mass, tight to frame
-  { scale: 1, x: 0, y: 0 }, // IDENTITY LOCK / RESOLUTION: resting composition
+  { scale: 2.4, x: 24, y: -21 }, // 0% MACRO: joint/gripper detail, deliberately unclear
+  { scale: 1.85, x: 16, y: -15 }, // 25% OPENING: frame visibly widening
+  { scale: 1.35, x: 7, y: -7 }, // 50% BIG CHANGE: most anatomy legible
+  { scale: 1.05, x: 1.5, y: -1.5 }, // 75% NEAR COMPLETE: arm may still exit frame
+  { scale: 1, x: 0, y: 0 }, // 100% RESOLVED: Gate 01's approved composition
 ];
 const MOBILE_SHOTS: Shot[] = [
-  { scale: 1.75, x: 16, y: -14 },
-  { scale: 1.4, x: 9, y: -8 },
-  { scale: 1.1, x: 3, y: -3 },
+  { scale: 1.65, x: 17, y: -15 },
+  { scale: 1.42, x: 11, y: -10 },
+  { scale: 1.2, x: 5, y: -5 },
+  { scale: 1.04, x: 1, y: -1 },
   { scale: 1, x: 0, y: 0 },
 ];
 
-const DESKTOP_TRACK_VH = 220;
-const MOBILE_TRACK_VH = 170;
+const DESKTOP_TRACK_VH = 160;
+const MOBILE_TRACK_VH = 130;
 
-// [ARRIVAL-hold-end, REVEAL-end, PRESENCE-end, IDENTITY-end, RESOLUTION-end]
-const TIMELINE = [0, 0.18, 0.42, 0.7, 0.88, 1];
-const WORDMARK_RANGE: [number, number] = [0.72, 0.88];
-const SCRIM_RANGE: [number, number] = [0.58, 0.8];
+const TIMELINE = [0, 0.25, 0.5, 0.75, 1];
+const WORDMARK_RANGE: [number, number] = [0.7, 0.95];
+const SCRIM_RANGE: [number, number] = [0.55, 0.85];
 
 /** Clamped piecewise-linear interpolation — `input` must be ascending. */
 function piecewiseLerp(value: number, input: number[], output: number[]): number {
@@ -90,9 +98,9 @@ function Hero() {
   const trackVh = isMobile ? MOBILE_TRACK_VH : DESKTOP_TRACK_VH;
   const resting = shots[shots.length - 1];
 
-  const scaleOut = [shots[0].scale, shots[0].scale, shots[1].scale, shots[2].scale, shots[3].scale, shots[3].scale];
-  const xOut = [shots[0].x, shots[0].x, shots[1].x, shots[2].x, shots[3].x, shots[3].x];
-  const yOut = [shots[0].y, shots[0].y, shots[1].y, shots[2].y, shots[3].y, shots[3].y];
+  const scaleOut = shots.map((s) => s.scale);
+  const xOut = shots.map((s) => s.x);
+  const yOut = shots.map((s) => s.y);
 
   const trackRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ["start start", "end end"] });
@@ -140,7 +148,7 @@ function Hero() {
             transition={{ duration: 0.5 }}
             className="absolute inset-0 overflow-hidden"
           >
-            <motion.div className="absolute inset-0" style={{ scale, x, y: imgY }}>
+            <motion.div data-x03-camera-layer className="absolute inset-0" style={{ scale, x, y: imgY }}>
               <Image
                 src="/images/x03/x03-a001-pl1-master.png"
                 alt=""
