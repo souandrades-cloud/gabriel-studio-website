@@ -20,12 +20,22 @@ const CAMERA_Z = [6.4, 4.75, 4.3];
 const CAMERA_Y = [0, 0.14, 0.2];
 const CAMERA_FOV = [34, 31, 29.5];
 
-// Photograph → computational-language convergence (mirrors A-005's own
-// language: solid mass fades toward line structure, never fully vanishes).
-// Starts at 0.83, after a ~9%-track solid hold ([0.74, 0.83]) where the
-// model has fully taken over but hasn't started abstracting yet — the
-// "small moment to absorb the new state" from the pacing-correction memo.
-const WIREFRAME_TIMELINE = [0.83, 0.96];
+/**
+ * Director Iteration 003 — representation convergence, not position: the
+ * previous version had solid mass at full opacity the instant the canvas
+ * layer started fading in, so the DOM crossfade was blending "detailed
+ * photo" with "opaque 3D primitives" — a representation jump, independent
+ * of how well the geometry was placed. Edges lead now (A-005 is already a
+ * line drawing over the photo — this keeps that vocabulary alive instead
+ * of replacing it), solid mass trails and stays translucent through the
+ * whole photo/canvas coexistence window (CANVAS_FADE_IN, frozen at
+ * [0.45, 0.74] in machine-signal.tsx), only reaching full opacity well
+ * after A-005 has already receded — nothing left to compare it against.
+ */
+const EDGE_TIMELINE = [0.45, 0.62, 0.96];
+const EDGE_OPACITY = [0, 0.82, 0.9];
+const SOLID_TIMELINE = [0.5, 0.74, 0.92];
+const SOLID_OPACITY = [0, 0.55, 1];
 
 interface SceneProps {
   mobile: boolean;
@@ -125,10 +135,10 @@ function SensorCavity({ mobile, scrollRef, pointerRef }: SceneProps) {
       camera.updateProjectionMatrix();
     }
 
-    const signal = piecewiseLerp(v, WIREFRAME_TIMELINE, [0, 1]);
+    const edgeOpacity = piecewiseLerp(v, EDGE_TIMELINE, EDGE_OPACITY);
     const edgeMesh = edgeAnchorRef.current;
-    if (edgeMesh) (edgeMesh.material as THREE.LineBasicMaterial).opacity = signal * 0.85;
-    const solidOpacity = 1 - signal * 0.68;
+    if (edgeMesh) (edgeMesh.material as THREE.LineBasicMaterial).opacity = edgeOpacity;
+    const solidOpacity = piecewiseLerp(v, SOLID_TIMELINE, SOLID_OPACITY);
     [graphiteAnchorRef, graphiteDarkAnchorRef, lensAnchorRef].forEach((ref) => {
       const mesh = ref.current;
       if (mesh) (mesh.material as THREE.MeshStandardMaterial).opacity = solidOpacity;
