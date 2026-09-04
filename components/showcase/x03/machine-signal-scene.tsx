@@ -10,15 +10,22 @@ import { piecewiseLerp } from "@/lib/x03/piecewise-lerp";
  * Matched-proxy camera: three keyframes (not a curve) so the dolly's slope
  * never flattens to zero near the track end — a smoothstep/ease would go
  * dead-flat right where the wheel-tick QA checks for continued response.
+ * Cinematic Pacing Correction: starts with canvas fade-in (0.45) so depth
+ * is already reading by the time the model is visible, middle keyframe at
+ * 0.74 lines up with the new "model takes over, solid hold" beat — camera
+ * keeps drifting through that hold instead of parking dead still.
  */
-const CAMERA_DOLLY_TIMELINE = [0.4, 0.7, 1];
+const CAMERA_DOLLY_TIMELINE = [0.45, 0.74, 1];
 const CAMERA_Z = [6.4, 4.75, 4.3];
 const CAMERA_Y = [0, 0.14, 0.2];
 const CAMERA_FOV = [34, 31, 29.5];
 
 // Photograph → computational-language convergence (mirrors A-005's own
 // language: solid mass fades toward line structure, never fully vanishes).
-const WIREFRAME_TIMELINE = [0.56, 0.88];
+// Starts at 0.83, after a ~9%-track solid hold ([0.74, 0.83]) where the
+// model has fully taken over but hasn't started abstracting yet — the
+// "small moment to absorb the new state" from the pacing-correction memo.
+const WIREFRAME_TIMELINE = [0.83, 0.96];
 
 interface SceneProps {
   mobile: boolean;

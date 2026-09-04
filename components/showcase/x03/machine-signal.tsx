@@ -29,24 +29,31 @@ const MachineSignalScene = dynamic(
   { ssr: false },
 );
 
-const CROSSFADE_A003_A004: [number, number] = [0, 0.16];
-const CROSSFADE_A004_A005: [number, number] = [0.3, 0.42];
-// A-004's opacity is flat at 1 for the whole interior hold ([0.16, 0.3]) — a
-// wheel tick landing inside that gap moved nothing (QA finding, Gate 03B).
+// Gate 03B — Cinematic Pacing Correction: the added vh budget is spent
+// almost entirely on INTERIOR → SIGNAL → MODEL (localized breathing), not
+// proportionally across the whole track. MECHANISM's handoff crossfade
+// below is within a vh of its pre-correction width on purpose.
+const CROSSFADE_A003_A004: [number, number] = [0, 0.13];
+const CROSSFADE_A004_A005: [number, number] = [0.33, 0.51];
+// A-004's opacity is flat at 1 for the whole interior hold — a wheel tick
+// landing inside that gap moves nothing (QA finding, first Gate 03B pass).
 // A slow continuous scale across A-004's full life closes it, same fix
 // material-mechanism.tsx already uses for its own material hold.
-const INTERIOR_SCALE_TIMELINE: [number, number] = [0, 0.42];
-const INTERIOR_SCALE: [number, number] = [1, 1.06];
-const CANVAS_FADE_IN: [number, number] = [0.4, 0.56];
-const CANVAS_MOUNT_THRESHOLD = 0.26;
-const CANVAS_ACTIVE_START = 0.24;
+const INTERIOR_SCALE_TIMELINE: [number, number] = [0, 0.51];
+const INTERIOR_SCALE: [number, number] = [1, 1.07];
+// Starts before the A-004→A-005 crossfade even finishes — the model begins
+// emerging while A-005 is still resolving, so photograph and computational
+// structure genuinely coexist rather than handing off in sequence.
+const CANVAS_FADE_IN: [number, number] = [0.45, 0.74];
+const CANVAS_MOUNT_THRESHOLD = 0.33;
+const CANVAS_ACTIVE_START = 0.31;
 
-const INTERIOR_LABEL_IN: [number, number] = [0.02, 0.09];
-const INTERIOR_LABEL_OUT: [number, number] = [0.28, 0.35];
-const SIGNAL_LABEL_IN: [number, number] = [0.55, 0.63];
+const INTERIOR_LABEL_IN: [number, number] = [0.02, 0.07];
+const INTERIOR_LABEL_OUT: [number, number] = [0.44, 0.51];
+const SIGNAL_LABEL_IN: [number, number] = [0.72, 0.8];
 
-const DESKTOP_TRACK_VH = 230;
-const MOBILE_TRACK_VH = 210;
+const DESKTOP_TRACK_VH = 300;
+const MOBILE_TRACK_VH = 275;
 
 function MachineSignal() {
   const mounted = useMounted();
