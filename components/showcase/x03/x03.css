@@ -11,6 +11,7 @@
   --x03-ink: #f2efe9;
   --x03-ink-soft: rgba(242, 239, 233, 0.68);
   --x03-accent: #c99a3f;
+  --x03-hairline: rgba(242, 239, 233, 0.14);
 
   --x03-margin: clamp(20px, 4vw, 64px);
 
