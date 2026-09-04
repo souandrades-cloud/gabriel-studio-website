@@ -68,8 +68,8 @@ function SensorCavity({ mobile, scrollRef, pointerRef }: SceneProps) {
   const edgeAnchorRef = useRef<THREE.LineSegments>(null);
 
   const mountBoxGeo = useMemo(() => new THREE.BoxGeometry(1.6, 1.1, 0.9), []);
-  const lensGeo = useMemo(() => new THREE.CylinderGeometry(0.32, 0.32, 0.34, 24), []);
-  const sensorBlockGeo = useMemo(() => new THREE.BoxGeometry(1.7, 0.55, 0.55), []);
+  const lensGeo = useMemo(() => new THREE.CylinderGeometry(0.23, 0.23, 0.34, 24), []);
+  const sensorBlockGeo = useMemo(() => new THREE.BoxGeometry(1.7, 0.32, 0.55), []);
   const finBodyGeo = useMemo(() => new THREE.BoxGeometry(1.3, 1.0, 1.0), []);
   const finGeo = useMemo(() => new THREE.BoxGeometry(0.045, 0.92, 0.92), []);
   const braceGeo = useMemo(() => new THREE.BoxGeometry(3.4, 0.18, 0.22), []);
@@ -141,23 +141,30 @@ function SensorCavity({ mobile, scrollRef, pointerRef }: SceneProps) {
       <directionalLight position={[-3, 4, 5]} intensity={6.5} color="#f3e8cf" />
       <directionalLight position={[4, -2, -3]} intensity={1.2} color="#5a6560" />
 
-      <mesh ref={graphiteAnchorRef} geometry={mountBoxGeo} material={graphite} position={[-0.6, 0.15, -0.1]} />
-      <lineSegments ref={edgeAnchorRef} geometry={edgeGeometries[0]} material={edgeMaterial} position={[-0.6, 0.15, -0.1]} />
+      {/* Lens/sensor module as one adjustable group — calibrated against A-004/
+          A-005 via overlay comparison (Gate 03B Director Iteration 002): the
+          per-mesh local coordinates below are unchanged from the original
+          authoring, this group transform is what brings the assembly's
+          screen position/scale in line with the photograph. */}
+      <group position={[0.05, 0.42, 0]} scale={0.82}>
+        <mesh ref={graphiteAnchorRef} geometry={mountBoxGeo} material={graphite} position={[-0.6, 0.15, -0.1]} />
+        <lineSegments ref={edgeAnchorRef} geometry={edgeGeometries[0]} material={edgeMaterial} position={[-0.6, 0.15, -0.1]} />
 
-      <mesh ref={lensAnchorRef} geometry={lensGeo} material={lensGlass} position={[-0.95, 0.2, 0.6]} rotation={[Math.PI / 2, 0, 0]} />
-      <lineSegments geometry={edgeGeometries[1]} material={edgeMaterial} position={[-0.95, 0.2, 0.6]} rotation={[Math.PI / 2, 0, 0]} />
-      <mesh geometry={lensGeo} material={lensGlass} position={[-0.25, 0.25, 0.6]} rotation={[Math.PI / 2, 0, 0]} />
-      <lineSegments geometry={edgeGeometries[1]} material={edgeMaterial} position={[-0.25, 0.25, 0.6]} rotation={[Math.PI / 2, 0, 0]} />
+        <mesh ref={lensAnchorRef} geometry={lensGeo} material={lensGlass} position={[-0.86, 0.2, 0.6]} rotation={[Math.PI / 2, 0, 0]} />
+        <lineSegments geometry={edgeGeometries[1]} material={edgeMaterial} position={[-0.86, 0.2, 0.6]} rotation={[Math.PI / 2, 0, 0]} />
+        <mesh geometry={lensGeo} material={lensGlass} position={[-0.3, 0.22, 0.6]} rotation={[Math.PI / 2, 0, 0]} />
+        <lineSegments geometry={edgeGeometries[1]} material={edgeMaterial} position={[-0.3, 0.22, 0.6]} rotation={[Math.PI / 2, 0, 0]} />
 
-      <mesh geometry={sensorBlockGeo} material={graphite} position={[-0.55, -0.75, 0.35]} />
-      <lineSegments geometry={edgeGeometries[2]} material={edgeMaterial} position={[-0.55, -0.75, 0.35]} />
+        <mesh geometry={sensorBlockGeo} material={graphite} position={[-0.55, -0.62, 0.35]} />
+        <lineSegments geometry={edgeGeometries[2]} material={edgeMaterial} position={[-0.55, -0.62, 0.35]} />
+      </group>
 
-      <mesh ref={graphiteDarkAnchorRef} geometry={finBodyGeo} material={graphiteDark} position={[1.55, 0.05, -0.4]} />
-      <lineSegments geometry={edgeGeometries[3]} material={edgeMaterial} position={[1.55, 0.05, -0.4]} />
+      <mesh ref={graphiteDarkAnchorRef} geometry={finBodyGeo} material={graphiteDark} position={[1.55, 0.2, -0.4]} />
+      <lineSegments geometry={edgeGeometries[3]} material={edgeMaterial} position={[1.55, 0.2, -0.4]} />
       {fins.map((x, i) => (
         <group key={i}>
-          <mesh geometry={finGeo} material={graphiteDark} position={[1.55 + x, 0.05, 0.16]} />
-          <lineSegments geometry={edgeGeometries[4]} material={edgeMaterial} position={[1.55 + x, 0.05, 0.16]} />
+          <mesh geometry={finGeo} material={graphiteDark} position={[1.55 + x, 0.2, 0.16]} />
+          <lineSegments geometry={edgeGeometries[4]} material={edgeMaterial} position={[1.55 + x, 0.2, 0.16]} />
         </group>
       ))}
 
