@@ -66,7 +66,7 @@ function SensorCavity({ mobile, scrollRef, pointerRef }: SceneProps) {
   const finBodyGeo = useMemo(() => new THREE.BoxGeometry(1.3, 1.0, 1.0), []);
   const finGeo = useMemo(() => new THREE.BoxGeometry(0.045, 0.92, 0.92), []);
   const braceGeo = useMemo(() => new THREE.BoxGeometry(3.4, 0.18, 0.22), []);
-  const strutGeo = useMemo(() => new THREE.BoxGeometry(6.4, 0.95, 0.35), []);
+  const strutGeo = useMemo(() => new THREE.BoxGeometry(4.2, 0.34, 0.22), []);
   const cableGeo = useMemo(() => {
     const curve = new THREE.CatmullRomCurve3([
       new THREE.Vector3(1.8, 1.2, -0.3),
@@ -164,8 +164,8 @@ function SensorCavity({ mobile, scrollRef, pointerRef }: SceneProps) {
         </>
       )}
 
-      <mesh geometry={strutGeo} material={graphiteDark} position={[-1.0, 0.3, 2.6]} rotation={[0, 0, -0.32]} />
-      <lineSegments geometry={edgeGeometries[6]} material={edgeMaterial} position={[-1.0, 0.3, 2.6]} rotation={[0, 0, -0.32]} />
+      <mesh geometry={strutGeo} material={graphiteDark} position={[-2.6, 1.3, 1.2]} rotation={[0, 0, -0.32]} />
+      <lineSegments geometry={edgeGeometries[6]} material={edgeMaterial} position={[-2.6, 1.3, 1.2]} rotation={[0, 0, -0.32]} />
     </>
   );
 }
