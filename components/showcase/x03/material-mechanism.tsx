@@ -30,7 +30,7 @@ interface Shot {
   y: number; // percent
 }
 
-const PUSH_TIMELINE = [0, 0.22];
+const PUSH_TIMELINE = [0, 0.17];
 // End shot is not a guess — it's solved from the object-cover math (base
 // cover scale/offset for objectPosition "center 40%") so that the framed
 // region matches A-002's actual source crop (x:545,y:590,w:420,h:260 in the
@@ -54,17 +54,17 @@ const MOBILE_PUSH: Shot[] = [
   { scale: 2, x: -17, y: 0.5 },
 ];
 
-const CROSSFADE_RANGE: [number, number] = [0.16, 0.34];
+const CROSSFADE_RANGE: [number, number] = [0.13, 0.28];
 
-const MATERIAL_SCALE_TIMELINE = [0.16, 0.56];
+const MATERIAL_SCALE_TIMELINE = [0.13, 0.61];
 const DESKTOP_MATERIAL_SCALE = [1.05, 1.18];
 const MOBILE_MATERIAL_SCALE = [1.05, 1.15];
 
-const MASK_RANGE: [number, number] = [0.56, 0.88];
+const MASK_RANGE: [number, number] = [0.61, 0.84];
 const MASK_RIGHT_RANGE = [-15, 130]; // % — always ahead of left, revealing toward lower/lateral-right
 const MASK_LEFT_OFFSET = 30; // % behind the right edge — sets the diagonal's slant
 
-const SETTLE_TIMELINE = [0.56, 0.96]; // resolves with a short buffer before track end — mechanism rests before release
+const SETTLE_TIMELINE = [0.61, 0.96]; // resolves with a short buffer before track end — mechanism rests before release
 interface SettleShot {
   scale: number;
   x: number;
@@ -79,12 +79,12 @@ const MOBILE_SETTLE: [SettleShot, SettleShot] = [
   { scale: 1, x: 0, y: 0 },
 ];
 
-const MATERIAL_LABEL_IN: [number, number] = [0.22, 0.32];
-const MATERIAL_LABEL_OUT: [number, number] = [0.56, 0.67];
-const MECHANISM_LABEL_IN: [number, number] = [0.77, 0.88];
+const MATERIAL_LABEL_IN: [number, number] = [0.18, 0.26];
+const MATERIAL_LABEL_OUT: [number, number] = [0.61, 0.69];
+const MECHANISM_LABEL_IN: [number, number] = [0.76, 0.84];
 
-const DESKTOP_TRACK_VH = 230;
-const MOBILE_TRACK_VH = 205;
+const DESKTOP_TRACK_VH = 300;
+const MOBILE_TRACK_VH = 285;
 
 function MaterialMechanism() {
   const mounted = useMounted();
