@@ -1,41 +1,72 @@
 "use client";
 
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, type RefObject } from "react";
 import * as THREE from "three";
 
 import { piecewiseLerp } from "@/lib/x03/piecewise-lerp";
 
+import { A005_ASPECT, A005_HEIGHT, A005_SRC, A005_WIDTH } from "./bridge-constants";
+import { createDepthMaskTexture } from "./depth-mask";
+import { useColorTexture } from "./use-color-texture";
+
 /**
  * Matched-proxy camera: three keyframes (not a curve) so the dolly's slope
  * never flattens to zero near the track end — a smoothstep/ease would go
  * dead-flat right where the wheel-tick QA checks for continued response.
- * Cinematic Pacing Correction: starts with canvas fade-in (0.45) so depth
- * is already reading by the time the model is visible, middle keyframe at
- * 0.74 lines up with the new "model takes over, solid hold" beat — camera
- * keeps drifting through that hold instead of parking dead still.
+ *
+ * Gate 03D — Perceptual Bridge Integration: retimed to start at the same
+ * point the structural bridge begins acquiring depth (DEPTH_TIMELINE[0])
+ * instead of at the old direct photo->proxy crossfade — one continuous
+ * dolly now spans the whole depth/dissolution/arrival transformation
+ * instead of only its last third. Z/Y/FOV values are unchanged from Gate
+ * 03B (the validated "amplitude máxima de movimento" baseline).
  */
-const CAMERA_DOLLY_TIMELINE = [0.45, 0.74, 1];
+const CAMERA_DOLLY_TIMELINE = [0.61, 0.86, 1];
 const CAMERA_Z = [6.4, 4.75, 4.3];
 const CAMERA_Y = [0, 0.14, 0.2];
 const CAMERA_FOV = [34, 31, 29.5];
 
 /**
- * Director Iteration 003 — representation convergence, not position: the
- * previous version had solid mass at full opacity the instant the canvas
- * layer started fading in, so the DOM crossfade was blending "detailed
- * photo" with "opaque 3D primitives" — a representation jump, independent
- * of how well the geometry was placed. Edges lead now (A-005 is already a
- * line drawing over the photo — this keeps that vocabulary alive instead
- * of replacing it), solid mass trails and stays translucent through the
- * whole photo/canvas coexistence window (CANVAS_FADE_IN, frozen at
- * [0.45, 0.74] in machine-signal.tsx), only reaching full opacity well
- * after A-005 has already receded — nothing left to compare it against.
+ * Gate 03D — Perceptual Bridge Integration: SensorCavity's "structural
+ * arrival" (edges lead, solid mass trails) now happens AFTER Approach C's
+ * structural dissolution has already made A-005 read as computational
+ * representation (DISSOLVE_TIMELINE below), not concurrent with the raw
+ * photograph. The live WebGL structure is meant to emerge from the
+ * dissolved 2D structural image, not race it — so edges begin only once
+ * uDissolve is already dominant, coexist with the fading structural bridge
+ * plane (BRIDGE_FADE_OUT), and solid mass only reaches full opacity once
+ * the bridge plane has fully receded — nothing photographic left to
+ * compare it against, same principle as Director Iteration 003, moved to
+ * a later stage in the sequence.
  */
-const EDGE_TIMELINE = [0.45, 0.62, 0.96];
+const EDGE_TIMELINE = [0.86, 0.9, 0.97];
 const EDGE_OPACITY = [0, 0.82, 0.9];
-const SOLID_TIMELINE = [0.5, 0.74, 0.92];
+const SOLID_TIMELINE = [0.9, 0.95, 1];
 const SOLID_OPACITY = [0, 0.55, 1];
+
+/**
+ * Gate 03D — Perceptual Bridge Integration. Approach A (depth acquisition)
+ * ramps first and holds; Approach C (structural dissolution) starts before
+ * A finishes ramping so the two coexist (Phase 3) before dissolution
+ * dominates alone (Phase 4). Values ported from the Gate 03C discovery
+ * microprototypes (components/showcase/x03-lab/bridge/{depth,dissolution}-
+ * scene.tsx), remapped onto this track's own timeline — same amplitude
+ * ceiling (0.85 — higher produced tearing/stretching at the strut bands
+ * per the discovery report) and the same dissolution math.
+ */
+const DEPTH_TIMELINE = [0.61, 0.72, 0.82];
+const DEPTH_AMPLITUDE = [0, 0.55, 0.85];
+const DISSOLVE_TIMELINE: [number, number] = [0.7, 0.86];
+const DISSOLVE_SPREAD = 0.55;
+// Structural bridge plane's own opacity — recedes once SensorCavity's
+// solid mass has enough presence to carry the scene alone (Phase 6 -> 7).
+const BRIDGE_FADE_OUT: [number, number] = [0.9, 0.97];
+// World-space depth of the bridge plane, well behind SensorCavity's
+// frontmost geometry (its nearest strut sits at z=1.2) so the live
+// structure reads as emerging in front of the flattened structural image
+// rather than intersecting it.
+const BRIDGE_PLANE_Z = -4;
 
 interface SceneProps {
   mobile: boolean;
@@ -319,6 +350,154 @@ function SensorCavity({ mobile, scrollRef, pointerRef }: SceneProps) {
   );
 }
 
+const BRIDGE_VERTEX_SHADER = /* glsl */ `
+  uniform sampler2D depthMask;
+  uniform float uAmplitude;
+  uniform vec2 uCoverScale;
+  varying vec2 vCoveredUv;
+
+  void main() {
+    vCoveredUv = (uv - 0.5) * uCoverScale + 0.5;
+    float depth = texture2D(depthMask, vCoveredUv).r; // 0 near .. 1 far
+    float displacement = (1.0 - depth) * uAmplitude;
+    vec3 displaced = position + normal * displacement;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(displaced, 1.0);
+  }
+`;
+
+// lumaOf, not luminance() -- three.js's ShaderChunk.common already declares
+// a luminance() function prepended to every ShaderMaterial fragment shader;
+// redeclaring it with a different signature is a GLSL compile error (silent
+// black canvas, no JS throw) — see 3ef9bda.
+const BRIDGE_FRAGMENT_SHADER = /* glsl */ `
+  uniform sampler2D map;
+  uniform sampler2D depthMask;
+  uniform float uDissolve;
+  uniform float uOpacity;
+  uniform vec2 uTexel;
+  varying vec2 vCoveredUv;
+
+  float lumaOf(vec3 c) {
+    return dot(c, vec3(0.299, 0.587, 0.114));
+  }
+
+  void main() {
+    vec2 uv = vCoveredUv;
+    vec3 color = texture2D(map, uv).rgb;
+
+    float tl = lumaOf(texture2D(map, uv + uTexel * vec2(-1.0, -1.0)).rgb);
+    float t  = lumaOf(texture2D(map, uv + uTexel * vec2( 0.0, -1.0)).rgb);
+    float tr = lumaOf(texture2D(map, uv + uTexel * vec2( 1.0, -1.0)).rgb);
+    float l  = lumaOf(texture2D(map, uv + uTexel * vec2(-1.0,  0.0)).rgb);
+    float r  = lumaOf(texture2D(map, uv + uTexel * vec2( 1.0,  0.0)).rgb);
+    float bl = lumaOf(texture2D(map, uv + uTexel * vec2(-1.0,  1.0)).rgb);
+    float b  = lumaOf(texture2D(map, uv + uTexel * vec2( 0.0,  1.0)).rgb);
+    float br = lumaOf(texture2D(map, uv + uTexel * vec2( 1.0,  1.0)).rgb);
+    float gx = -tl - 2.0 * l - bl + tr + 2.0 * r + br;
+    float gy = -tl - 2.0 * t - tr + bl + 2.0 * b + br;
+    float edge = clamp(length(vec2(gx, gy)), 0.0, 1.0);
+
+    float depth = texture2D(depthMask, uv).r;
+    float order = smoothstep(0.0, ${DISSOLVE_SPREAD.toFixed(3)}, abs(depth - 0.48));
+    float dissolve = clamp(uDissolve * 1.3 - order * 0.5, 0.0, 1.0);
+
+    vec3 ink = vec3(0.851, 0.788, 0.651); // #d9c9a6 — Gate 03B's edge color
+    vec3 desaturated = mix(color, vec3(lumaOf(color)), dissolve);
+    vec3 structural = mix(desaturated, ink, edge * dissolve);
+    vec3 finalColor = mix(structural, vec3(0.02, 0.018, 0.015), dissolve * 0.4);
+
+    gl_FragColor = vec4(finalColor, uOpacity);
+  }
+`;
+
+/**
+ * Structural bridge — Approach A (depth/displacement) + Approach C
+ * (structural dissolution) fused onto one plane, both driven off the same
+ * shared depth mask so they stay in agreement about where the photo's
+ * foreground/subject/background sit. The plane is sized every frame to
+ * exactly fill the camera's frustum at its fixed world depth (BRIDGE_
+ * PLANE_Z) using the camera's REST fov/z (CAMERA_FOV[0]/CAMERA_Z[0], before
+ * the dolly in CAMERA_DOLLY_TIMELINE begins) — at progress 0 this makes the
+ * plane pixel-identical to the DOM <Image object-cover> it hands off from
+ * (machine-signal.tsx's CANVAS_FADE_IN), so the DOM->WebGL swap is
+ * invisible. uCoverScale reproduces CSS object-fit:cover's UV cropping so
+ * the source photo (portrait, A005_ASPECT) frames correctly regardless of
+ * viewport aspect, exactly like the DOM layer's object-cover it replaces.
+ */
+function StructuralBridge({ mobile, scrollRef }: { mobile: boolean; scrollRef: RefObject<number> }) {
+  const { size } = useThree();
+  const colorMap = useColorTexture(A005_SRC);
+  const depthMask = useMemo(() => createDepthMaskTexture(), []);
+  const meshRef = useRef<THREE.Mesh>(null);
+
+  useEffect(() => {
+    return () => depthMask.dispose();
+  }, [depthMask]);
+
+  const segments = mobile ? { w: 60, h: 84 } : { w: 100, h: 140 };
+
+  const coverScale = useMemo(() => {
+    const viewportAspect = size.width / size.height;
+    return A005_ASPECT > viewportAspect
+      ? new THREE.Vector2(viewportAspect / A005_ASPECT, 1)
+      : new THREE.Vector2(1, A005_ASPECT / viewportAspect);
+  }, [size.width, size.height]);
+
+  const geometry = useMemo(() => {
+    const distance = CAMERA_Z[0] - BRIDGE_PLANE_Z;
+    const vFov = (CAMERA_FOV[0] * Math.PI) / 180;
+    const height = 2 * Math.tan(vFov / 2) * distance;
+    const width = height * (size.width / size.height);
+    return new THREE.PlaneGeometry(width, height, segments.w, segments.h);
+  }, [size.width, size.height, segments.w, segments.h]);
+
+  useEffect(() => {
+    return () => geometry.dispose();
+  }, [geometry]);
+
+  const material = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        uniforms: {
+          map: { value: null },
+          depthMask: { value: depthMask },
+          uAmplitude: { value: 0 },
+          uDissolve: { value: 0 },
+          uOpacity: { value: 1 },
+          uCoverScale: { value: coverScale.clone() },
+          uTexel: { value: new THREE.Vector2(1 / A005_WIDTH, 1 / A005_HEIGHT) },
+        },
+        vertexShader: BRIDGE_VERTEX_SHADER,
+        fragmentShader: BRIDGE_FRAGMENT_SHADER,
+        transparent: true,
+        depthWrite: false,
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [depthMask],
+  );
+
+  useEffect(() => {
+    return () => material.dispose();
+  }, [material]);
+
+  useFrame(() => {
+    const mesh = meshRef.current;
+    if (!mesh) return;
+    const mat = mesh.material as THREE.ShaderMaterial;
+    if (mat.uniforms.map.value !== colorMap) mat.uniforms.map.value = colorMap;
+    (mat.uniforms.uCoverScale.value as THREE.Vector2).copy(coverScale);
+
+    const v = scrollRef.current ?? 0;
+    mat.uniforms.uAmplitude.value = piecewiseLerp(v, DEPTH_TIMELINE, DEPTH_AMPLITUDE);
+    mat.uniforms.uDissolve.value = piecewiseLerp(v, DISSOLVE_TIMELINE, [0, 1]);
+    mat.uniforms.uOpacity.value = piecewiseLerp(v, BRIDGE_FADE_OUT, [1, 0]);
+  });
+
+  if (!colorMap) return null;
+
+  return <mesh ref={meshRef} geometry={geometry} material={material} position={[0, 0, BRIDGE_PLANE_Z]} />;
+}
+
 interface MachineSignalSceneProps extends SceneProps {
   active: boolean;
   onContextLost?: () => void;
@@ -339,6 +518,7 @@ function MachineSignalScene({ mobile, scrollRef, pointerRef, active, onContextLo
         gl.domElement.addEventListener("webglcontextlost", onContextLost, { once: true });
       }}
     >
+      <StructuralBridge mobile={mobile} scrollRef={scrollRef} />
       <SensorCavity mobile={mobile} scrollRef={scrollRef} pointerRef={pointerRef} />
     </Canvas>
   );

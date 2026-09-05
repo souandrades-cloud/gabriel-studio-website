@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useEffect, useRef, useState, type PointerEvent } from "react";
@@ -41,16 +41,29 @@ const CROSSFADE_A004_A005: [number, number] = [0.33, 0.51];
 // material-mechanism.tsx already uses for its own material hold.
 const INTERIOR_SCALE_TIMELINE: [number, number] = [0, 0.51];
 const INTERIOR_SCALE: [number, number] = [1, 1.07];
-// Starts before the A-004→A-005 crossfade even finishes — the model begins
-// emerging while A-005 is still resolving, so photograph and computational
-// structure genuinely coexist rather than handing off in sequence.
-const CANVAS_FADE_IN: [number, number] = [0.45, 0.74];
+// Gate 03D — Perceptual Bridge Integration: A-005 now gets a real hold
+// (resolves at 0.51, crossfades to the WebGL structural bridge starting at
+// 0.58) before any transformation begins, satisfying "A-005 deve existir
+// por tempo perceptualmente suficiente" — the old window here started
+// before A-005 even finished resolving. The crossfade itself is short and
+// deliberately unremarkable: the structural bridge plane at this point in
+// its own timeline (machine-signal-scene.tsx DEPTH_TIMELINE/DISSOLVE_
+// TIMELINE) has near-zero amplitude/dissolve, i.e. it renders A-005
+// pixel-identically to this DOM layer, so the handoff itself is invisible
+// — depth acquisition and dissolution only begin after the swap.
+const CANVAS_FADE_IN: [number, number] = [0.58, 0.61];
 const CANVAS_MOUNT_THRESHOLD = 0.33;
-const CANVAS_ACTIVE_START = 0.31;
+// Frameloop switches to "always" only once the transformation is about to
+// start — no motion happens in the scene before CANVAS_FADE_IN, so keeping
+// "demand" through the long A-005 hold avoids rendering idle frames.
+const CANVAS_ACTIVE_START = 0.56;
 
 const INTERIOR_LABEL_IN: [number, number] = [0.02, 0.07];
 const INTERIOR_LABEL_OUT: [number, number] = [0.44, 0.51];
-const SIGNAL_LABEL_IN: [number, number] = [0.72, 0.8];
+// Retimed to land as the structural dissolution dominates and SensorCavity
+// begins its structural arrival (machine-signal-scene.tsx EDGE_TIMELINE),
+// rather than at the old direct photo->proxy crossfade.
+const SIGNAL_LABEL_IN: [number, number] = [0.83, 0.9];
 
 const DESKTOP_TRACK_VH = 300;
 const MOBILE_TRACK_VH = 275;
@@ -208,13 +221,54 @@ function MachineSignal() {
           >
             Signal
           </motion.p>
+
+          {process.env.NODE_ENV !== "production" && <BridgePhaseDebugHud scrollYProgress={scrollYProgress} />}
         </section>
       ) : (
         <div>
           <StaticBeat src="/images/x03/A-004.png" objectPosition="center center" label="Interior" />
           <StaticBeat src="/images/x03/A-005.png" objectPosition="center center" label="Signal" />
+          <StructuralStaticBeat src="/images/x03/A-005.png" objectPosition="center center" label="Machine Space" />
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * Gate 03D — observability during implementation, per the gate brief: a
+ * coarse readout of which of the 7 bridge phases the current scroll
+ * position falls into, so the sequence can be checked without eyeballing
+ * raw progress numbers. Dev-only — `process.env.NODE_ENV` is statically
+ * replaced by Next.js, so this whole branch (including the component) is
+ * dead-code-eliminated from the production bundle.
+ */
+function BridgePhaseDebugHud({ scrollYProgress }: { scrollYProgress: MotionValue<number> }) {
+  const [progress, setProgress] = useState(0);
+  useMotionValueEvent(scrollYProgress, "change", setProgress);
+
+  const phase =
+    progress < 0.58
+      ? "1. A-005 intact"
+      : progress < 0.7
+        ? "2. depth acquisition"
+        : progress < 0.82
+          ? "3. A+C coexistence"
+          : progress < 0.86
+            ? "4. C dominant"
+            : progress < 0.9
+              ? "5. WebGL structural arrival"
+              : progress < 0.97
+                ? "6. 2D/WebGL coexistence"
+                : "7. WebGL ownership";
+
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none fixed right-2 bottom-2 z-50 font-mono text-[10px] tracking-wide text-[#d9c9a6]"
+      style={{ background: "rgba(10,9,8,0.82)", padding: "4px 8px", borderRadius: 3 }}
+    >
+      {progress.toFixed(3)} — {phase}
     </div>
   );
 }
@@ -227,6 +281,48 @@ function StaticBeat({ src, objectPosition, label }: { src: string; objectPositio
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 bottom-0 h-[30%]"
         style={{ background: "linear-gradient(to top, rgba(16,14,12,0.65), transparent)" }}
+      />
+      <p
+        className="x03-container x03-mono absolute bottom-0 left-0 z-10 pb-8 text-[11px] tracking-[0.14em] uppercase sm:pb-12 sm:text-[12px]"
+        style={{ color: "var(--x03-ink-soft)" }}
+      >
+        {label}
+      </p>
+    </section>
+  );
+}
+
+/**
+ * Gate 03D — FALLBACK / REDUCED MOTION: a discrete, WebGL-free approximation
+ * of the structural representation (desaturation + the same warm ink tone
+ * the shader uses, #d9c9a6) instead of attempting the live Sobel/dissolve
+ * look — "preferir terminar em um estado estrutural derivado de A-005 em
+ * vez de mostrar broken Canvas", without simulating Machine Space's full
+ * complexity outside WebGL. Serves the no-WebGL, context-lost, AND reduced-
+ * motion fallback (all three share this render branch).
+ */
+function StructuralStaticBeat({ src, objectPosition, label }: { src: string; objectPosition: string; label: string }) {
+  return (
+    <section className="relative h-[90svh] w-full overflow-hidden border-t" style={{ borderColor: "var(--x03-hairline)" }}>
+      <Image
+        src={src}
+        alt=""
+        aria-hidden="true"
+        fill
+        loading="eager"
+        sizes="100vw"
+        className="object-cover"
+        style={{ objectPosition, filter: "grayscale(1) contrast(1.35) brightness(0.85)" }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{ background: "#d9c9a6", mixBlendMode: "color", opacity: 0.5 }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[30%]"
+        style={{ background: "linear-gradient(to top, rgba(16,14,12,0.75), transparent)" }}
       />
       <p
         className="x03-container x03-mono absolute bottom-0 left-0 z-10 pb-8 text-[11px] tracking-[0.14em] uppercase sm:pb-12 sm:text-[12px]"
