@@ -94,9 +94,31 @@ function SensorCavity({ mobile, scrollRef, pointerRef }: SceneProps) {
     return new THREE.TubeGeometry(curve, 28, 0.055, 8, false);
   }, []);
 
+  // Director Iteration 004 — spatial identity preservation: once A-005 fully
+  // recedes, only sensor + heat sink survived, floating on empty black. These
+  // four masses restore the room A-004/A-005 establish (opening, rear depth,
+  // floor) at the same "architectural proxy" complexity as the rest of the
+  // scene — no new detail, just enough silhouette that the interior reads as
+  // the same cavity rather than isolated components on a void.
+  const upperOpeningGeo = useMemo(() => new THREE.BoxGeometry(2.6, 0.26, 0.2), []);
+  const railGeo = useMemo(() => new THREE.BoxGeometry(0.18, 2.0, 0.18), []);
+  const baseFrameGeo = useMemo(() => new THREE.BoxGeometry(3.2, 0.22, 1.4), []);
+
   const solidGeometries = useMemo(
-    () => [mountBoxGeo, lensGeo, sensorBlockGeo, finBodyGeo, finGeo, braceGeo, strutGeo, cableGeo],
-    [mountBoxGeo, lensGeo, sensorBlockGeo, finBodyGeo, finGeo, braceGeo, strutGeo, cableGeo],
+    () => [
+      mountBoxGeo,
+      lensGeo,
+      sensorBlockGeo,
+      finBodyGeo,
+      finGeo,
+      braceGeo,
+      strutGeo,
+      cableGeo,
+      upperOpeningGeo,
+      railGeo,
+      baseFrameGeo,
+    ],
+    [mountBoxGeo, lensGeo, sensorBlockGeo, finBodyGeo, finGeo, braceGeo, strutGeo, cableGeo, upperOpeningGeo, railGeo, baseFrameGeo],
   );
   const edgeGeometries = useMemo(
     () => solidGeometries.map((g) => new THREE.EdgesGeometry(g, 16)),
@@ -178,8 +200,8 @@ function SensorCavity({ mobile, scrollRef, pointerRef }: SceneProps) {
         </group>
       ))}
 
-      <mesh geometry={braceGeo} material={graphite} position={[0.2, 1.55, -0.4]} rotation={[0, 0, 0.2]} />
-      <lineSegments geometry={edgeGeometries[5]} material={edgeMaterial} position={[0.2, 1.55, -0.4]} rotation={[0, 0, 0.2]} />
+      <mesh geometry={braceGeo} material={graphite} position={[0.2, 0.98, -0.55]} rotation={[0, 0, 0.2]} />
+      <lineSegments geometry={edgeGeometries[5]} material={edgeMaterial} position={[0.2, 0.98, -0.55]} rotation={[0, 0, 0.2]} />
 
       {!mobile && (
         <>
@@ -190,6 +212,23 @@ function SensorCavity({ mobile, scrollRef, pointerRef }: SceneProps) {
 
       <mesh geometry={strutGeo} material={graphiteDark} position={[-2.6, 1.3, 1.2]} rotation={[0, 0, -0.32]} />
       <lineSegments geometry={edgeGeometries[6]} material={edgeMaterial} position={[-2.6, 1.3, 1.2]} rotation={[0, 0, -0.32]} />
+
+      {/* Upper opening frame — the foreground chassis edge above the beam,
+          establishing "looking through an opening" per A-005's top framing. */}
+      <mesh geometry={upperOpeningGeo} material={graphite} position={[-0.8, 2.7, -0.9]} rotation={[0, 0, -0.12]} />
+      <lineSegments geometry={edgeGeometries[8]} material={edgeMaterial} position={[-0.8, 2.7, -0.9]} rotation={[0, 0, -0.12]} />
+
+      {/* Rear vertical supports — simple posts behind the sensor group and
+          heat sink, giving the cavity depth instead of a flat backdrop. */}
+      <mesh geometry={railGeo} material={graphiteDark} position={[-0.9, 0.3, -1.3]} />
+      <lineSegments geometry={edgeGeometries[9]} material={edgeMaterial} position={[-0.9, 0.3, -1.3]} />
+      <mesh geometry={railGeo} material={graphiteDark} position={[0.9, 0.3, -1.6]} />
+      <lineSegments geometry={edgeGeometries[9]} material={edgeMaterial} position={[0.9, 0.3, -1.6]} />
+
+      {/* Lower structural frame — the floor the assembly sits on, so it no
+          longer floats in empty space once the photograph recedes. */}
+      <mesh geometry={baseFrameGeo} material={graphiteDark} position={[0.1, -0.95, -0.1]} />
+      <lineSegments geometry={edgeGeometries[10]} material={edgeMaterial} position={[0.1, -0.95, -0.1]} />
     </>
   );
 }
