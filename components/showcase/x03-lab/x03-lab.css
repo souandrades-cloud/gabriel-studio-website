@@ -97,3 +97,106 @@
   white-space: nowrap;
   border: 0;
 }
+
+/*
+ * Gate 03C — Perceptual Bridge Discovery. Scoped to the bridge comparison
+ * routes only; deliberately plain (no Perception Rig aesthetic borrowed),
+ * same dark/mono base as the rest of x03-lab.
+ */
+.x03-bridge-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: clamp(20px, 4vw, 40px);
+}
+
+.x03-bridge-header h1 {
+  margin: 8px 0 4px;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.x03-bridge-note {
+  margin: 0 0 14px;
+  max-width: 60ch;
+  font-size: 12px;
+  line-height: 1.6;
+  color: rgba(214, 216, 216, 0.65);
+}
+
+.x03-bridge-back {
+  display: inline-block;
+  margin-bottom: 20px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(214, 216, 216, 0.55);
+}
+
+.x03-bridge-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1086 / 1448;
+  max-height: 78vh;
+  margin: 0 auto;
+  overflow: hidden;
+  background: #0d0c0a;
+  outline: 1px solid rgba(214, 216, 216, 0.12);
+}
+
+.x03-bridge-fallback {
+  position: absolute;
+  inset: 0;
+}
+
+.x03-bridge-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  font-size: 11px;
+}
+
+.x03-bridge-controls button {
+  padding: 6px 14px;
+  border: 1px solid rgba(214, 216, 216, 0.3);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.x03-bridge-controls input[type="range"] {
+  flex: 1;
+}
+
+.x03-bridge-index ul {
+  list-style: none;
+  margin: 20px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.x03-bridge-index a {
+  display: block;
+  padding: 14px 16px;
+  border: 1px solid rgba(214, 216, 216, 0.18);
+  color: inherit;
+}
+
+.x03-bridge-index a:hover {
+  border-color: rgba(214, 216, 216, 0.4);
+}
+
+.x03-bridge-index .x03-bridge-tag {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(214, 216, 216, 0.5);
+  margin-bottom: 4px;
+}
