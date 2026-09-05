@@ -43,21 +43,25 @@ const FRAGMENT_SHADER = /* glsl */ `
   uniform vec2 uTexel;
   varying vec2 vUv;
 
-  float luminance(vec3 c) {
+  // Named lumaOf, not luminance() -- three.js's built-in ShaderChunk.common
+  // already declares a luminance() function that gets prepended to every
+  // ShaderMaterial fragment shader, and redeclaring it with a different
+  // signature is a GLSL compile error (silent black canvas, no JS throw).
+  float lumaOf(vec3 c) {
     return dot(c, vec3(0.299, 0.587, 0.114));
   }
 
   void main() {
     vec3 color = texture2D(map, vUv).rgb;
 
-    float tl = luminance(texture2D(map, vUv + uTexel * vec2(-1.0, -1.0)).rgb);
-    float t  = luminance(texture2D(map, vUv + uTexel * vec2( 0.0, -1.0)).rgb);
-    float tr = luminance(texture2D(map, vUv + uTexel * vec2( 1.0, -1.0)).rgb);
-    float l  = luminance(texture2D(map, vUv + uTexel * vec2(-1.0,  0.0)).rgb);
-    float r  = luminance(texture2D(map, vUv + uTexel * vec2( 1.0,  0.0)).rgb);
-    float bl = luminance(texture2D(map, vUv + uTexel * vec2(-1.0,  1.0)).rgb);
-    float b  = luminance(texture2D(map, vUv + uTexel * vec2( 0.0,  1.0)).rgb);
-    float br = luminance(texture2D(map, vUv + uTexel * vec2( 1.0,  1.0)).rgb);
+    float tl = lumaOf(texture2D(map, vUv + uTexel * vec2(-1.0, -1.0)).rgb);
+    float t  = lumaOf(texture2D(map, vUv + uTexel * vec2( 0.0, -1.0)).rgb);
+    float tr = lumaOf(texture2D(map, vUv + uTexel * vec2( 1.0, -1.0)).rgb);
+    float l  = lumaOf(texture2D(map, vUv + uTexel * vec2(-1.0,  0.0)).rgb);
+    float r  = lumaOf(texture2D(map, vUv + uTexel * vec2( 1.0,  0.0)).rgb);
+    float bl = lumaOf(texture2D(map, vUv + uTexel * vec2(-1.0,  1.0)).rgb);
+    float b  = lumaOf(texture2D(map, vUv + uTexel * vec2( 0.0,  1.0)).rgb);
+    float br = lumaOf(texture2D(map, vUv + uTexel * vec2( 1.0,  1.0)).rgb);
     float gx = -tl - 2.0 * l - bl + tr + 2.0 * r + br;
     float gy = -tl - 2.0 * t - tr + bl + 2.0 * b + br;
     float edge = clamp(length(vec2(gx, gy)), 0.0, 1.0);
@@ -67,7 +71,7 @@ const FRAGMENT_SHADER = /* glsl */ `
     float dissolve = clamp(uProgress * 1.3 - order * 0.5, 0.0, 1.0);
 
     vec3 ink = vec3(0.851, 0.788, 0.651); // #d9c9a6 — Gate 03B's edge color
-    vec3 desaturated = mix(color, vec3(luminance(color)), dissolve);
+    vec3 desaturated = mix(color, vec3(lumaOf(color)), dissolve);
     vec3 structural = mix(desaturated, ink, edge * dissolve);
     vec3 finalColor = mix(structural, vec3(0.02, 0.018, 0.015), dissolve * 0.4);
 
