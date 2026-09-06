@@ -200,3 +200,58 @@
   color: rgba(214, 216, 216, 0.5);
   margin-bottom: 4px;
 }
+
+/*
+ * Gate 04A — Machine Perception Narrative Discovery. Scoped to the
+ * perception comparison routes; reuses .x03-bridge-* chrome (same plain
+ * dark/mono base) and adds only the SENSE/UNDERSTAND/DECIDE readout the
+ * bridge discovery didn't need.
+ */
+.x03-perception-stage {
+  aspect-ratio: 16 / 10;
+}
+
+.x03-perception-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #16171818;
+}
+
+.x03-perception-info {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 5;
+  display: flex;
+  gap: 18px;
+  padding: 28px clamp(12px, 3vw, 24px) clamp(12px, 3vw, 24px);
+  pointer-events: none;
+  /* Scrim independent of the scene's own brightness — Hypothesis A/B render
+     dark by default, but a bright FIELD (e.g. Hypothesis C's "open"
+     traversable read) must not wash the readout out. */
+  background: linear-gradient(to top, rgba(10, 10, 10, 0.72), transparent);
+}
+
+.x03-perception-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 30ch;
+}
+
+.x03-perception-info-tag {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(214, 216, 216, 0.35);
+}
+
+.x03-perception-info-item.is-active .x03-perception-info-tag {
+  color: rgba(231, 233, 234, 0.85);
+}
+
+.x03-perception-info-copy {
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(214, 216, 216, 0.75);
+}
