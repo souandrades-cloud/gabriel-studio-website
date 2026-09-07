@@ -255,3 +255,47 @@
   line-height: 1.5;
   color: rgba(214, 216, 216, 0.75);
 }
+
+/*
+ * Gate 05B — Mechanical Action Representation Discovery. Hypothesis B's
+ * DOM/CSS compositing stage -- stacked approved stills cross-faded by
+ * progress, sharing .x03-bridge-stage/.x03-perception-stage sizing with
+ * the WebGL hypotheses (A/C) for a fair side-by-side comparison.
+ */
+.x03-mechanical-dom {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #0a0908;
+}
+
+.x03-mechanical-zoom {
+  position: absolute;
+  inset: 0;
+}
+
+.x03-mechanical-layer {
+  object-fit: cover;
+}
+
+.x03-mechanical-ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 10%;
+  z-index: 2;
+  display: flex;
+  pointer-events: none;
+}
+
+.x03-mechanical-ground span {
+  flex: 1;
+  border-top: 2px solid rgba(201, 154, 63, 0.55);
+}
+
+/* The raised side of the step -- purely a decorative context cue, same
+   level-change concept the WebGL hypotheses render as real geometry. */
+.x03-mechanical-ground span:last-child {
+  transform: translateY(-42%);
+}
