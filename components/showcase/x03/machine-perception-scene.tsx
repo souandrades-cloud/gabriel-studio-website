@@ -43,16 +43,38 @@ const SEE_WINDOW: [number, number] = [0.04, 0.34];
 // known — deliberately overlapping SEE's tail, not waiting for a hard cut.
 const UNDERSTAND_WINDOW: [number, number] = [0.3, 0.5];
 
-// CONSIDER: three real candidates fade in to equal weight and hold —
-// "the machine has not decided yet" is the gap between this window ending
-// (0.6) and CHOOSE's first elimination beginning (0.68).
-const CONSIDER_IN: [number, number] = [0.5, 0.6];
-// CHOOSE: 3 -> 2 -> 1, two separate elimination beats with a hold between
-// them (0.76-0.8), not one simultaneous convergence.
-const ELIMINATE_RIGHT: [number, number] = [0.68, 0.76];
-const ELIMINATE_LEFT: [number, number] = [0.8, 0.9];
-const CHOSEN_STRENGTHEN: [number, number] = [0.68, 0.9];
-const CHOSEN_SWEEP: [number, number] = [0.76, 1];
+/**
+ * Director Iteration 001 — THE CHOICE read as "a route was defined"
+ * instead of "the machine considered multiple futures and decided". Root
+ * cause: chosen-route strengthening (CHOSEN_STRENGTHEN) shared its window
+ * with the FIRST elimination and ran continuously through the second, so
+ * the "winning" route was already visibly gaining ground the moment 3
+ * became 2 — no beat ever held perceptually still long enough to register
+ * as its own state. Fix is pure timing/hierarchy, not new visual language:
+ * every beat below now has a genuine flat hold on either side (nothing in
+ * this file changes during a HOLD window), and CHOSEN_STRENGTHEN is moved
+ * entirely past both eliminations — the chosen route stays visually
+ * IDENTICAL to a plain candidate (same neutral color, same opacity as the
+ * pre-elimination baseline) all the way through "one route remains"; only
+ * in the dedicated ownership window does it move.
+ *
+ * Beat map (fractions of the whole track, unchanged 0.5 CONSIDER start so
+ * UNDERSTAND's hand-off is untouched):
+ *   0.50–0.58  CONSIDER_IN         three futures fade in, equal weight
+ *   0.58–0.66  (hold)              THREE FUTURES EXIST — nothing changes
+ *   0.66–0.72  ELIMINATE_RIGHT     first possibility recedes (3 -> 2)
+ *   0.72–0.80  (hold)              TWO REMAIN — nothing changes, chosen
+ *                                  route still equal to the survivor
+ *   0.80–0.86  ELIMINATE_LEFT      second possibility recedes (2 -> 1)
+ *   0.86–0.90  (hold)              ONE ROUTE EXISTS — still no ownership
+ *   0.90–0.97  CHOSEN_STRENGTHEN   the survivor alone gains presence
+ *   0.97–1.00  (hold)              DECISION MADE — settled, held
+ */
+const CONSIDER_IN: [number, number] = [0.5, 0.58];
+const ELIMINATE_RIGHT: [number, number] = [0.66, 0.72];
+const ELIMINATE_LEFT: [number, number] = [0.8, 0.86];
+const CHOSEN_STRENGTHEN: [number, number] = [0.9, 0.97];
+const CHOSEN_SWEEP: [number, number] = [0.9, 0.97];
 
 const SAMPLE_Y = 0.05;
 // Undecided candidates share ONE dimmed-ink tone — no route should read as

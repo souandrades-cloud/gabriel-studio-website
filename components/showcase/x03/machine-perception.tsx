@@ -31,7 +31,12 @@ const MOBILE_TRACK_VH = 300;
 // declared timelines) — these only drive the DOM text overlays, not the
 // WebGL mechanism itself.
 const UNDERSTAND_COPY: [number, number] = [0.32, 0.48];
-const AUTONOMY_COPY: [number, number] = [0.82, 0.97];
+// Director Iteration 001: synced to the "ONE ROUTE EXISTS" hold (0.86-0.9)
+// that now precedes chosen-route ownership (0.9-0.97) — the copy settles in
+// alongside the decision instead of racing the old, continuous 0.68-0.97
+// strengthen. No fade-out: this is the track's last beat, held through the
+// final decision hold (0.97-1) rather than clearing before it.
+const AUTONOMY_COPY: [number, number] = [0.86, 1];
 
 function MachinePerception() {
   const mounted = useMounted();
@@ -75,11 +80,9 @@ function MachinePerception() {
     const out = piecewiseLerp(p, [UNDERSTAND_COPY[1] - 0.05, UNDERSTAND_COPY[1]], [1, 0]);
     return Math.min(in_, out);
   });
-  const autonomyCopyOpacity = useTransform(scrollYProgress, (p) => {
-    const in_ = piecewiseLerp(p, [AUTONOMY_COPY[0], AUTONOMY_COPY[0] + 0.04], [0, 1]);
-    const out = piecewiseLerp(p, [AUTONOMY_COPY[1] - 0.03, AUTONOMY_COPY[1]], [1, 0]);
-    return Math.min(in_, out);
-  });
+  const autonomyCopyOpacity = useTransform(scrollYProgress, (p) =>
+    piecewiseLerp(p, [AUTONOMY_COPY[0], AUTONOMY_COPY[0] + 0.04], [0, 1]),
+  );
 
   return (
     <div
@@ -164,17 +167,21 @@ function PerceptionPhaseDebugHud({ scrollYProgress }: { scrollYProgress: MotionV
         ? "1. See (+ Remember accruing)"
         : progress < 0.5
           ? "2. Understand"
-          : progress < 0.6
-            ? "3. Consider — possibilities appear"
-            : progress < 0.68
-              ? "4. Consider — indecision hold"
-              : progress < 0.76
+          : progress < 0.58
+            ? "3. Consider — three futures appear"
+            : progress < 0.66
+              ? "4. Consider — HOLD (three futures exist)"
+              : progress < 0.72
                 ? "5. Choose — eliminate (3→2)"
                 : progress < 0.8
-                  ? "6. Choose — hold at 2"
-                  : progress < 0.9
+                  ? "6. Choose — HOLD (two remain)"
+                  : progress < 0.86
                     ? "7. Choose — eliminate (2→1)"
-                    : "8. Choose — decision held";
+                    : progress < 0.9
+                      ? "8. Choose — HOLD (one route exists)"
+                      : progress < 0.97
+                        ? "9. Choose — chosen route ownership"
+                        : "10. Choose — DECISION HELD";
 
   return (
     <div
