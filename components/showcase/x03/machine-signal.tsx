@@ -52,7 +52,6 @@ const INTERIOR_SCALE: [number, number] = [1, 1.07];
 // pixel-identically to this DOM layer, so the handoff itself is invisible
 // — depth acquisition and dissolution only begin after the swap.
 const CANVAS_FADE_IN: [number, number] = [0.58, 0.61];
-const CANVAS_MOUNT_THRESHOLD = 0.33;
 // Frameloop switches to "always" only once the transformation is about to
 // start — no motion happens in the scene before CANVAS_FADE_IN, so keeping
 // "demand" through the long A-005 hold avoids rendering idle frames.
@@ -87,10 +86,25 @@ function MachineSignal() {
     scrollRef.current = v;
   });
 
+  // Gate 09B: was a one-way latch (mount past CANVAS_MOUNT_THRESHOLD, never
+  // unmount) — correct once, but left this the only WebGL context still
+  // alive for the rest of the page after a visitor scrolls on. Proximity-
+  // based via IntersectionObserver instead: a full-viewport rootMargin on
+  // each side means mount/unmount only fires once the section is genuinely
+  // not about to be needed, so normal scrolling (including scrolling back
+  // up) never sees a re-init pop-in — `active` below already keeps a
+  // mounted-but-distant canvas render-idle, so this only affects far-scroll
+  // teardown, not the pre-warm timing CANVAS_MOUNT_THRESHOLD used to give it.
   const [canvasMounted, setCanvasMounted] = useState(false);
-  useMotionValueEvent(scrollYProgress, "change", (v) => {
-    if (v > CANVAS_MOUNT_THRESHOLD) setCanvasMounted(true);
-  });
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => setCanvasMounted(entry.isIntersecting), {
+      rootMargin: "100% 0px 100% 0px",
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const [canvasActive, setCanvasActive] = useState(false);
   useMotionValueEvent(scrollYProgress, "change", (v) => {

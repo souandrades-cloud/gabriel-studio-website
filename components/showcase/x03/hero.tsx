@@ -114,12 +114,23 @@ const DESKTOP_CAMERA = buildUnifiedCamera(DESKTOP_HERO_SHOTS, DESKTOP_PUSH_END, 
 const MOBILE_CAMERA = buildUnifiedCamera(MOBILE_HERO_SHOTS, MOBILE_PUSH_END, MOBILE_HERO_SHARE, MOBILE_MM_SHARE);
 
 // --- Old MaterialMechanism-local ranges, remapped into unified progress ---
-// Values themselves (0.13/0.28/0.61/0.18/0.26) are untouched from before
-// Gate 07B — only the space they're expressed in changed.
+// materialScale/materialLabelIn (0.13/0.61/0.18/0.26) are untouched from
+// before Gate 07B — only the space they're expressed in changed.
+//
+// Gate 09B: crossfade end brought in from 0.28 to 0.19 (0.15 local width ->
+// 0.06). Browser-real diagnostic at the old width showed a held, readable
+// double-exposure on the PL-1/PROPRIO nameplate through the whole blend —
+// high-frequency text ghosts far more noticeably than the material's own
+// diffuse shading, which the original "matches A-002's crop closely enough
+// it doesn't ghost" framing math didn't fully anticipate. Same fix already
+// proven for field-action.tsx's CONTACT/LOAD/COMMIT crossfades: keep the
+// window short enough that it reads as missing frames between two related
+// shots rather than a held dissolve between two different photographs.
+// Start point (0.13) is unchanged — begins at the same camera position.
 function buildMaterialRanges(heroShare: number, mmShare: number) {
   const m = (p: number) => mmLocalToUnified(p, heroShare, mmShare);
   return {
-    crossfade: [m(0.13), m(0.28)] as [number, number],
+    crossfade: [m(0.13), m(0.19)] as [number, number],
     materialScale: [m(0.13), m(MATERIAL_ESTABLISHED_FRACTION)] as [number, number],
     materialLabelIn: [m(0.18), m(0.26)] as [number, number],
   };
