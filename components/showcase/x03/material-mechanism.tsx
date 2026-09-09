@@ -7,64 +7,64 @@ import { useRef } from "react";
 import { useIsMobileViewport } from "@/hooks/use-is-mobile-viewport";
 import { useMounted } from "@/hooks/use-mounted";
 import { piecewiseLerp } from "@/lib/x03/piecewise-lerp";
+import {
+  DESKTOP_MM_BUDGET_VH,
+  MATERIAL_ESTABLISHED_FRACTION,
+  MOBILE_MM_BUDGET_VH,
+} from "@/lib/x03/opening-track";
 
 /**
- * Gate 02B: extends the Hero's sequence with a second, independent sticky
- * track — not a remap of Hero's own scrollYProgress. Hero stays pixel-exact
- * (its approved 160vh/130vh track and shot table are untouched), and this
- * track's opening frame (A-001 at scale 1, x 0, y 0, objectPosition
- * "center 40%") exactly matches Hero's closing frame, so the handoff across
- * the two sticky sections reads as one continuous photograph rather than a
- * section boundary. From there: push in further on A-001 toward the panel
- * region, crossfade to A-002 (matched framing, not a slide), hold on
- * A-002 with a slow continued scale (keeps the "hold" from becoming a dead
- * zone), then a diagonal clip-path reveal — anchored upper/center, growing
- * lower/lateral toward the right, following where the rear-right leg
- * actually sits relative to the chassis panel in A-001 — brings in A-003,
- * which settles to rest as the track completes.
+ * Gate 07B — Director Iteration 001 — Unified Opening Track.
+ *
+ * This component now owns ONLY what happens after A-002 is established:
+ * the diagonal clip-path reveal into A-003 and its settle. Everything up
+ * through A-002 established (Hero's own arrival/approach, the A-001->A-002
+ * push and crossfade, the material scale-hold) moved into hero.tsx as one
+ * continuous sticky track — see that file's and `lib/x03/opening-track.ts`'s
+ * comments for why the OLD two-track boundary here was the actual defect
+ * Gate 07B's browser-real QA caught, independent of shot values.
+ *
+ * MASK_RANGE, SETTLE_TIMELINE, and the label crossfade values below are
+ * UNCHANGED from before — same numbers, same proportions, same technique
+ * (diagonal clip-path anchored upper/center, growing lower/lateral toward
+ * the rear-right leg). Only the space they're expressed in shrank: they
+ * used to be a sub-range [MATERIAL_ESTABLISHED_FRACTION, 1] of a bigger
+ * shared 0-1, now they're this track's own full 0-1, and the wrapper's
+ * scroll budget shrank proportionally (from the same fraction of the old
+ * combined budget) so the absolute scroll distance — and therefore pacing
+ * — for this phase is exactly what it was before, not compressed.
+ *
+ * A-002 itself is rendered here as a STATIC layer (no scale animation): by
+ * MATERIAL_ESTABLISHED_FRACTION its scale-hold had already finished in the
+ * old single track, so there is nothing left to animate — it arrives at
+ * whatever hero.tsx's own material-hold settled it to (1.18 desktop /
+ * 1.15 mobile) and stays there while the mask reveals A-003 on top.
  */
 
-interface Shot {
-  scale: number;
-  x: number; // percent
-  y: number; // percent
+const DESKTOP_REMAINING_FRACTION = 1 - MATERIAL_ESTABLISHED_FRACTION; // 0.39
+const DESKTOP_REMAINING_BUDGET_VH = DESKTOP_MM_BUDGET_VH * DESKTOP_REMAINING_FRACTION; // 78
+const DESKTOP_TRACK_VH = 100 + DESKTOP_REMAINING_BUDGET_VH; // 178
+
+const MOBILE_REMAINING_BUDGET_VH = MOBILE_MM_BUDGET_VH * DESKTOP_REMAINING_FRACTION; // 72.15
+const MOBILE_TRACK_VH = 100 + MOBILE_REMAINING_BUDGET_VH; // 172.15
+
+/** Old MaterialMechanism-local progress (MATERIAL_ESTABLISHED_FRACTION to 1)
+ *  -> this track's own local 0-1. */
+function toDownstreamLocal(p: number): number {
+  return (p - MATERIAL_ESTABLISHED_FRACTION) / DESKTOP_REMAINING_FRACTION;
 }
 
-const PUSH_TIMELINE = [0, 0.17];
-// End shot is not a guess — it's solved from the object-cover math (base
-// cover scale/offset for objectPosition "center 40%") so that the framed
-// region matches A-002's actual source crop (x:545,y:590,w:420,h:260 in the
-// 1086x1448 master) closely enough that the crossfade doesn't ghost. Without
-// this the push-in and A-002 show different content at different scale
-// during the blend, which reads as a destructive double-exposure, not a
-// focus pull — that was the actual QA failure this replaced.
-const DESKTOP_PUSH: Shot[] = [
-  { scale: 1, x: 0, y: 0 }, // matches Hero's resolved frame exactly
-  { scale: 2.6, x: -50, y: -28 }, // framed to match A-002's crop region
-];
-// Mobile's narrow viewport crops A-001 horizontally at the base cover render
-// (object-position "center 40%" on a portrait image in a much-narrower-than-
-// tall container) — unlike desktop, where the full source width survives the
-// base crop. Zooming toward A-002's own crop center (x:755 in source space)
-// pushes past what's actually rendered and exposes empty background at the
-// edge. This target (x:600) sits inside the panel nameplate but safely
-// within the base-cover-visible window.
-const MOBILE_PUSH: Shot[] = [
-  { scale: 1, x: 0, y: 0 },
-  { scale: 2, x: -17, y: 0.5 },
-];
+const A002_SRC = "/images/x03/x03-a002-pl1-material-macro.png";
+const A003_SRC = "/images/x03/x03-a003-pl1-mechanism-detail.png";
 
-const CROSSFADE_RANGE: [number, number] = [0.13, 0.28];
+const DESKTOP_A002_SETTLED_SCALE = 1.18;
+const MOBILE_A002_SETTLED_SCALE = 1.15;
 
-const MATERIAL_SCALE_TIMELINE = [0.13, 0.61];
-const DESKTOP_MATERIAL_SCALE = [1.05, 1.18];
-const MOBILE_MATERIAL_SCALE = [1.05, 1.15];
-
-const MASK_RANGE: [number, number] = [0.61, 0.84];
-const MASK_RIGHT_RANGE = [-15, 130]; // % — always ahead of left, revealing toward lower/lateral-right
+const MASK_RANGE: [number, number] = [toDownstreamLocal(0.61), toDownstreamLocal(0.84)];
+const MASK_RIGHT_RANGE = [-15, 130]; // % — untouched, same diagonal grammar
 const MASK_LEFT_OFFSET = 30; // % behind the right edge — sets the diagonal's slant
 
-const SETTLE_TIMELINE = [0.61, 0.96]; // resolves with a short buffer before track end — mechanism rests before release
+const SETTLE_TIMELINE = [toDownstreamLocal(0.61), toDownstreamLocal(0.96)];
 interface SettleShot {
   scale: number;
   x: number;
@@ -79,12 +79,8 @@ const MOBILE_SETTLE: [SettleShot, SettleShot] = [
   { scale: 1, x: 0, y: 0 },
 ];
 
-const MATERIAL_LABEL_IN: [number, number] = [0.18, 0.26];
-const MATERIAL_LABEL_OUT: [number, number] = [0.61, 0.69];
-const MECHANISM_LABEL_IN: [number, number] = [0.76, 0.84];
-
-const DESKTOP_TRACK_VH = 300;
-const MOBILE_TRACK_VH = 285;
+const MATERIAL_LABEL_OUT: [number, number] = [toDownstreamLocal(0.61), toDownstreamLocal(0.69)];
+const MECHANISM_LABEL_IN: [number, number] = [toDownstreamLocal(0.76), toDownstreamLocal(0.84)];
 
 function MaterialMechanism() {
   const mounted = useMounted();
@@ -92,25 +88,12 @@ function MaterialMechanism() {
   const isMobile = useIsMobileViewport();
   const useScrollSequence = mounted && !prefersReducedMotion;
 
-  const push = isMobile ? MOBILE_PUSH : DESKTOP_PUSH;
-  const materialScale = isMobile ? MOBILE_MATERIAL_SCALE : DESKTOP_MATERIAL_SCALE;
   const settle = isMobile ? MOBILE_SETTLE : DESKTOP_SETTLE;
   const trackVh = isMobile ? MOBILE_TRACK_VH : DESKTOP_TRACK_VH;
+  const a002Scale = isMobile ? MOBILE_A002_SETTLED_SCALE : DESKTOP_A002_SETTLED_SCALE;
 
   const trackRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ["start start", "end end"] });
-
-  // A-001 layer — continues the push-in from Hero's exact resolved frame.
-  const a001Scale = useTransform(scrollYProgress, (p) =>
-    piecewiseLerp(p, PUSH_TIMELINE, push.map((s) => s.scale)),
-  );
-  const a001X = useTransform(scrollYProgress, (p) => `${piecewiseLerp(p, PUSH_TIMELINE, push.map((s) => s.x))}%`);
-  const a001Y = useTransform(scrollYProgress, (p) => `${piecewiseLerp(p, PUSH_TIMELINE, push.map((s) => s.y))}%`);
-  const a001Opacity = useTransform(scrollYProgress, (p) => piecewiseLerp(p, CROSSFADE_RANGE, [1, 0]));
-
-  // A-002 layer — crossfades in, then a slow continued scale through its hold.
-  const a002Opacity = useTransform(scrollYProgress, (p) => piecewiseLerp(p, CROSSFADE_RANGE, [0, 1]));
-  const a002Scale = useTransform(scrollYProgress, (p) => piecewiseLerp(p, MATERIAL_SCALE_TIMELINE, materialScale));
 
   // A-003 layer — diagonal clip-path reveal, then settles to rest.
   const maskRight = useTransform(scrollYProgress, (p) => piecewiseLerp(p, MASK_RANGE, MASK_RIGHT_RANGE));
@@ -130,14 +113,13 @@ function MaterialMechanism() {
     (p) => `${piecewiseLerp(p, SETTLE_TIMELINE, [settle[0].y, settle[1].y])}%`,
   );
 
-  // Chapter markers.
-  const materialLabelOpacity = useTransform(scrollYProgress, (p) => {
-    const in_ = piecewiseLerp(p, MATERIAL_LABEL_IN, [0, 1]);
-    const out = piecewiseLerp(p, MATERIAL_LABEL_OUT, [1, 0]);
-    return Math.min(in_, out);
-  });
+  // Chapter markers — "Material" (inherited already-visible from hero.tsx)
+  // fades out as "Mechanism" fades in.
+  const materialLabelOpacity = useTransform(scrollYProgress, (p) =>
+    useScrollSequence ? piecewiseLerp(p, MATERIAL_LABEL_OUT, [1, 0]) : 0,
+  );
   const mechanismLabelOpacity = useTransform(scrollYProgress, (p) =>
-    piecewiseLerp(p, MECHANISM_LABEL_IN, [0, 1]),
+    useScrollSequence ? piecewiseLerp(p, MECHANISM_LABEL_IN, [0, 1]) : 0,
   );
 
   return (
@@ -149,41 +131,26 @@ function MaterialMechanism() {
     >
       {useScrollSequence ? (
         <section className="sticky top-0 isolate h-[100svh] w-full overflow-hidden">
-          <div className="absolute inset-0" data-x03-a001-layer>
-            <motion.div className="absolute inset-0" style={{ scale: a001Scale, x: a001X, y: a001Y, opacity: a001Opacity }}>
-              <Image
-                src="/images/x03/x03-a001-pl1-master.png"
-                alt=""
-                aria-hidden="true"
-                fill
-                sizes="100vw"
-                className="object-cover"
-                style={{ objectPosition: "center 40%" }}
-              />
-            </motion.div>
-          </div>
-
           <div className="absolute inset-0" data-x03-a002-layer>
-            <motion.div className="absolute inset-0" style={{ opacity: a002Opacity }}>
-              <motion.div className="absolute inset-0" style={{ scale: a002Scale }}>
-                <Image
-                  src="/images/x03/x03-a002-pl1-material-macro.png"
-                  alt=""
-                  aria-hidden="true"
-                  fill
-                  loading="eager"
-                  sizes="100vw"
-                  className="object-cover"
-                  style={{ objectPosition: isMobile ? "38% 45%" : "center center" }}
-                />
-              </motion.div>
-            </motion.div>
+            <Image
+              src={A002_SRC}
+              alt=""
+              aria-hidden="true"
+              fill
+              loading="eager"
+              sizes="100vw"
+              className="object-cover"
+              style={{
+                objectPosition: isMobile ? "38% 45%" : "center center",
+                transform: `scale(${a002Scale})`,
+              }}
+            />
           </div>
 
           <motion.div className="absolute inset-0" data-x03-a003-layer style={{ clipPath }}>
             <motion.div className="absolute inset-0" style={{ scale: a003Scale, x: a003X, y: a003Y }}>
               <Image
-                src="/images/x03/x03-a003-pl1-mechanism-detail.png"
+                src={A003_SRC}
                 alt=""
                 aria-hidden="true"
                 fill
@@ -215,17 +182,20 @@ function MaterialMechanism() {
           </motion.p>
         </section>
       ) : (
+        // Reduced motion: hero.tsx's own fallback shows only the ARRIVAL
+        // frame (it no longer owns a settled "Material" moment to hold on
+        // now that this file's downstream track starts past that point),
+        // so this file restores the "Material" beat here rather than
+        // dropping it — same three-beat sequence as before Gate 07B
+        // Director Iteration 001 (arrival -> material -> mechanism), just
+        // sourced from two components instead of one.
         <div>
           <StaticBeat
-            src="/images/x03/x03-a002-pl1-material-macro.png"
+            src={A002_SRC}
             objectPosition={isMobile ? "38% 45%" : "center center"}
             label="Material"
           />
-          <StaticBeat
-            src="/images/x03/x03-a003-pl1-mechanism-detail.png"
-            objectPosition={isMobile ? "55% 30%" : "62% 32%"}
-            label="Mechanism"
-          />
+          <StaticBeat src={A003_SRC} objectPosition={isMobile ? "55% 30%" : "62% 32%"} label="Mechanism" />
         </div>
       )}
     </div>
