@@ -1,0 +1,370 @@
+/*
+ * X02 LAB — laboratório técnico isolado (ABYSS / 02, protótipo 001).
+ * Escopado sob `.x02-lab-root`, sem herdar nem contaminar os tokens globais
+ * em app/globals.css — mesmo princípio de isolamento do X01
+ * (components/showcase/x01/x01.css). Direção visual deliberadamente neutra:
+ * este arquivo não fixa Art Direction final, só o mínimo para avaliar
+ * espacialidade (ver briefing, "Direção Visual Provisória").
+ */
+.x02-lab-root {
+  background: #050506;
+  color: #c9d0cc;
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", monospace;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.x02-lab-root * {
+  box-sizing: border-box;
+}
+
+.x02-lab-viewport {
+  position: relative;
+  width: 100%;
+}
+
+.x02-lab-canvas-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+.x02-lab-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(201, 208, 204, 0.45);
+}
+
+/*
+ * Camada de legendas — deliberadamente NÃO um HUD (o briefing proíbe
+ * explicitamente esse vocabulário sci-fi): sem molduras, sem brackets, sem
+ * indicadores piscando, sem cor de acento. Só texto quieto, o mesmo
+ * princípio editorial das legendas do X01, em tom neutro.
+ */
+.x02-lab-caption {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  padding: clamp(16px, 3vw, 32px);
+}
+
+.x02-lab-caption-tag {
+  position: absolute;
+  top: clamp(16px, 3vw, 32px);
+  left: clamp(16px, 3vw, 32px);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(201, 208, 204, 0.4);
+}
+
+.x02-lab-caption-state {
+  position: absolute;
+  bottom: clamp(16px, 3vw, 32px);
+  left: clamp(16px, 3vw, 32px);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(201, 208, 204, 0.55);
+}
+
+.x02-lab-caption-hint {
+  position: absolute;
+  top: clamp(16px, 3vw, 32px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(201, 208, 204, 0.35);
+}
+
+.x02-lab-debug {
+  position: fixed;
+  top: clamp(16px, 3vw, 32px);
+  right: clamp(16px, 3vw, 32px);
+  z-index: 10;
+  pointer-events: none;
+  font-size: 10px;
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+  color: rgba(201, 208, 204, 0.55);
+  white-space: pre;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .x02-lab-caption-hint {
+    display: none;
+  }
+}
+
+/*
+ * ====================================================================
+ * EXPERIMENTO A — SURFACE → THRESHOLD (Technical Experience Prototype
+ * 002). Classes prefixadas `x02-threshold-*`, aditivas: nada acima é
+ * alterado. Isoladas do protótipo 001 aprovado.
+ * ====================================================================
+ */
+.x02-threshold-root {
+  position: relative;
+  background: #050506;
+}
+
+.x02-threshold-track {
+  position: relative;
+}
+
+.x02-threshold-canvas-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+/* Painéis DOM — a "crosta". Cor de fundo igual ao clear color do Canvas
+   (#050506): é essa continuidade de paleta, não um efeito, que faz o
+   Canvas por trás nunca "aparecer" — ele já estava lá. */
+.x02-threshold-panel {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 50vw;
+  z-index: 1;
+  background: #050506;
+  will-change: transform;
+}
+
+.x02-threshold-panel--left {
+  left: 0;
+  clip-path: polygon(
+    0% 0%,
+    100% 0%,
+    94% 14%,
+    100% 30%,
+    96% 46%,
+    100% 62%,
+    93% 78%,
+    100% 92%,
+    100% 100%,
+    0% 100%
+  );
+}
+
+.x02-threshold-panel--right {
+  right: 0;
+  clip-path: polygon(
+    0% 0%,
+    100% 0%,
+    100% 100%,
+    0% 100%,
+    0% 92%,
+    7% 78%,
+    0% 62%,
+    4% 46%,
+    0% 30%,
+    6% 14%
+  );
+}
+
+/* Fio de luz na costura — pista da anomalia antes da abertura: presente em
+   repouso, independente do conteúdo do Canvas (funciona mesmo com a fresta
+   em poucos pixels). Pulso muito lento, nunca pisca como indicador de UI. */
+.x02-threshold-seam-light {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  z-index: 2;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(180, 168, 150, 0.35) 20%,
+    rgba(180, 168, 150, 0.5) 50%,
+    rgba(180, 168, 150, 0.35) 80%,
+    transparent 100%
+  );
+  animation: x02-threshold-pulse 7s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes x02-threshold-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Fixed, não em fluxo normal — mesma arquitetura do protótipo 001: só a
+   trilha de scroll (spacer) ocupa espaço real no documento, começando em
+   Y=0. Isso mantém o mapeamento scroll→progresso direto e previsível, sem
+   uma "zona morta" inicial antes do primeiro pixel de scroll surtir efeito. */
+.x02-threshold-content {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.x02-threshold-block {
+  width: 50%;
+  padding: 0 clamp(20px, 6vw, 96px);
+}
+
+.x02-threshold-block--right {
+  margin-left: auto;
+  text-align: right;
+}
+
+.x02-threshold-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(201, 208, 204, 0.45);
+  margin: 0 0 12px;
+}
+
+.x02-threshold-headline {
+  font-size: clamp(28px, 5vw, 56px);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  color: #c9d0cc;
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .x02-threshold-seam-light {
+    animation: none;
+    opacity: 0.8;
+  }
+}
+
+/*
+ * ====================================================================
+ * EXPERIMENTO B — FRACTURE. Classes prefixadas `x02-fracture-*`,
+ * aditivas.
+ * ====================================================================
+ */
+.x02-fracture-root {
+  position: relative;
+  background: #050506;
+}
+
+.x02-fracture-canvas-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+/*
+ * ====================================================================
+ * CORE V2 SPATIAL PROTOTYPE 001. Classes prefixadas `x02-corev2-*`,
+ * aditivas. Legendas/debug reaproveitam `x02-lab-caption*` e
+ * `x02-lab-debug` acima, sem duplicar regras.
+ * ====================================================================
+ */
+.x02-corev2-root {
+  position: relative;
+  background: #050506;
+}
+
+.x02-corev2-canvas-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+/*
+ * ====================================================================
+ * MATERIAL WORLD V3. Classes prefixadas `x02-materialv3-*`, aditivas.
+ * Legendas/debug reaproveitam `x02-lab-caption*`/`x02-lab-debug` acima.
+ * ====================================================================
+ */
+.x02-materialv3-root {
+  position: relative;
+  background: #050506;
+}
+
+.x02-materialv3-canvas-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+/* Toggle A/B — controle de laboratório, não UI de produto: texto quieto,
+   sem ícone, sem cor de destaque (mesmo princípio editorial de
+   `x02-lab-caption*`), só um estado "ativo" perceptível por opacidade. */
+.x02-materialv3-variant-toggle {
+  position: fixed;
+  bottom: clamp(16px, 3vw, 32px);
+  right: clamp(16px, 3vw, 32px);
+  z-index: 10;
+  display: flex;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.x02-materialv3-variant-toggle button {
+  appearance: none;
+  background: rgba(201, 208, 204, 0.06);
+  border: 1px solid rgba(201, 208, 204, 0.18);
+  color: rgba(201, 208, 204, 0.55);
+  font-family: inherit;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.x02-materialv3-variant-toggle button:hover {
+  color: rgba(201, 208, 204, 0.8);
+}
+
+.x02-materialv3-variant-toggle button.is-active {
+  color: #c9d0cc;
+  border-color: rgba(201, 208, 204, 0.5);
+}
+
+/* Em telas estreitas o texto de `.x02-lab-caption-state` (canto inferior
+   esquerdo) fica longo o bastante para colidir com o toggle — sobe para o
+   canto superior direito, onde só há espaço vazio (tag/hint ficam à
+   esquerda/centro). */
+@media (max-width: 640px) {
+  .x02-materialv3-variant-toggle {
+    bottom: auto;
+    top: clamp(16px, 3vw, 32px);
+    flex-direction: column;
+    align-items: flex-end;
+  }
+}

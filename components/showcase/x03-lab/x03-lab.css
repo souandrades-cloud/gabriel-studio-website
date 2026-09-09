@@ -299,3 +299,682 @@
 .x03-mechanical-ground span:last-child {
   transform: translateY(-42%);
 }
+
+/*
+ * Gate 05C — Field Action Sequence Design. DOM/CSS compositing stage, same
+ * discipline as Gate 05B Hypothesis B (the winning representation): no
+ * WebGL for PL-1's body. Reuses .x03-bridge-stage/.x03-perception-stage
+ * sizing and .x03-perception-info rail styling rather than redefining them.
+ */
+.x03-field-action-viewport {
+  background: #0a0908;
+}
+
+.x03-field-action-dom {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.x03-field-action-handoff {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: #08090a;
+}
+
+.x03-field-action-photo-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.x03-field-action-photo {
+  object-fit: cover;
+  transition: filter 0.2s linear;
+}
+
+.x03-field-action-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.x03-field-action-diagram {
+  z-index: 3;
+  pointer-events: none;
+}
+
+.x03-field-action-environment {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.x03-field-action-env-structure {
+  position: absolute;
+  top: 8%;
+  right: 6%;
+  width: 22%;
+  height: 34%;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(120, 122, 120, 0.28),
+    rgba(120, 122, 120, 0.28) 2px,
+    transparent 2px,
+    transparent 10px
+  );
+  opacity: 0.5;
+}
+
+.x03-field-action-env-channel {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 14%;
+  height: 1px;
+  background: rgba(201, 154, 63, 0.4);
+  box-shadow: 0 6px 0 rgba(201, 154, 63, 0.22);
+}
+
+.x03-field-action-env-ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 12%;
+  background: linear-gradient(to top, rgba(10, 9, 8, 0.55), transparent);
+}
+
+.x03-field-action-rail {
+  z-index: 5;
+}
+
+.x03-field-action-selectors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 18px;
+}
+
+.x03-field-action-selectors fieldset {
+  flex: 1 1 220px;
+  min-width: 220px;
+  border: 1px solid rgba(214, 216, 216, 0.18);
+  padding: 10px 12px 12px;
+}
+
+.x03-field-action-selectors legend {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(214, 216, 216, 0.5);
+  padding: 0 4px;
+}
+
+.x03-field-action-selectors label {
+  display: block;
+  font-size: 11px;
+  line-height: 1.8;
+  color: rgba(214, 216, 216, 0.65);
+  cursor: pointer;
+}
+
+.x03-field-action-selectors label.is-active {
+  color: #e7e9ea;
+}
+
+.x03-field-action-selectors input[type="radio"] {
+  margin-right: 8px;
+}
+
+.x03-field-action-selector-note {
+  margin: 8px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: rgba(214, 216, 216, 0.5);
+}
+
+.x03-field-action-annotations {
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(214, 216, 216, 0.14);
+}
+
+.x03-field-action-annotations h2 {
+  margin: 0 0 10px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(214, 216, 216, 0.5);
+  font-weight: 500;
+}
+
+.x03-field-action-annotations ul {
+  margin: 0;
+  padding: 0 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.x03-field-action-annotations li {
+  font-size: 12px;
+  line-height: 1.6;
+  color: rgba(214, 216, 216, 0.7);
+}
+
+.x03-field-action-annotations strong {
+  color: rgba(214, 216, 216, 0.9);
+}
+
+/*
+ * Gate 06A — Return / Resolution Discovery. DOM/CSS compositing, same
+ * discipline as Gate 05C — no WebGL. New `.x03-return-*` classes rather
+ * than reusing `.x03-field-action-*` ones: this gate depends on Gate 05C's
+ * frozen CONSEQUENCE frame for continuity, but stays visually independent
+ * of it so neither gate can accidentally break the other's styling.
+ */
+.x03-return-viewport {
+  background: #0a0908;
+}
+
+.x03-return-dom {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.x03-return-bg-field,
+.x03-return-bg-studio {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.x03-return-bg-field {
+  background: #0a0908;
+}
+
+.x03-return-bg-studio {
+  background: #1c1a17;
+}
+
+.x03-return-hold {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.x03-return-hold-photo {
+  object-fit: cover;
+  filter: saturate(0.9) sepia(0.05);
+}
+
+.x03-return-hold-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.x03-return-hold-structure {
+  position: absolute;
+  top: 8%;
+  right: 6%;
+  width: 22%;
+  height: 34%;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(120, 122, 120, 0.22),
+    rgba(120, 122, 120, 0.22) 2px,
+    transparent 2px,
+    transparent 10px
+  );
+  opacity: 0.4;
+}
+
+.x03-return-hold-ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 12%;
+  background: linear-gradient(to top, rgba(10, 9, 8, 0.55), transparent);
+}
+
+.x03-return-environmental {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.x03-return-environmental-photo {
+  object-fit: cover;
+}
+
+.x03-return-product {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
+.x03-return-scrim {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 65%;
+  z-index: 4;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(6, 5, 4, 0.92) 0%, rgba(6, 5, 4, 0.65) 45%, transparent 100%);
+}
+
+.x03-return-caption {
+  position: absolute;
+  left: clamp(16px, 3vw, 28px);
+  bottom: clamp(16px, 3vw, 28px);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 34ch;
+  pointer-events: none;
+}
+
+.x03-return-caption-center {
+  left: 50%;
+  bottom: clamp(20px, 5vw, 40px);
+  transform: translateX(-50%);
+  align-items: center;
+  text-align: center;
+}
+
+.x03-return-caption-tag {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(214, 216, 216, 0.5);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
+}
+
+.x03-return-caption-line {
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(231, 233, 234, 0.88);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
+}
+
+.x03-return-nav {
+  position: absolute;
+  right: clamp(16px, 3vw, 28px);
+  bottom: clamp(16px, 3vw, 28px);
+  z-index: 5;
+  display: flex;
+  gap: 18px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(214, 216, 216, 0.45);
+}
+
+.x03-return-identity {
+  position: absolute;
+  left: clamp(16px, 3vw, 28px);
+  top: clamp(16px, 3vw, 28px);
+  z-index: 5;
+  padding: 5px 9px;
+  background: rgba(8, 7, 6, 0.55);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(231, 233, 234, 0.8);
+}
+
+/*
+ * Gate 07A — Opening Architecture Re-Discovery. DOM/CSS compositing, same
+ * discipline as Gate 05C/06A — no WebGL, no new asset. `.x03-opening-*`
+ * rather than reusing `.x03-return-*`: this gate is visually independent
+ * (only `.x03-bridge-stage` sizing is shared, same as every prior gate).
+ * Stage aspect-ratio matches A-001's own 1086x1448 master, same as the
+ * bridge stage, so all three hypotheses and production's own Hero (which
+ * renders full-bleed against a 100svh viewport) are judged against the same
+ * source framing.
+ */
+.x03-opening-stage {
+  aspect-ratio: 1086 / 1448;
+  background: #0a0908;
+}
+
+.x03-opening-dom {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.x03-opening-photo-wrap {
+  position: absolute;
+  inset: 0;
+}
+
+.x03-opening-photo {
+  object-fit: cover;
+}
+
+/* Hypothesis A — contracting vignette, the one carrier of its light reveal. */
+.x03-opening-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 28%, rgba(4, 3, 2, 0.94) 96%);
+}
+
+/* Bottom scrim shared by every hypothesis' own stage — legibility for the
+   identity mark regardless of what sits underneath, same function as
+   production Hero's own scrims, never decoration. */
+.x03-opening-scrim {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 42%;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(8, 7, 6, 0.85), transparent);
+}
+
+/* Hypothesis B — the one growing aperture; the photograph itself never
+   re-crops underneath it. */
+.x03-opening-approach-field {
+  position: absolute;
+  inset: 0;
+  background: #0a0908;
+}
+
+.x03-opening-approach-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  overflow: hidden;
+  transform: translate(-50%, -50%);
+  outline: 1px solid rgba(214, 216, 216, 0.1);
+}
+
+/* Hypothesis C — fixed gallery mat, unmoving for the entire hold; the
+   negative space itself is the composition device, not a motion beat. */
+.x03-opening-monument-mat {
+  position: absolute;
+  inset: clamp(20px, 7%, 64px);
+  outline: 1px solid rgba(214, 216, 216, 0.14);
+}
+
+.x03-opening-monument-frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Shared identity mark — same copy, same hierarchy, every hypothesis. */
+.x03-opening-kicker {
+  position: absolute;
+  top: clamp(16px, 3vw, 28px);
+  left: clamp(16px, 3vw, 28px);
+  z-index: 6;
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(214, 216, 216, 0.7);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
+  animation: x03-opening-kicker-in 0.6s 0.35s both cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes x03-opening-kicker-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.x03-opening-identity {
+  position: absolute;
+  left: clamp(16px, 3vw, 28px);
+  right: clamp(16px, 3vw, 28px);
+  bottom: clamp(16px, 3vw, 28px);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.x03-opening-identity-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.x03-opening-wordmark {
+  margin: 0;
+  font-size: clamp(30px, 8vw, 52px);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #f2f0ec;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+}
+
+.x03-opening-designation {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 6px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(214, 216, 216, 0.7);
+}
+
+.x03-opening-badge {
+  padding: 4px 8px;
+  border: 1px solid #c99a3f;
+  border-radius: 3px;
+  color: #c99a3f;
+}
+
+.x03-opening-tagline {
+  margin: 0;
+  max-width: 34ch;
+  font-size: 13px;
+  color: rgba(214, 216, 216, 0.75);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
+}
+
+/* Shared MaterialEntry endpoint — identical for all three hypotheses. */
+.x03-opening-material {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+.x03-opening-material-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.x03-opening-material-photo {
+  object-fit: cover;
+}
+
+.x03-opening-material-label {
+  position: absolute;
+  left: clamp(16px, 3vw, 28px);
+  bottom: clamp(16px, 3vw, 28px);
+  z-index: 3;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(214, 216, 216, 0.75);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
+}
+
+/*
+ * Gate 08A — Final Signature Re-Discovery. Independent of `.x03-opening-*`
+ * and `.x03-return-*` (only `.x03-bridge-stage` sizing is shared, same
+ * discipline as every prior gate). Stage aspect-ratio matches A-001's own
+ * 1086x1448 master, same as every gate that presents it full-frame.
+ */
+.x03-final-stage {
+  aspect-ratio: 1086 / 1448;
+  background: #0a0908;
+}
+
+.x03-final-dom {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.x03-final-ground {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #0a0908;
+}
+
+.x03-final-ground-warm {
+  background: #201e1c;
+}
+
+.x03-final-photo {
+  object-fit: cover;
+}
+
+.x03-final-photo-contain {
+  object-fit: contain;
+}
+
+/* WORLD — the shared opening beat every hypothesis inherits. */
+.x03-final-world {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.x03-final-world-photo-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.x03-final-world-route,
+.x03-final-transform-trace {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.x03-final-scrim {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 2;
+  height: 32%;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(10, 9, 8, 0.72), transparent);
+}
+
+.x03-final-scrim-light {
+  background: linear-gradient(to top, rgba(32, 30, 28, 0.55), transparent);
+}
+
+.x03-final-caption {
+  position: absolute;
+  left: clamp(16px, 3vw, 28px);
+  right: clamp(16px, 3vw, 28px);
+  bottom: clamp(16px, 3vw, 28px);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.x03-final-caption-tag {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #d9c9a6;
+}
+
+.x03-final-caption-copy {
+  margin: 0;
+  max-width: 38ch;
+  font-size: 13px;
+  color: rgba(214, 216, 216, 0.78);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
+}
+
+/* FINAL REVEAL — PL-1's one definitive presentation, shape shared by all
+   three hypotheses (only crop/scale/entry differ per experience file). */
+.x03-final-monument-frame {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+}
+
+.x03-final-monument-photo-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Hypothesis B — the single soft bloom riding the decisive reveal. Plain
+   radial gradient, no bloom/glow post-processing — the anti-pattern list
+   explicitly rules out "cheap bloom" as a source of impact. */
+.x03-final-absence-bloom {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 48%, rgba(217, 201, 166, 0.22), transparent 62%);
+}
+
+/* Shared resolution mark — identical copy and treatment across all three
+   hypotheses, mirrors production hybrid-return.tsx's own restrained
+   identity line verbatim. */
+.x03-final-resolution {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: clamp(24px, 6vw, 44px) clamp(16px, 3vw, 28px);
+  text-align: center;
+  pointer-events: none;
+}
+
+.x03-final-resolution-badge {
+  padding: 4px 8px;
+  border: 1px solid #d9c9a6;
+  border-radius: 3px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #f2f0ec;
+}
+
+.x03-final-resolution-copy {
+  font-size: 13px;
+  color: rgba(214, 216, 216, 0.75);
+}
