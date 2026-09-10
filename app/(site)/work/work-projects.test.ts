@@ -47,8 +47,8 @@ describe("getWorkProjects", () => {
     expect(getWorkProjects([])).toEqual([]);
   });
 
-  it("nenhum standard case atual aparece — todos em publication review / visibility unlisted", () => {
-    expect(getWorkProjects(ALL_PROJECTS)).toEqual([]);
+  it("cora é o único standard case atual publicamente elegível", () => {
+    expect(getWorkProjects(ALL_PROJECTS).map((project) => project.slug)).toEqual(["cora"]);
   });
 });
 

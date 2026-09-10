@@ -16,8 +16,8 @@ export const STANDARD_CASE_PROJECTS: readonly StandardCaseProject[] = [
     title: "Cora",
     summary: "Identidade visual e landing page completas para uma clínica fictícia.",
     lifecycle: "production",
-    publication: "review",
-    visibility: "unlisted",
+    publication: "published",
+    visibility: "public",
     capabilities: ["Identidade editorial", "UI de agendamento"],
     technologies: [],
     media: [
