@@ -13,6 +13,7 @@ interface StandardCaseBodyProps {
 
 function StandardCaseBody({ project }: StandardCaseBodyProps) {
   const hero = project.media.find((media) => media.role === "thumbnail") ?? project.media[0];
+  const gallery = project.media.filter((media) => media.role === "gallery");
 
   return (
     <Section background="default" className="pt-24 sm:pt-28 lg:pt-32">
@@ -56,6 +57,31 @@ function StandardCaseBody({ project }: StandardCaseBodyProps) {
       <div className="border-brand/30 bg-brand-muted/40 mx-auto mt-8 max-w-2xl rounded-xl border px-5 py-4 text-center">
         <p className="text-foreground text-sm text-balance">{project.disclosure}</p>
       </div>
+
+      {gallery.length > 0 ? (
+        <div className="mx-auto mt-12 max-w-5xl">
+          <Heading as="h2" size="h4" className="text-muted-foreground text-center font-medium">
+            Interface e responsividade
+          </Heading>
+          <div className="mt-6 grid grid-cols-1 items-start gap-8 lg:grid-cols-[1.5fr_1fr]">
+            {gallery.map((media) => (
+              <figure key={media.src} className="border-border overflow-hidden rounded-2xl border">
+                <Image
+                  src={media.src}
+                  alt={media.alt}
+                  width={media.width ?? 1600}
+                  height={media.height ?? 900}
+                  sizes="(min-width: 1024px) 640px, 100vw"
+                  className="h-auto w-full"
+                />
+                <figcaption className="text-muted-foreground border-border border-t px-4 py-3 text-sm text-balance">
+                  {media.alt}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       {project.capabilities.length > 0 ? (
         <ul className="mx-auto mt-8 flex max-w-2xl flex-wrap justify-center gap-2">
