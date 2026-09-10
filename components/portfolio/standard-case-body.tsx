@@ -69,7 +69,7 @@ function StandardCaseBody({ project }: StandardCaseBodyProps) {
             Interface
           </Badge>
           <p className="text-foreground mt-3 max-w-xl text-lg text-balance">
-            Seção real que explica o funcionamento do atendimento.
+            Recorte real da interface — sem elementos adicionados ou reconstruídos.
           </p>
           <div className="border-border mt-6 overflow-hidden rounded-2xl border">
             <Image
