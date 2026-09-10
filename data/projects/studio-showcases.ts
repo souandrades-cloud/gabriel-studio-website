@@ -1,0 +1,55 @@
+import type { StudioShowcaseProject } from "@/lib/portfolio/types";
+
+export const STUDIO_SHOWCASE_PROJECTS: readonly StudioShowcaseProject[] = [
+  {
+    id: "x01",
+    slug: "x01",
+    kind: "studio-showcase",
+    showcaseCode: "X01",
+    title: "TENSION / 01 — Archive of Unstable Objects",
+    shortTitle: "Tension / 01",
+    summary: "Portfolio Showcase Series — Object Studies 001–008.",
+    lifecycle: "production",
+    publication: "review",
+    visibility: "unlisted",
+    capabilities: ["Narrativa por scroll", "Composição editorial"],
+    technologies: ["GSAP", "ScrollTrigger", "Framer Motion"],
+    media: [
+      {
+        src: "/images/x01/x01-a03-alternate.png",
+        alt: "Object Study 001 — Balance. A brushed-aluminium plane held upright by a blackened steel base and counterweight, shown in full.",
+        role: "thumbnail",
+        width: 1122,
+        height: 1402,
+      },
+      {
+        src: "/images/x01/X01-A04.png",
+        alt: "Object Study — Veil. A vertical plane of smoked glass and blackened steel, structure visible through its own transparency.",
+        role: "gallery",
+        width: 1122,
+        height: 1402,
+      },
+      {
+        src: "/images/x01/X01-A05.png",
+        alt: "Object Study 006 — Pendulum. A suspended mass held in potential, its counterweight resting against a fixed support.",
+        role: "gallery",
+        width: 1122,
+        height: 1402,
+      },
+      {
+        src: "/images/x01/X01-A06.png",
+        alt: "Material macro study for Pressure — close, cropped detail of the archive's material surface under compression.",
+        role: "gallery",
+        width: 1122,
+        height: 1402,
+      },
+    ],
+    relations: { relatedSlugs: [] },
+    featured: false,
+    seo: {
+      title: "TENSION / 01 — Archive of Unstable Objects",
+      description: "Portfolio Showcase Series — Object Studies 001–008.",
+      ogImage: "/images/x01/x01-a03-alternate.png",
+    },
+  },
+];

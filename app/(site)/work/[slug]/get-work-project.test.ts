@@ -19,6 +19,10 @@ describe("getWorkProject", () => {
   it("não resolve slug inexistente", () => {
     expect(getWorkProject("does-not-exist")).toBeUndefined();
   });
+
+  it("não resolve x01 (studio-showcase review/unlisted) pelo lookup público", () => {
+    expect(getWorkProject("x01")).toBeUndefined();
+  });
 });
 
 describe("estado público do registry real", () => {

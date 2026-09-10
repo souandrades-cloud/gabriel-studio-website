@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { StandardCaseBody } from "@/components/portfolio/standard-case-body";
+import { StudioShowcaseBody } from "@/components/portfolio/studio-showcase-body";
 import { Footer } from "@/components/sections/footer";
 import { getProjectEntryPath } from "@/lib/portfolio/paths";
 
@@ -56,15 +57,24 @@ export default async function WorkEntryPage(props: PageProps<"/work/[slug]">) {
     notFound();
   }
 
-  if (project.kind !== "standard-case") {
-    // studio-showcase e internal-system ainda não têm body implementado — piloto futuro.
-    notFound();
+  if (project.kind === "standard-case") {
+    return (
+      <>
+        <StandardCaseBody project={project} />
+        <Footer />
+      </>
+    );
   }
 
-  return (
-    <>
-      <StandardCaseBody project={project} />
-      <Footer />
-    </>
-  );
+  if (project.kind === "studio-showcase") {
+    return (
+      <>
+        <StudioShowcaseBody project={project} />
+        <Footer />
+      </>
+    );
+  }
+
+  // internal-system ainda não tem body implementado — piloto futuro.
+  notFound();
 }

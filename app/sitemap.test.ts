@@ -31,4 +31,11 @@ describe("sitemap", () => {
       expect(urls.some((url) => url.includes(forbidden))).toBe(false);
     }
   });
+
+  it("não inclui /work/x01 (studio-showcase review/unlisted) nem /work/x01/experience", () => {
+    const urls = sitemap().map((entry) => entry.url);
+
+    expect(urls.some((url) => url.endsWith("/work/x01"))).toBe(false);
+    expect(urls.some((url) => url.includes("/work/x01/experience"))).toBe(false);
+  });
 });

@@ -70,8 +70,14 @@ function Hero() {
     if (!mounted || prefersReducedMotion) return;
     if (!window.matchMedia("(pointer: fine)").matches) return;
 
-    const moveBalance = gsap.quickTo(balanceRef.current, "x", { duration: 0.7, ease: "power3.out" });
-    const moveTension = gsap.quickTo(tensionRef.current, "x", { duration: 0.9, ease: "power3.out" });
+    const moveBalance = gsap.quickTo(balanceRef.current, "x", {
+      duration: 0.7,
+      ease: "power3.out",
+    });
+    const moveTension = gsap.quickTo(tensionRef.current, "x", {
+      duration: 0.9,
+      ease: "power3.out",
+    });
 
     const handleMove = (event: MouseEvent) => {
       const nx = event.clientX / window.innerWidth - 0.5;
@@ -100,10 +106,14 @@ function Hero() {
       <div>
         {/* Nav — só os dois itens pedidos, sem menu convencional. */}
         <div className="x01-container x01-mono relative z-30 flex items-center justify-between pt-6 text-[11px] tracking-[0.08em] uppercase sm:pt-8">
-          <Link href="/showcase/x01" className="x01-focus rounded-sm">
+          <Link href="/work/x01/experience" className="x01-focus rounded-sm">
             Tension / 01
           </Link>
-          <Link href="#index" className="x01-focus rounded-sm" style={{ color: "var(--x01-ink-soft)" }}>
+          <Link
+            href="#index"
+            className="x01-focus rounded-sm"
+            style={{ color: "var(--x01-ink-soft)" }}
+          >
             Index
           </Link>
         </div>
@@ -141,9 +151,11 @@ function Hero() {
         initial={{ clipPath: "inset(0 0 0 100%)" }}
         animate={{ clipPath: "inset(0 0 0 0%)" }}
         transition={
-          reducedMotionReady ? { duration: 0 } : { duration: 0.6, delay: 0.55, ease: [0.22, 1, 0.36, 1] }
+          reducedMotionReady
+            ? { duration: 0 }
+            : { duration: 0.6, delay: 0.55, ease: [0.22, 1, 0.36, 1] }
         }
-        className="x01-display pointer-events-none absolute top-[30vh] left-[-1vw] z-10 select-none whitespace-nowrap sm:top-[33vh]"
+        className="x01-display pointer-events-none absolute top-[30vh] left-[-1vw] z-10 whitespace-nowrap select-none sm:top-[33vh]"
         style={{ fontSize: "clamp(96px, 20vw, 328px)" }}
       >
         Tension
@@ -165,7 +177,9 @@ function Hero() {
         initial={{ opacity: 0, y: 26 }}
         animate={{ opacity: 1, y: 0 }}
         transition={
-          reducedMotionReady ? { duration: 0 } : { duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }
+          reducedMotionReady
+            ? { duration: 0 }
+            : { duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }
         }
         className="pointer-events-none absolute right-[6vw] bottom-[5vh] z-20 aspect-[1122/1402] h-[66vh] sm:right-[23.5vw] sm:h-[74vh]"
       >
