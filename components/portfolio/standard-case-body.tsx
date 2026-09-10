@@ -14,6 +14,11 @@ interface StandardCaseBodyProps {
 function StandardCaseBody({ project }: StandardCaseBodyProps) {
   const hero = project.media.find((media) => media.role === "thumbnail") ?? project.media[0];
   const gallery = project.media.filter((media) => media.role === "gallery");
+  // Papel editorial derivado da orientação real da imagem, não de qual projeto é: uma
+  // captura paisagem/quadrada é tratada como detalhe de interface, uma retrato como
+  // prova de responsividade — vale para qualquer standard case futuro com esse padrão.
+  const detailShot = gallery.find((media) => (media.width ?? 0) >= (media.height ?? 0));
+  const proofShot = gallery.find((media) => (media.height ?? 0) > (media.width ?? 0));
 
   return (
     <Section background="default" className="pt-24 sm:pt-28 lg:pt-32">
@@ -58,27 +63,46 @@ function StandardCaseBody({ project }: StandardCaseBodyProps) {
         <p className="text-foreground text-sm text-balance">{project.disclosure}</p>
       </div>
 
-      {gallery.length > 0 ? (
-        <div className="mx-auto mt-12 max-w-5xl">
-          <Heading as="h2" size="h4" className="text-muted-foreground text-center font-medium">
-            Interface e responsividade
-          </Heading>
-          <div className="mt-6 grid grid-cols-1 items-start gap-8 lg:grid-cols-[1.5fr_1fr]">
-            {gallery.map((media) => (
-              <figure key={media.src} className="border-border overflow-hidden rounded-2xl border">
-                <Image
-                  src={media.src}
-                  alt={media.alt}
-                  width={media.width ?? 1600}
-                  height={media.height ?? 900}
-                  sizes="(min-width: 1024px) 640px, 100vw"
-                  className="h-auto w-full"
-                />
-                <figcaption className="text-muted-foreground border-border border-t px-4 py-3 text-sm text-balance">
-                  {media.alt}
-                </figcaption>
-              </figure>
-            ))}
+      {detailShot ? (
+        <div className="mx-auto mt-16 max-w-5xl">
+          <Badge variant="outline" className="tracking-wide uppercase">
+            Interface
+          </Badge>
+          <p className="text-foreground mt-3 max-w-xl text-lg text-balance">
+            Seção real que explica o funcionamento do atendimento.
+          </p>
+          <div className="border-border mt-6 overflow-hidden rounded-2xl border">
+            <Image
+              src={detailShot.src}
+              alt={detailShot.alt}
+              width={detailShot.width ?? 1600}
+              height={detailShot.height ?? 900}
+              sizes="(min-width: 1024px) 1024px, 100vw"
+              className="h-auto w-full"
+            />
+          </div>
+        </div>
+      ) : null}
+
+      {proofShot ? (
+        <div className="mx-auto mt-16 grid max-w-3xl grid-cols-1 items-start gap-8 lg:grid-cols-[1fr_auto]">
+          <div className="lg:pt-1">
+            <Badge variant="outline" className="tracking-wide uppercase">
+              Responsivo
+            </Badge>
+            <p className="text-foreground mt-3 max-w-xs text-lg text-balance">
+              Mesma interface, composta para um viewport de 390px.
+            </p>
+          </div>
+          <div className="border-border mx-auto w-full max-w-[280px] overflow-hidden rounded-2xl border lg:mx-0">
+            <Image
+              src={proofShot.src}
+              alt={proofShot.alt}
+              width={proofShot.width ?? 390}
+              height={proofShot.height ?? 900}
+              sizes="280px"
+              className="h-auto w-full"
+            />
           </div>
         </div>
       ) : null}
