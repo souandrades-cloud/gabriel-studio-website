@@ -4,13 +4,18 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "typegen": "next typegen",
+    "prebuild": "npm run validate:registry",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "format:check:changed": "node scripts/format-check-changed.mjs",
+    "typecheck": "npm run typegen && tsc --noEmit",
+    "validate:registry": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/alias-hooks-register.mjs scripts/validate-registry.mts",
+    "test": "vitest run",
+    "clean-gate": "npm run typecheck && npm run lint && npm run format:check:changed && npm run test && npm run validate:registry && npm run build"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
@@ -22,7 +27,7 @@
     "framer-motion": "^12.43.0",
     "gsap": "^3.15.0",
     "lucide-react": "^1.28.0",
-    "next": "16.3.0",
+    "next": "16.3.4",
     "next-themes": "^0.4.6",
     "react": "19.2.8",
     "react-dom": "19.2.8",
@@ -43,6 +48,6 @@
     "shadcn": "^4.16.1",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^3.2.7"
+    "vitest": "^4.1.11"
   }
 }

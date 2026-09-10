@@ -78,11 +78,30 @@ export interface InternalSystemProject extends ProjectBase {
 
 export type Project = StandardCaseProject | StudioShowcaseProject | InternalSystemProject;
 
-/** Único portão de "pronto para público": os três eixos (visibility/publication/lifecycle) têm de concordar. */
-export function isPubliclyVisible(project: Project): boolean {
+/** Os quatro gates devem ser todos `true` — compartilhado entre o publication boundary e a validação do registry. */
+export function isInternalSystemEligible(eligibility: InternalSystemEligibility): boolean {
   return (
+    eligibility.contentSafe &&
+    eligibility.dataSanitized &&
+    eligibility.visualQualityApproved &&
+    eligibility.humanDirectorPass
+  );
+}
+
+/**
+ * Único portão de "pronto para público". Os três eixos (visibility/publication/
+ * lifecycle) sempre têm de concordar; internal-system exige adicionalmente os
+ * quatro gates de eligibility completos.
+ */
+export function isPubliclyVisible(project: Project): boolean {
+  const meetsCommonGates =
     project.visibility === "public" &&
     project.publication === "published" &&
-    project.lifecycle === "production"
-  );
+    project.lifecycle === "production";
+
+  if (!meetsCommonGates) {
+    return false;
+  }
+
+  return project.kind === "internal-system" ? isInternalSystemEligible(project.eligibility) : true;
 }

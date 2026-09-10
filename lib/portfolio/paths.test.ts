@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { getProjectEntryPath, getShowcaseExperiencePath } from "@/lib/portfolio/paths";
+import {
+  getLegacyShowcasePath,
+  getProjectEntryPath,
+  getTargetExperiencePath,
+} from "@/lib/portfolio/paths";
 
 describe("getProjectEntryPath", () => {
   it("deriva /work/{slug}", () => {
@@ -8,10 +12,16 @@ describe("getProjectEntryPath", () => {
   });
 });
 
-describe("getShowcaseExperiencePath", () => {
-  it("resolve os três showcase codes conhecidos", () => {
-    expect(getShowcaseExperiencePath("X01")).toBe("/showcase/x01");
-    expect(getShowcaseExperiencePath("X02")).toBe("/showcase/x02");
-    expect(getShowcaseExperiencePath("X03")).toBe("/showcase/x03");
+describe("getTargetExperiencePath", () => {
+  it("deriva /work/{slug}/experience — distinta da legacy showcase path", () => {
+    expect(getTargetExperiencePath("x03")).toBe("/work/x03/experience");
+  });
+});
+
+describe("getLegacyShowcasePath", () => {
+  it("resolve os três showcase codes conhecidos para a rota legada /showcase/x0N", () => {
+    expect(getLegacyShowcasePath("X01")).toBe("/showcase/x01");
+    expect(getLegacyShowcasePath("X02")).toBe("/showcase/x02");
+    expect(getLegacyShowcasePath("X03")).toBe("/showcase/x03");
   });
 });

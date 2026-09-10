@@ -161,15 +161,28 @@ describe("validateRegistry — invariantes", () => {
     expect(codesFor(projects)).toContain("invalid-external-destination");
   });
 
+  it.each(["javascript:alert(1)", "file:///etc/passwd", "data:text/html,evil"])(
+    "detecta invalid-external-destination para scheme não permitido (%s)",
+    (url) => {
+      const projects = [buildCase({ externalDestination: { url } })];
+      expect(codesFor(projects)).toContain("invalid-external-destination");
+    },
+  );
+
+  it("aceita externalDestination com scheme http/https permitido", () => {
+    const projects = [buildCase({ externalDestination: { url: "https://example.com" } })];
+    expect(codesFor(projects)).not.toContain("invalid-external-destination");
+  });
+
   it("detecta standard-case-missing-disclosure", () => {
     const projects = [buildCase({ disclosure: "  " })];
     expect(codesFor(projects)).toContain("standard-case-missing-disclosure");
   });
 
-  it("detecta showcase-published-without-experience-path", () => {
+  it("detecta showcase-published-without-legacy-path", () => {
     const unmappedCode = "X99" as unknown as ShowcaseCode;
     const projects = [buildShowcase({ publication: "published", showcaseCode: unmappedCode })];
-    expect(codesFor(projects)).toContain("showcase-published-without-experience-path");
+    expect(codesFor(projects)).toContain("showcase-published-without-legacy-path");
   });
 
   it("detecta internal-system-public-without-eligibility", () => {

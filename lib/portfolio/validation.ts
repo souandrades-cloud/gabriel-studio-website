@@ -1,5 +1,5 @@
-import { getShowcaseExperiencePath } from "@/lib/portfolio/paths";
-import type { Project } from "@/lib/portfolio/types";
+import { getLegacyShowcasePath } from "@/lib/portfolio/paths";
+import { isInternalSystemEligible, type Project } from "@/lib/portfolio/types";
 
 export interface ValidationIssue {
   readonly code: string;
@@ -13,10 +13,12 @@ function isValidSlug(slug: string): boolean {
   return SLUG_PATTERN.test(slug);
 }
 
-function isValidUrl(url: string): boolean {
+/** Destinos externos só podem apontar para http(s) — nunca file:, javascript:, data: etc. */
+const ALLOWED_EXTERNAL_DESTINATION_PROTOCOLS = new Set(["http:", "https:"]);
+
+function hasAllowedExternalDestinationScheme(url: string): boolean {
   try {
-    new URL(url);
-    return true;
+    return ALLOWED_EXTERNAL_DESTINATION_PROTOCOLS.has(new URL(url).protocol);
   } catch {
     return false;
   }
@@ -97,10 +99,13 @@ function validateProjectSelf(project: Project): ValidationIssue[] {
       });
     }
 
-    if (project.externalDestination && !isValidUrl(project.externalDestination.url)) {
+    if (
+      project.externalDestination &&
+      !hasAllowedExternalDestinationScheme(project.externalDestination.url)
+    ) {
       issues.push({
         code: "invalid-external-destination",
-        message: `Projeto "${id}" possui external destination com URL inválida ("${project.externalDestination.url}").`,
+        message: `Projeto "${id}" possui external destination com URL inválida ou scheme não permitido ("${project.externalDestination.url}").`,
         projectId: id,
       });
     }
@@ -109,25 +114,25 @@ function validateProjectSelf(project: Project): ValidationIssue[] {
   if (
     project.kind === "studio-showcase" &&
     project.publication === "published" &&
-    !getShowcaseExperiencePath(project.showcaseCode)
+    !getLegacyShowcasePath(project.showcaseCode)
   ) {
     issues.push({
-      code: "showcase-published-without-experience-path",
-      message: `Showcase "${id}" está publicado mas não possui experiencePath resolvível para "${project.showcaseCode}".`,
+      code: "showcase-published-without-legacy-path",
+      message: `Showcase "${id}" está publicado mas não possui rota legada resolvível para "${project.showcaseCode}".`,
       projectId: id,
     });
   }
 
-  if (project.kind === "internal-system" && visibility === "public") {
-    const { contentSafe, dataSanitized, visualQualityApproved, humanDirectorPass } =
-      project.eligibility;
-    if (!(contentSafe && dataSanitized && visualQualityApproved && humanDirectorPass)) {
-      issues.push({
-        code: "internal-system-public-without-eligibility",
-        message: `Internal system "${id}" é público sem eligibility completo (contentSafe/dataSanitized/visualQualityApproved/humanDirectorPass).`,
-        projectId: id,
-      });
-    }
+  if (
+    project.kind === "internal-system" &&
+    visibility === "public" &&
+    !isInternalSystemEligible(project.eligibility)
+  ) {
+    issues.push({
+      code: "internal-system-public-without-eligibility",
+      message: `Internal system "${id}" é público sem eligibility completo (contentSafe/dataSanitized/visualQualityApproved/humanDirectorPass).`,
+      projectId: id,
+    });
   }
 
   return issues;
