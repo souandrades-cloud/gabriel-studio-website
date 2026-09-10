@@ -75,4 +75,26 @@ export const STUDIO_SHOWCASE_PROJECTS: readonly StudioShowcaseProject[] = [
         "Portfolio Showcase Series — X02 Abyss. Depth reveals what the surface cannot contain.",
     },
   },
+  {
+    id: "x03",
+    slug: "x03",
+    kind: "studio-showcase",
+    showcaseCode: "X03",
+    title: "Proprio — PL-1 / Autonomous Field Unit",
+    shortTitle: "Proprio — PL-1",
+    summary: "Portfolio Showcase Series — PL-1, an autonomous field robotics unit for Physical AI.",
+    lifecycle: "production",
+    publication: "review",
+    visibility: "unlisted",
+    capabilities: ["Narrativa por scroll", "Composição editorial", "Cena 3D em tempo real"],
+    technologies: ["React Three Fiber", "Three.js", "Framer Motion"],
+    media: [],
+    relations: { relatedSlugs: [] },
+    featured: false,
+    seo: {
+      title: "Proprio — PL-1 / Autonomous Field Unit",
+      description:
+        "Portfolio Showcase Series — PL-1, an autonomous field robotics unit for Physical AI.",
+    },
+  },
 ];

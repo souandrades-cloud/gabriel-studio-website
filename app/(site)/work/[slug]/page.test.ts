@@ -24,6 +24,11 @@ describe("generateStaticParams", () => {
     const params = await generateStaticParams();
     expect(params).not.toContainEqual({ slug: "x02" });
   });
+
+  it("não inclui x03 (studio-showcase review/unlisted)", async () => {
+    const params = await generateStaticParams();
+    expect(params).not.toContainEqual({ slug: "x03" });
+  });
 });
 
 describe("generateMetadata", () => {

@@ -75,3 +75,30 @@ describe("STUDIO_SHOWCASE_PROJECTS — x02", () => {
     expect(x02?.seo.description.trim().length).toBeGreaterThan(0);
   });
 });
+
+describe("STUDIO_SHOWCASE_PROJECTS — x03", () => {
+  const x03 = STUDIO_SHOWCASE_PROJECTS.find((p) => p.slug === "x03");
+
+  it("existe e usa kind/showcaseCode corretos", () => {
+    expect(x03?.kind).toBe("studio-showcase");
+    expect(x03?.showcaseCode).toBe("X03");
+  });
+
+  it("permanece review/unlisted nesta gate (não publicado)", () => {
+    expect(x03?.publication).toBe("review");
+    expect(x03?.visibility).toBe("unlisted");
+  });
+
+  it("lifecycle é production — implementação existente já é final, não lab/experiment", () => {
+    expect(x03?.lifecycle).toBe("production");
+  });
+
+  it("media está deliberadamente vazio nesta gate (sem thumbnail decidido)", () => {
+    expect(x03?.media).toEqual([]);
+  });
+
+  it("possui SEO title/description não vazios", () => {
+    expect(x03?.seo.title.trim().length).toBeGreaterThan(0);
+    expect(x03?.seo.description.trim().length).toBeGreaterThan(0);
+  });
+});

@@ -27,6 +27,10 @@ describe("getWorkProject", () => {
   it("não resolve x02 (studio-showcase review/unlisted) pelo lookup público", () => {
     expect(getWorkProject("x02")).toBeUndefined();
   });
+
+  it("não resolve x03 (studio-showcase review/unlisted) pelo lookup público", () => {
+    expect(getWorkProject("x03")).toBeUndefined();
+  });
 });
 
 describe("estado público do registry real", () => {
