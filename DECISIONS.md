@@ -177,3 +177,41 @@ Continuam proibidos nesta fase (sem alteração de escopo):
 Motivo:
 
 Checkpoint técnico `41b4e6bec4dcfdb594b93e92fce76109e0a6e683` já continha QA completo (108/108 testes, typecheck, lint, build, registry validation, WebGL QA) sem nenhuma regressão de migração identificada — apenas avisos de console pré-existentes (deprecation do `THREE.Clock`, aviso do Framer Motion sobre reduced-motion) e um warning de precisão de shader não-reprodutível, presente numa única passagem e ausente da rota legada usando o mesmo shader, consistente com variação de compilação do driver e não com uma regressão causada pela rota. Com a confirmação perceptual humana, o segundo Studio Showcase da série está formalmente encerrado, reforçando — agora com uma tecnologia de renderização estruturalmente diferente da do X01 — que a arquitetura registry → `StudioShowcaseBody` → `/work/{slug}/experience` isolada → fronteira `unlisted/review` → dual-run é independente da tecnologia interna de cada showcase. X03 (WebGL + variantes `x03-lab`) fica autorizado para uma futura missão de discovery/pilot separada — não iniciado aqui.
+
+---
+
+## 2026-09-10 — X03 Migration Pilot 001 (V2 — Portfolio System) — PASS / CLOSED
+
+Decisão:
+
+O piloto de migração do X03 (Studio Showcase "Proprio — PL-1", híbrido imagem + WebGL/React Three Fiber) para a arquitetura `/work/{slug}` + `/work/{slug}/experience` foi validado tecnicamente e visualmente pelo Gabriel Studio — Human Director e está **aprovado / encerrado (PASS / CLOSED)**.
+
+Human QA:
+
+PASS. Gabriel (Human Director) comparou diretamente `http://localhost:3000/showcase/x03` (legacy) e `http://localhost:3000/work/x03/experience` (nova rota) e considerou as duas rotas **perceptualmente iguais**.
+
+Aprendizados arquiteturais validados por este piloto:
+
+- A arquitetura provada por X01 (DOM/motion) e X02 (canvas WebGL único) se aplica, sem nenhuma adaptação, a uma terceira classe de experiência: X03 intercala 4 seções baseadas em imagem (Hero, Material/Mechanism, Field Action, Hybrid Return) com 2 seções WebGL/R3F (Machine Signal, Machine Perception) dentro de uma única composição de página — `registry.ts`, `app/(site)/work/[slug]/page.tsx` e `StudioShowcaseBody` não precisaram de nenhuma alteração.
+- Reutilização máxima: `app/(showcase)/work/x03/experience/page.tsx` é um reexport direto (`export { default } from ".../showcase/x03/page"`), zero cópia de JSX — forma ainda mais enxuta que X01 (JSX duplicado) e X02 (wrapper de um componente único), possível porque a página X03 não tem nenhuma lógica dependente de rota.
+- Root-layout isolation preservada: layout independente sob `(showcase)`, sem herdar Navbar/chrome institucional, mesmo padrão de X01/X02.
+- Zero fork da árvore visual: `components/showcase/x03/*` não sofreu nenhuma alteração; as duas rotas montam exatamente os mesmos componentes.
+- Compatibilidade WebGL confirmada: QA automatizado via Playwright/Chromium headless — canvas monta com bounding box não-nulo nas duas rotas (desktop 1440×900, mobile 390×844), zero `pageErrors` em 6 passagens (legacy/new × desktop/mobile/reduced-motion), console idêntico entre as duas rotas (avisos pré-existentes e não-bloqueantes: deprecação do `THREE.Clock`, fallback de software WebGL do ambiente headless, aviso do próprio Framer Motion confirmando que `prefers-reduced-motion` foi detectado e respeitado nas duas rotas).
+- Fronteira de publicação (`isPubliclyVisible`) preservada intacta: `/work/x03` → 404, `/work` continua mostrando apenas os 6 Standard Cases, sitemap não referencia `/work/x03` nem `/work/x03/experience`. `validate:registry` — "Registry válido, 9 projetos, zero issues."
+- Metadata da nova rota mantida deliberadamente idêntica à legada (`robots: { index: false, follow: false }`, sem `canonical`) — segue o precedente X02, não o do X01, porque X03 permanece `review`/`unlisted`. Confirma X02 como o padrão correto daqui pra frente, não uma exceção isolada.
+- Separação total entre produção e X03-Lab confirmada: zero import cruzado em qualquer direção entre `components/showcase/x03/*` e `components/showcase/x03-lab/*`. Nenhum WIP não commitado do worktree `main` (`x03-lab/field-action`, `field/consequence-*`, `continuous-*`, `reentry-*`, `final/`, `opening/`, `return/`) foi lido, promovido ou alterado — X03-Lab permanece inteiramente fora do escopo desta migração.
+- Compatibilidade do contrato Studio Showcase confirmada em três classes de experiência estruturalmente distintas: X01 (DOM/motion), X02 (canvas WebGL único) e X03 (híbrido imagem + dois canvas WebGL independentes) — nenhuma delas exigiu extensão do schema do registry ou branching por slug em código compartilhado.
+
+Continuam proibidos nesta fase (sem alteração de escopo):
+
+- Publicação pública do X03 (`publication`/`visibility` permanecem `review`/`unlisted`).
+- Remoção de `/showcase/x03`.
+- Criação de redirect entre as rotas.
+- Criação de thumbnail/OG image.
+- Integração ao X03-Lab ou promoção do WIP do worktree `main`.
+- Integração à Home/Navbar.
+- Push e deploy.
+
+Motivo:
+
+Checkpoint técnico `7205a90ba624bcb3ad5970642e907fa30861fb4e` já continha QA completo (117/117 testes, typecheck, lint, format, build, registry validation, QA WebGL via browser real) sem nenhuma regressão de migração identificada. Com a confirmação perceptual humana, o terceiro e último Studio Showcase planejado da série está formalmente encerrado. Os três pilotos (X01, X02, X03) validam coletivamente que a arquitetura registry → `StudioShowcaseBody` → `/work/{slug}/experience` isolada → fronteira `unlisted/review` → dual-run é independente da tecnologia interna de cada showcase, encerrando o programa de migração-piloto dos Studio Showcases. Próximo gate (publicação, remoção de legacy, ou novo showcase) depende de decisão do Gabriel Studio — Mentor.
