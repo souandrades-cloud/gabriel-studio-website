@@ -117,3 +117,28 @@ Motivo:
 `/next` é o entry point oficial da Vercel para Next.js App Router (confirmado via `.d.ts` do pacote instalado antes de escrever código — mesma disciplina de nunca assumir uma API sem checar o pacote real). Nenhum outro analytics (GA, Meta Pixel, Hotjar, Clarity) foi adicionado — instrução explícita de usar somente Vercel Web Analytics nesta Sprint, sem cookie próprio nem banner de consentimento artificial.
 
 Localmente (`next start`, fora da infraestrutura da Vercel), o script `/_vercel/insights/script.js` retorna 404 — comportamento esperado: esse endpoint só existe quando servido pela própria Vercel em produção. Confirmado que o `<Analytics />` injeta a tag `<script>` corretamente no HTML; a coleta de dados real só é validável após o deploy.
+
+---
+
+## 2026-09-10 — X01 Migration Pilot 001 (V2 — Portfolio System)
+
+Decisão:
+
+O piloto de migração do X01 (Studio Showcase) para a arquitetura `/work/{slug}` + `/work/{slug}/experience` foi validado tecnicamente e visualmente pelo Gabriel Studio — Human Director e **aprovado como baseline arquitetural** para a migração dos demais Studio Showcases (X02, X03).
+
+Arquitetura validada:
+
+- Legacy: `/showcase/x01` (intocado, permanece funcional).
+- Experience candidate: `/work/x01/experience` — cópia da implementação existente, mesmo padrão de root layout independente (sem Navbar institucional) já usado por `(showcase)` hoje. Único código de produção reaproveitado, nenhuma duplicação de árvore de componentes.
+- Registry: X01 registrado em `data/projects/studio-showcases.ts` como `kind: "studio-showcase"`, `showcaseCode: "X01"`, `publication: "review"`, `visibility: "unlisted"` — mesmo modelo de fronteira pública (`isPubliclyVisible`) já usado pelos Standard Cases, sem nenhum campo novo no schema.
+- `StudioShowcaseBody` criado (`components/portfolio/studio-showcase-body.tsx`) — genérico, mesmo padrão de dispatch por `project.kind` que `StandardCaseBody`, sem branching por slug.
+- Fronteira pública confirmada intacta: `/work/x01` → 404, `/work` mostra apenas os 6 Standard Cases, sitemap não referencia `/work/x01` nem `/work/x01/experience`.
+- Dual-run (legacy + nova rota simultaneamente ativas) permanece a estratégia ativa — nenhum redirect criado ainda.
+
+Decisão específica sobre o self-link do wordmark: `components/showcase/x01/hero.tsx` é componente compartilhado entre a rota legada e a nova (não duplicado); o href do wordmark foi atualizado para `/work/x01/experience` e passou a valer para as duas rotas simultaneamente durante o dual-run. Isso foi avaliado e **aceito deliberadamente** pelo Human Director — duplicar a árvore de componentes só para preservar o href antigo violaria a regra de reutilização máxima do projeto, e o link permanece válido/navegável nos dois casos.
+
+Motivo:
+
+QA técnico (99/99 testes, typecheck, lint, format, registry validation, build, 31 rotas estáticas) e QA visual humano (Hero, narrativa de scroll, tipografia, Balance, Tension, Veil, Pendulum, Object Studies, imagens, macro/material studies, composição e continuidade geral) não encontraram nenhuma regressão. `document.body.innerText` capturado via CDP confirmou conteúdo byte-idêntico entre `/showcase/x01` e `/work/x01/experience`. Com o piloto aprovado, o padrão (`studio-showcases` registry → `StudioShowcaseBody` → `/work/{slug}/experience` isolada → fronteira `unlisted/review` → dual-run) passa a ser reutilizado como arquitetura-padrão para X02 e X03, evitando criar uma segunda arquitetura para cada showcase.
+
+Nenhuma alteração de publicação: X01 continua `review`/`unlisted`. Nenhum redirect criado. Home e Navbar não tocados.

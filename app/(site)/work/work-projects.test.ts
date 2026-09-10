@@ -61,6 +61,10 @@ describe("getWorkProjects", () => {
   it("x01 (studio-showcase review/unlisted) não aparece em /work", () => {
     expect(getWorkProjects(ALL_PROJECTS).map((project) => project.slug)).not.toContain("x01");
   });
+
+  it("x02 (studio-showcase review/unlisted) não aparece em /work", () => {
+    expect(getWorkProjects(ALL_PROJECTS).map((project) => project.slug)).not.toContain("x02");
+  });
 });
 
 describe("fronteira pública de /work", () => {

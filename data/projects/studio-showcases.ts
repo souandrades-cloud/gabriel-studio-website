@@ -52,4 +52,27 @@ export const STUDIO_SHOWCASE_PROJECTS: readonly StudioShowcaseProject[] = [
       ogImage: "/images/x01/x01-a03-alternate.png",
     },
   },
+  {
+    id: "x02",
+    slug: "x02",
+    kind: "studio-showcase",
+    showcaseCode: "X02",
+    title: "X02 — Abyss / The Impossible Structure",
+    shortTitle: "X02 — Abyss",
+    summary:
+      "Portfolio Showcase Series — X02 Abyss. Depth reveals what the surface cannot contain.",
+    lifecycle: "production",
+    publication: "review",
+    visibility: "unlisted",
+    capabilities: ["Narrativa por scroll", "Cena 3D em tempo real"],
+    technologies: ["React Three Fiber", "Three.js", "Framer Motion"],
+    media: [],
+    relations: { relatedSlugs: [] },
+    featured: false,
+    seo: {
+      title: "X02 — Abyss / The Impossible Structure",
+      description:
+        "Portfolio Showcase Series — X02 Abyss. Depth reveals what the surface cannot contain.",
+    },
+  },
 ];

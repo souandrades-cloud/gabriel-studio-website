@@ -48,3 +48,30 @@ describe("STUDIO_SHOWCASE_PROJECTS — x01", () => {
     expect(x01?.seo.description.trim().length).toBeGreaterThan(0);
   });
 });
+
+describe("STUDIO_SHOWCASE_PROJECTS — x02", () => {
+  const x02 = STUDIO_SHOWCASE_PROJECTS.find((p) => p.slug === "x02");
+
+  it("existe e usa kind/showcaseCode corretos", () => {
+    expect(x02?.kind).toBe("studio-showcase");
+    expect(x02?.showcaseCode).toBe("X02");
+  });
+
+  it("permanece review/unlisted nesta gate (não publicado)", () => {
+    expect(x02?.publication).toBe("review");
+    expect(x02?.visibility).toBe("unlisted");
+  });
+
+  it("lifecycle é production — implementação existente já é final, não lab/experiment", () => {
+    expect(x02?.lifecycle).toBe("production");
+  });
+
+  it("media está deliberadamente vazio nesta gate (sem asset de thumbnail real disponível)", () => {
+    expect(x02?.media).toEqual([]);
+  });
+
+  it("possui SEO title/description não vazios", () => {
+    expect(x02?.seo.title.trim().length).toBeGreaterThan(0);
+    expect(x02?.seo.description.trim().length).toBeGreaterThan(0);
+  });
+});
