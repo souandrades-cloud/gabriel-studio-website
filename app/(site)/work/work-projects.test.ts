@@ -47,8 +47,15 @@ describe("getWorkProjects", () => {
     expect(getWorkProjects([])).toEqual([]);
   });
 
-  it("cora é o único standard case atual publicamente elegível", () => {
-    expect(getWorkProjects(ALL_PROJECTS).map((project) => project.slug)).toEqual(["cora"]);
+  it("os seis standard cases estão publicamente elegíveis, em ordem determinística", () => {
+    expect(getWorkProjects(ALL_PROJECTS).map((project) => project.slug)).toEqual([
+      "cora",
+      "toledo-prado",
+      "vao",
+      "lume",
+      "nexo",
+      "vidra",
+    ]);
   });
 });
 

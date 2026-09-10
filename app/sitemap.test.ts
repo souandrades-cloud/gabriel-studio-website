@@ -2,10 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import sitemap from "./sitemap";
 
-const UNPUBLISHED_STANDARD_CASE_SLUGS = ["toledo-prado", "vao", "lume", "nexo", "vidra"];
+const PUBLIC_STANDARD_CASE_SLUGS = ["cora", "toledo-prado", "vao", "lume", "nexo", "vidra"];
 
 describe("sitemap", () => {
-  it("inclui / , /work e /work/cora", () => {
+  it("inclui / e /work", () => {
     const urls = sitemap().map((entry) => entry.url);
 
     expect(
@@ -14,14 +14,21 @@ describe("sitemap", () => {
       ),
     ).toBe(true);
     expect(urls.some((url) => url.endsWith("/work"))).toBe(true);
-    expect(urls.some((url) => url.endsWith("/work/cora"))).toBe(true);
   });
 
-  it("não inclui os standard cases ainda em review/unlisted", () => {
+  it("inclui os seis standard cases publicamente elegíveis", () => {
     const urls = sitemap().map((entry) => entry.url);
 
-    for (const slug of UNPUBLISHED_STANDARD_CASE_SLUGS) {
-      expect(urls.some((url) => url.endsWith(`/work/${slug}`))).toBe(false);
+    for (const slug of PUBLIC_STANDARD_CASE_SLUGS) {
+      expect(urls.some((url) => url.endsWith(`/work/${slug}`))).toBe(true);
+    }
+  });
+
+  it("não inclui nenhuma rota fora da fronteira pública (LAB, showcase, internal)", () => {
+    const urls = sitemap().map((entry) => entry.url);
+
+    for (const forbidden of ["/showcase", "/lab", "/internal"]) {
+      expect(urls.some((url) => url.includes(forbidden))).toBe(false);
     }
   });
 });

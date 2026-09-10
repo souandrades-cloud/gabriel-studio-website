@@ -61,8 +61,8 @@ export const STANDARD_CASE_PROJECTS: readonly StandardCaseProject[] = [
     summary:
       "Identidade visual e landing page demonstrativa para um escritório de advocacia estratégica.",
     lifecycle: "production",
-    publication: "review",
-    visibility: "unlisted",
+    publication: "published",
+    visibility: "public",
     capabilities: ["Tipografia serifada", "Tom institucional"],
     technologies: [],
     media: [
@@ -107,8 +107,8 @@ export const STANDARD_CASE_PROJECTS: readonly StandardCaseProject[] = [
     summary:
       "Identidade visual e landing page demonstrativa para uma curadoria imobiliária fictícia.",
     lifecycle: "production",
-    publication: "review",
-    visibility: "unlisted",
+    publication: "published",
+    visibility: "public",
     capabilities: ["Fotografia full-bleed", "Curadoria imobiliária"],
     technologies: [],
     media: [
@@ -153,8 +153,8 @@ export const STANDARD_CASE_PROJECTS: readonly StandardCaseProject[] = [
     summary:
       "Identidade visual e landing page demonstrativa para um restaurante contemporâneo fictício.",
     lifecycle: "production",
-    publication: "review",
-    visibility: "unlisted",
+    publication: "published",
+    visibility: "public",
     capabilities: ["Composição diagonal", "Fotografia autoral"],
     technologies: [],
     media: [
@@ -199,8 +199,8 @@ export const STANDARD_CASE_PROJECTS: readonly StandardCaseProject[] = [
     summary:
       "Identidade visual e landing page demonstrativa para uma plataforma fictícia de operações internas.",
     lifecycle: "production",
-    publication: "review",
-    visibility: "unlisted",
+    publication: "published",
+    visibility: "public",
     capabilities: ["Interface de produto", "Design B2B"],
     technologies: [],
     media: [
@@ -245,8 +245,8 @@ export const STANDARD_CASE_PROJECTS: readonly StandardCaseProject[] = [
     summary:
       "Identidade visual e landing page demonstrativa para um estúdio boutique de estética facial fictício.",
     lifecycle: "production",
-    publication: "review",
-    visibility: "unlisted",
+    publication: "published",
+    visibility: "public",
     capabilities: ["Fotografia macro", "Estética minimalista"],
     technologies: [],
     media: [

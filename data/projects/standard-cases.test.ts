@@ -36,18 +36,15 @@ describe("STANDARD_CASE_PROJECTS — mídia dos seis standard cases", () => {
 });
 
 describe("STANDARD_CASE_PROJECTS — fronteira de publicação preservada", () => {
-  it("cora é o único standard case publicado e público", () => {
-    const cora = STANDARD_CASE_PROJECTS.find((p) => p.slug === "cora");
-    expect(cora?.publication).toBe("published");
-    expect(cora?.visibility).toBe("public");
+  it.each(ALL_SLUGS)("%s está published/public/production (elegível ao público)", (slug) => {
+    const project = STANDARD_CASE_PROJECTS.find((p) => p.slug === slug);
+    expect(project?.publication).toBe("published");
+    expect(project?.visibility).toBe("public");
+    expect(project?.lifecycle).toBe("production");
   });
 
-  it.each(["toledo-prado", "vao", "lume", "nexo", "vidra"])(
-    "%s permanece em review/unlisted (não publicado por este gate)",
-    (slug) => {
-      const project = STANDARD_CASE_PROJECTS.find((p) => p.slug === slug);
-      expect(project?.publication).toBe("review");
-      expect(project?.visibility).toBe("unlisted");
-    },
-  );
+  it.each(ALL_SLUGS)("%s preserva o disclosure conceitual obrigatório", (slug) => {
+    const project = STANDARD_CASE_PROJECTS.find((p) => p.slug === slug);
+    expect(project?.disclosure.trim().length).toBeGreaterThan(0);
+  });
 });

@@ -3,9 +3,16 @@ import { describe, expect, it } from "vitest";
 import { generateMetadata, generateStaticParams } from "./page";
 
 describe("generateStaticParams", () => {
-  it("inclui cora e exclui os outros cinco standard cases", async () => {
+  it("inclui exatamente os seis standard cases publicamente elegíveis", async () => {
     const params = await generateStaticParams();
-    expect(params).toEqual([{ slug: "cora" }]);
+    expect(params).toEqual([
+      { slug: "cora" },
+      { slug: "toledo-prado" },
+      { slug: "vao" },
+      { slug: "lume" },
+      { slug: "nexo" },
+      { slug: "vidra" },
+    ]);
   });
 });
 
@@ -20,9 +27,9 @@ describe("generateMetadata", () => {
     expect(metadata.alternates?.canonical).toBe("/work/cora");
   });
 
-  it("retorna metadata vazia para um slug não elegível", async () => {
+  it("retorna metadata vazia para um slug inexistente", async () => {
     const metadata = await generateMetadata({
-      params: Promise.resolve({ slug: "vao" }),
+      params: Promise.resolve({ slug: "does-not-exist" }),
       searchParams: Promise.resolve({}),
     });
 
