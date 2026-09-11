@@ -10,8 +10,8 @@ export const STUDIO_SHOWCASE_PROJECTS: readonly StudioShowcaseProject[] = [
     shortTitle: "Tension / 01",
     summary: "Portfolio Showcase Series — Object Studies 001–008.",
     lifecycle: "production",
-    publication: "review",
-    visibility: "unlisted",
+    publication: "published",
+    visibility: "public",
     capabilities: ["Narrativa por scroll", "Composição editorial"],
     technologies: ["GSAP", "ScrollTrigger", "Framer Motion"],
     media: [

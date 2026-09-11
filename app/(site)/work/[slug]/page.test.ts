@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { generateMetadata, generateStaticParams, resolveOgImage } from "./page";
 
 describe("generateStaticParams", () => {
-  it("inclui exatamente os seis standard cases publicamente elegíveis", async () => {
+  it("inclui exatamente os seis standard cases + x01 publicamente elegíveis", async () => {
     const params = await generateStaticParams();
     expect(params).toEqual([
       { slug: "cora" },
@@ -12,12 +12,13 @@ describe("generateStaticParams", () => {
       { slug: "lume" },
       { slug: "nexo" },
       { slug: "vidra" },
+      { slug: "x01" },
     ]);
   });
 
-  it("não inclui x01 (studio-showcase review/unlisted)", async () => {
+  it("inclui x01 (studio-showcase published/public — Publication Pilot 001)", async () => {
     const params = await generateStaticParams();
-    expect(params).not.toContainEqual({ slug: "x01" });
+    expect(params).toContainEqual({ slug: "x01" });
   });
 
   it("não inclui x02 (studio-showcase review/unlisted)", async () => {
@@ -60,6 +61,27 @@ describe("generateMetadata", () => {
     });
 
     expect(metadata).toEqual({});
+  });
+
+  it("x01 (publicado — Publication Pilot 001) usa canonical /work/x01 e não declara noindex", async () => {
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ slug: "x01" }),
+      searchParams: Promise.resolve({}),
+    });
+
+    expect(metadata.alternates?.canonical).toBe("/work/x01");
+    expect(metadata.robots).toBeUndefined();
+  });
+
+  it("x01 usa o asset de OG aprovado com dimensões reais", async () => {
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ slug: "x01" }),
+      searchParams: Promise.resolve({}),
+    });
+
+    expect(metadata.openGraph?.images).toEqual([
+      { url: "/images/x01/x01-a03-alternate.png", width: 1122, height: 1402 },
+    ]);
   });
 });
 
