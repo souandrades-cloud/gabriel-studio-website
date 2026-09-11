@@ -254,3 +254,45 @@ Continuam proibidos nesta fase (sem alteração de escopo):
 Motivo:
 
 Checkpoint técnico `16096cd24bb35a7f74a847d8739602a64cbb58f0` já continha QA completo (121/121 testes, typecheck, lint, format, registry validation, build) sem nenhuma regressão identificada, com fronteira de publicação reconfirmada via checagem HTTP ao vivo. Com a confirmação visual humana dos três contratos de mídia — incluindo a aprovação explícita da decisão de excluir o overlay DOM interativo dos captures do X02 — o Media Gate 001 está formalmente encerrado. Os três Studio Showcases agora possuem `media[]` completo e válido, pré-requisito para qualquer gate futuro de SEO/OG ou de publicação. Próximo gate depende de decisão do Gabriel Studio — Mentor.
+
+---
+
+## 2026-09-11 — X01 Publication Pilot 001 (V2 — Portfolio System) — PASS / CLOSED
+
+Decisão:
+
+X01 (Studio Showcase) foi publicado publicamente através da arquitetura V2 existente — primeiro Studio Showcase a sair do estado `review`/`unlisted` para `published`/`public`. Validado tecnicamente e, em seguida, visualmente pelo Gabriel Studio — Human Director, está **aprovado / encerrado (PASS / CLOSED)**.
+
+Mudança de registro:
+
+Único campo funcional alterado em `data/projects/studio-showcases.ts`: X01 `publication: "review"` → `"published"`, `visibility: "unlisted"` → `"public"`. X02 e X03 não foram tocados — permanecem `review`/`unlisted`. Nenhum enum ou campo novo foi criado no schema (`lib/portfolio/types.ts`); o contrato `isPubliclyVisible` já suportava publicação desde os pilotos de migração.
+
+Nenhum outro arquivo de produção precisou mudar: `/work` (listagem), `/work/[slug]` (resolução, `generateStaticParams`, `generateMetadata`, OG image), `getWorkProject`, `sitemap.ts` e `StudioShowcaseBody` já eram escritos genericamente contra a fronteira de publicação, sem branching por slug ou por `kind`. Apenas fixtures de teste que assumiam o estado antigo da fronteira foram atualizadas.
+
+Resultado técnico (checkpoint `b0f9ee85fa46f8a057a66b125dd1393f5e88503a`):
+
+- Fronteira de publicação resolve exatamente: `/work/x01` → 200, `/work/x02` → 404, `/work/x03` → 404; as três rotas `/work/{slug}/experience` permanecem 200 (alcançáveis tecnicamente ≠ publicadas).
+- `/work` passa a listar os 6 Standard Cases + X01 (7 cards), ordem determinística preservada.
+- `/work/x01` usa `StudioShowcaseBody` sem nenhuma alteração no componente; canonical `/work/x01`, sem `robots` explícito (indexável); OG image usa o asset aprovado (`x01-a03-alternate.png`, 1122×1402, dimensões reais do registry).
+- `/work/x01/experience` mantém `robots: { index: false, follow: false }` — decoupling deliberado entre publicação da entry e indexabilidade da experience, conforme o gate de reconciliação de SEO já aplicado nos pilotos de migração.
+- Sitemap passa a incluir `/work/x01`, mas nunca `/work/x01/experience`; X02/X03 e suas experiences continuam ausentes.
+- Legacy `/showcase/x01` intocado e funcional; dual-run preservado, nenhum redirect criado.
+- 137/137 testes, typecheck, lint, format e `validate:registry` ("9 projetos, zero issues") limpos; build de produção gerando 7 SSG paths sob `/work/[slug]`.
+
+Human QA:
+
+PASS. Gabriel (Human Director) revisou em browser real `/work` e `/work/x01`, incluindo card na grade, thumbnail, título, summary, capabilities, entry editorial, CTA "Ver experiência", integração com header/footer e comportamento visual geral. O tratamento visual atual de X01 dentro da grade `/work` é aceito como **baseline do piloto** — a grade não foi redesenhada.
+
+Continuam proibidos nesta fase (sem alteração de escopo):
+
+- Publicação pública de X02 ou X03 (`publication`/`visibility` permanecem `review`/`unlisted`).
+- Redesign da grade `/work`.
+- Remoção de `/showcase/x01` ou de qualquer rota legacy.
+- Criação de redirects.
+- Alteração das experiences (`/work/{slug}/experience`) ou de assets aprovados.
+- Integração ao X03-Lab.
+- Push e deploy.
+
+Motivo:
+
+QA técnico completo (testes, typecheck, lint, format, registry validation, build, checagem HTTP ao vivo da fronteira de publicação e da metadata) não encontrou nenhuma regressão nos 6 Standard Cases nem no dual-run legacy/nova rota. Com a confirmação visual humana, o primeiro Publication Pilot da série Studio Showcase está formalmente encerrado, provando que a arquitetura registry → fronteira de publicação (`isPubliclyVisible`) → `/work` → `/work/{slug}` → sitemap/SEO, já validada pelos Migration Pilots e pelo Media Gate 001, também suporta publicação real sem exigir nenhuma mudança estrutural — apenas a virada de dois campos no registro. A decisão sobre um eventual tratamento visual "premium" diferenciado para Studio Showcases dentro da grade `/work` permanece **futura** e não bloqueia este piloto. Próximo gate (X02 Publication Pilot, diferenciação visual, ou remoção de legacy) depende de decisão do Gabriel Studio — Mentor.
