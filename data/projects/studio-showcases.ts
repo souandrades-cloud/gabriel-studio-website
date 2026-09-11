@@ -66,7 +66,29 @@ export const STUDIO_SHOWCASE_PROJECTS: readonly StudioShowcaseProject[] = [
     visibility: "unlisted",
     capabilities: ["Narrativa por scroll", "Cena 3D em tempo real"],
     technologies: ["React Three Fiber", "Three.js", "Framer Motion"],
-    media: [],
+    media: [
+      {
+        src: "/images/x02/x02-a001-surface.png",
+        alt: "X02 — Abyss, opening state. A symmetrical hourglass-shaped silhouette of layered translucent panels against a black ground, bisected by a thin vertical line.",
+        role: "thumbnail",
+        width: 1440,
+        height: 900,
+      },
+      {
+        src: "/images/x02/x02-a002-fracture.png",
+        alt: "X02 — Abyss, Fracture state. An angular arrangement of fractured geometric block forms in olive and pale grey, seen from within the 3D scene.",
+        role: "gallery",
+        width: 1440,
+        height: 900,
+      },
+      {
+        src: "/images/x02/x02-a003-resolution.png",
+        alt: "X02 — Abyss, Resolution state. A view upward at three thin vertical pillars crossing a dark angled wall, with a darker rectangular recess below.",
+        role: "gallery",
+        width: 1440,
+        height: 900,
+      },
+    ],
     relations: { relatedSlugs: [] },
     featured: false,
     seo: {
@@ -88,7 +110,36 @@ export const STUDIO_SHOWCASE_PROJECTS: readonly StudioShowcaseProject[] = [
     visibility: "unlisted",
     capabilities: ["Narrativa por scroll", "Composição editorial", "Cena 3D em tempo real"],
     technologies: ["React Three Fiber", "Three.js", "Framer Motion"],
-    media: [],
+    media: [
+      {
+        src: "/images/x03/x03-a001-pl1-master.png",
+        alt: "PL-1 autonomous field robot, three-quarter studio view on a neutral background — four-wheeled articulated legs and an extended robotic arm with gripper, chassis labeled 'PL-1' and 'Proprio'.",
+        role: "thumbnail",
+        width: 1086,
+        height: 1448,
+      },
+      {
+        src: "/images/x03/A-004.png",
+        alt: "Interior mechanism detail of the PL-1 sensor head — a dual-lens camera module, internal heatsink fins, and routed cabling, shown in close-up.",
+        role: "gallery",
+        width: 1086,
+        height: 1448,
+      },
+      {
+        src: "/images/x03/x03-a008-field-commit.png",
+        alt: "PL-1 climbing a concrete curb at an outdoor electrical substation, arm and gripper extended toward an equipment cabinet.",
+        role: "gallery",
+        width: 1448,
+        height: 1086,
+      },
+      {
+        src: "/images/x03/x03-a009-final-signature.png",
+        alt: "PL-1 positioned between concrete walls marked 'B3 Substation Zone' at sunset, arm raised, wet ground reflecting the sky.",
+        role: "gallery",
+        width: 1672,
+        height: 941,
+      },
+    ],
     relations: { relatedSlugs: [] },
     featured: false,
     seo: {

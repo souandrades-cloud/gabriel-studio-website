@@ -66,8 +66,28 @@ describe("STUDIO_SHOWCASE_PROJECTS — x02", () => {
     expect(x02?.lifecycle).toBe("production");
   });
 
-  it("media está deliberadamente vazio nesta gate (sem asset de thumbnail real disponível)", () => {
-    expect(x02?.media).toEqual([]);
+  it("possui exatamente 1 thumbnail e ao menos 1 item gallery", () => {
+    const thumbnails = x02?.media.filter((media) => media.role === "thumbnail") ?? [];
+    const gallery = x02?.media.filter((media) => media.role === "gallery") ?? [];
+
+    expect(thumbnails).toHaveLength(1);
+    expect(gallery.length).toBeGreaterThan(0);
+  });
+
+  it("o conjunto gallery não duplica o thumbnail (src distintos)", () => {
+    const thumbnailSrc = x02?.media.find((media) => media.role === "thumbnail")?.src;
+    const gallerySrcs =
+      x02?.media.filter((media) => media.role === "gallery").map((m) => m.src) ?? [];
+
+    expect(gallerySrcs).not.toContain(thumbnailSrc);
+    expect(new Set(gallerySrcs).size).toBe(gallerySrcs.length);
+  });
+
+  it("cada item de mídia possui width/height reais (> 0)", () => {
+    for (const media of x02?.media ?? []) {
+      expect(media.width ?? 0).toBeGreaterThan(0);
+      expect(media.height ?? 0).toBeGreaterThan(0);
+    }
   });
 
   it("possui SEO title/description não vazios", () => {
@@ -93,8 +113,28 @@ describe("STUDIO_SHOWCASE_PROJECTS — x03", () => {
     expect(x03?.lifecycle).toBe("production");
   });
 
-  it("media está deliberadamente vazio nesta gate (sem thumbnail decidido)", () => {
-    expect(x03?.media).toEqual([]);
+  it("possui exatamente 1 thumbnail e ao menos 1 item gallery", () => {
+    const thumbnails = x03?.media.filter((media) => media.role === "thumbnail") ?? [];
+    const gallery = x03?.media.filter((media) => media.role === "gallery") ?? [];
+
+    expect(thumbnails).toHaveLength(1);
+    expect(gallery.length).toBeGreaterThan(0);
+  });
+
+  it("o conjunto gallery não duplica o thumbnail (src distintos)", () => {
+    const thumbnailSrc = x03?.media.find((media) => media.role === "thumbnail")?.src;
+    const gallerySrcs =
+      x03?.media.filter((media) => media.role === "gallery").map((m) => m.src) ?? [];
+
+    expect(gallerySrcs).not.toContain(thumbnailSrc);
+    expect(new Set(gallerySrcs).size).toBe(gallerySrcs.length);
+  });
+
+  it("cada item de mídia possui width/height reais (> 0)", () => {
+    for (const media of x03?.media ?? []) {
+      expect(media.width ?? 0).toBeGreaterThan(0);
+      expect(media.height ?? 0).toBeGreaterThan(0);
+    }
   });
 
   it("possui SEO title/description não vazios", () => {
