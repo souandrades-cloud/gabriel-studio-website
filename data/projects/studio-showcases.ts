@@ -62,8 +62,8 @@ export const STUDIO_SHOWCASE_PROJECTS: readonly StudioShowcaseProject[] = [
     summary:
       "Portfolio Showcase Series — X02 Abyss. Depth reveals what the surface cannot contain.",
     lifecycle: "production",
-    publication: "review",
-    visibility: "unlisted",
+    publication: "published",
+    visibility: "public",
     capabilities: ["Narrativa por scroll", "Cena 3D em tempo real"],
     technologies: ["React Three Fiber", "Three.js", "Framer Motion"],
     media: [

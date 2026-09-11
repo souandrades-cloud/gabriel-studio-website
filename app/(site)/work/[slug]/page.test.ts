@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { generateMetadata, generateStaticParams, resolveOgImage } from "./page";
 
 describe("generateStaticParams", () => {
-  it("inclui exatamente os seis standard cases + x01 publicamente elegíveis", async () => {
+  it("inclui exatamente os seis standard cases + x01 + x02 publicamente elegíveis", async () => {
     const params = await generateStaticParams();
     expect(params).toEqual([
       { slug: "cora" },
@@ -13,6 +13,7 @@ describe("generateStaticParams", () => {
       { slug: "nexo" },
       { slug: "vidra" },
       { slug: "x01" },
+      { slug: "x02" },
     ]);
   });
 
@@ -21,9 +22,9 @@ describe("generateStaticParams", () => {
     expect(params).toContainEqual({ slug: "x01" });
   });
 
-  it("não inclui x02 (studio-showcase review/unlisted)", async () => {
+  it("inclui x02 (studio-showcase published/public — Publication Pilot 002)", async () => {
     const params = await generateStaticParams();
-    expect(params).not.toContainEqual({ slug: "x02" });
+    expect(params).toContainEqual({ slug: "x02" });
   });
 
   it("não inclui x03 (studio-showcase review/unlisted)", async () => {
@@ -81,6 +82,27 @@ describe("generateMetadata", () => {
 
     expect(metadata.openGraph?.images).toEqual([
       { url: "/images/x01/x01-a03-alternate.png", width: 1122, height: 1402 },
+    ]);
+  });
+
+  it("x02 (publicado — Publication Pilot 002) usa canonical /work/x02 e não declara noindex", async () => {
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ slug: "x02" }),
+      searchParams: Promise.resolve({}),
+    });
+
+    expect(metadata.alternates?.canonical).toBe("/work/x02");
+    expect(metadata.robots).toBeUndefined();
+  });
+
+  it("x02 usa o asset de OG aprovado com dimensões reais", async () => {
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ slug: "x02" }),
+      searchParams: Promise.resolve({}),
+    });
+
+    expect(metadata.openGraph?.images).toEqual([
+      { url: "/images/x02/x02-a001-surface.png", width: 1440, height: 900 },
     ]);
   });
 });

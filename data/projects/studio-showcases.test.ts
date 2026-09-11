@@ -57,9 +57,9 @@ describe("STUDIO_SHOWCASE_PROJECTS — x02", () => {
     expect(x02?.showcaseCode).toBe("X02");
   });
 
-  it("permanece review/unlisted nesta gate (não publicado)", () => {
-    expect(x02?.publication).toBe("review");
-    expect(x02?.visibility).toBe("unlisted");
+  it("está publicado — Publication Pilot 002 (X02 Studio Showcase)", () => {
+    expect(x02?.publication).toBe("published");
+    expect(x02?.visibility).toBe("public");
   });
 
   it("lifecycle é production — implementação existente já é final, não lab/experiment", () => {
