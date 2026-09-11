@@ -215,3 +215,42 @@ Continuam proibidos nesta fase (sem alteração de escopo):
 Motivo:
 
 Checkpoint técnico `7205a90ba624bcb3ad5970642e907fa30861fb4e` já continha QA completo (117/117 testes, typecheck, lint, format, build, registry validation, QA WebGL via browser real) sem nenhuma regressão de migração identificada. Com a confirmação perceptual humana, o terceiro e último Studio Showcase planejado da série está formalmente encerrado. Os três pilotos (X01, X02, X03) validam coletivamente que a arquitetura registry → `StudioShowcaseBody` → `/work/{slug}/experience` isolada → fronteira `unlisted/review` → dual-run é independente da tecnologia interna de cada showcase, encerrando o programa de migração-piloto dos Studio Showcases. Próximo gate (publicação, remoção de legacy, ou novo showcase) depende de decisão do Gabriel Studio — Mentor.
+
+---
+
+## 2026-09-10 — Studio Showcase Media Gate 001 (V2 — Portfolio System) — PASS / CLOSED
+
+Decisão:
+
+A curadoria e aquisição de mídia dos três Studio Showcases (X01, X02, X03) foi validada visualmente pelo Gabriel Studio — Human Director e está **aprovada / encerrada (PASS / CLOSED)**.
+
+Human Media QA:
+
+PASS nos três. Gabriel (Human Director) revisou o contrato de mídia final do checkpoint `16096cd24bb35a7f74a847d8739602a64cbb58f0`:
+
+- **X01** → PASS — thumbnail atual (Balance) + gallery Veil/Pendulum/Pressure, sem nenhuma alteração de registry.
+- **X02** → PASS — Surface (thumbnail) + Fracture/Resolution (gallery), **incluindo explicitamente a decisão curatorial de usar os captures sem o overlay DOM de headline/tagline/caption** (mantendo apenas os elementos visuais/composicionais da cena, como o `x02-seam-light`/`x02-panel` da cortina Surface).
+- **X03** → PASS — PL-1 Master (thumbnail) + A-004/Field Commit/Final Signature (gallery).
+
+Media contract final aprovado (sem alteração desde o checkpoint anterior):
+
+- X01: `x01-a03-alternate.png` (thumbnail) + `X01-A04/A05/A06.png` (gallery) — inalterado; `x01-a01-monumental.png` e `x01-a02-isolated.png` permanecem fora do registry, decisão já registrada no gate anterior.
+- X02: `x02-a001-surface.png` (thumbnail) + `x02-a002-fracture.png`/`x02-a003-resolution.png` (gallery) — 3 capturas determinísticas novas, aprovadas na forma atual.
+- X03: `x03-a001-pl1-master.png` (thumbnail) + `A-004.png`/`x03-a008-field-commit.png`/`x03-a009-final-signature.png` (gallery) — wiring de assets já existentes.
+
+Nenhuma regeneração ou recuradoria foi solicitada — o conjunto aprovado é definitivo até um futuro gate que o reabra explicitamente.
+
+Fronteira de publicação (`isPubliclyVisible`) permanece intacta: `/work/x01`, `/work/x02`, `/work/x03` → 404; `/work/x01/experience`, `/work/x02/experience`, `/work/x03/experience` → 200; `/work` continua mostrando apenas os 6 Standard Cases; sitemap não referencia nenhum dos três showcases. Nenhum showcase foi publicado — `publication`/`visibility` permanecem `review`/`unlisted` nos três.
+
+Continuam proibidos nesta fase (sem alteração de escopo):
+
+- Publicação pública de X01/X02/X03.
+- Alteração de `publication`/`visibility`.
+- SEO Gate (canonical, `robots`, OG image) — permanece um gate futuro separado.
+- Modificação de `StudioShowcaseBody`, `StandardCaseBody` ou `WorkProjectCard`.
+- Remoção de legacy routes ou criação de redirects.
+- Push e deploy.
+
+Motivo:
+
+Checkpoint técnico `16096cd24bb35a7f74a847d8739602a64cbb58f0` já continha QA completo (121/121 testes, typecheck, lint, format, registry validation, build) sem nenhuma regressão identificada, com fronteira de publicação reconfirmada via checagem HTTP ao vivo. Com a confirmação visual humana dos três contratos de mídia — incluindo a aprovação explícita da decisão de excluir o overlay DOM interativo dos captures do X02 — o Media Gate 001 está formalmente encerrado. Os três Studio Showcases agora possuem `media[]` completo e válido, pré-requisito para qualquer gate futuro de SEO/OG ou de publicação. Próximo gate depende de decisão do Gabriel Studio — Mentor.
