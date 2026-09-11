@@ -28,13 +28,12 @@ const ibmPlexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "TENSION / 01 — Archive of Unstable Objects",
   description: "Portfolio Showcase Series — Object Studies 001–008.",
-  // Experience isolada: não indexar diretamente (o Project Entry em /work/x01
-  // é o canonical público), mas seguir os links — mesmo padrão do restante
-  // do site (ver Discovery, Trail H).
-  robots: { index: false, follow: true },
-  alternates: {
-    canonical: "/work/x01",
-  },
+  // SEO + Metadata Reconciliation 001: normalizado para o mesmo padrão de
+  // X02/X03 — `/work/x01` (o Project Entry) ainda não está publicado
+  // (`publication:"review"`), então um `canonical` apontando para uma rota
+  // que hoje retorna 404 era prematuro. `follow:false`, sem `alternates`,
+  // até a entry ser publicada.
+  robots: { index: false, follow: false },
 };
 
 export default function X01ExperienceLayout({ children }: LayoutProps<"/work/x01/experience">) {

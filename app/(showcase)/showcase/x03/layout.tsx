@@ -29,8 +29,11 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: "Proprio — PL-1 / Autonomous Field Unit",
+  // SEO + Metadata Reconciliation 001: alinhado a data/projects/studio-showcases.ts
+  // (`summary`/`seo.description`) — divergia por uma cláusula extra ("X03
+  // Proprio.") não presente no registry, a fonte de verdade do Project domain.
   description:
-    "Portfolio Showcase Series — X03 Proprio. PL-1, an autonomous field robotics unit for Physical AI.",
+    "Portfolio Showcase Series — PL-1, an autonomous field robotics unit for Physical AI.",
   robots: { index: false, follow: false },
 };
 

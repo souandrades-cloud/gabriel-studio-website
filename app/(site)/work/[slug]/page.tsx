@@ -5,12 +5,37 @@ import { StandardCaseBody } from "@/components/portfolio/standard-case-body";
 import { StudioShowcaseBody } from "@/components/portfolio/studio-showcase-body";
 import { Footer } from "@/components/sections/footer";
 import { getProjectEntryPath } from "@/lib/portfolio/paths";
+import type { ProjectMedia, ProjectSEO } from "@/lib/portfolio/types";
 
 import { getWorkProjects } from "../work-projects";
 import { getWorkProject } from "./get-work-project";
 
 export function generateStaticParams() {
   return getWorkProjects().map((project) => ({ slug: project.slug }));
+}
+
+/**
+ * Resolve o OG image a partir do `seo.ogImage` + a entrada de `media`
+ * correspondente (mesmo `src`) — usa a largura/altura reais do asset em vez
+ * de assumir uma dimensão fixa. Quando o `media` correspondente não declara
+ * width/height (caso de todos os Standard Cases hoje), omite as dimensões em
+ * vez de reportar um valor incorreto — plataformas de OG inferem do próprio
+ * arquivo de imagem nesse caso.
+ */
+export function resolveOgImage(project: {
+  seo: ProjectSEO;
+  media: readonly ProjectMedia[];
+}): { url: string; width?: number; height?: number } | undefined {
+  if (!project.seo.ogImage) {
+    return undefined;
+  }
+
+  const match = project.media.find((media) => media.src === project.seo.ogImage);
+
+  return {
+    url: project.seo.ogImage,
+    ...(match?.width && match?.height ? { width: match.width, height: match.height } : {}),
+  };
 }
 
 export async function generateMetadata(props: PageProps<"/work/[slug]">): Promise<Metadata> {
@@ -22,6 +47,7 @@ export async function generateMetadata(props: PageProps<"/work/[slug]">): Promis
   }
 
   const canonical = getProjectEntryPath(project.slug);
+  const ogImage = resolveOgImage(project);
 
   return {
     title: `${project.seo.title} · Gabriel Studio`,
@@ -34,9 +60,7 @@ export async function generateMetadata(props: PageProps<"/work/[slug]">): Promis
       description: project.seo.description,
       url: canonical,
       siteName: "Gabriel Studio",
-      images: project.seo.ogImage
-        ? [{ url: project.seo.ogImage, width: 1200, height: 630 }]
-        : undefined,
+      images: ogImage ? [ogImage] : undefined,
       locale: "pt_BR",
       type: "website",
     },

@@ -95,6 +95,7 @@ export const STUDIO_SHOWCASE_PROJECTS: readonly StudioShowcaseProject[] = [
       title: "X02 — Abyss / The Impossible Structure",
       description:
         "Portfolio Showcase Series — X02 Abyss. Depth reveals what the surface cannot contain.",
+      ogImage: "/images/x02/x02-a001-surface.png",
     },
   },
   {
@@ -146,6 +147,7 @@ export const STUDIO_SHOWCASE_PROJECTS: readonly StudioShowcaseProject[] = [
       title: "Proprio — PL-1 / Autonomous Field Unit",
       description:
         "Portfolio Showcase Series — PL-1, an autonomous field robotics unit for Physical AI.",
+      ogImage: "/images/x03/x03-a001-pl1-master.png",
     },
   },
 ];
