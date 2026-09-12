@@ -28,17 +28,18 @@ describe("getWorkProject", () => {
     expect(getWorkProject("x02")?.slug).toBe("x02");
   });
 
-  it("não resolve x03 (studio-showcase review/unlisted) pelo lookup público", () => {
-    expect(getWorkProject("x03")).toBeUndefined();
+  it("resolve x03 (studio-showcase published/public) pelo lookup público — Publication Pilot 003", () => {
+    expect(getWorkProject("x03")?.slug).toBe("x03");
   });
 });
 
 describe("estado público do registry real", () => {
-  it("os seis standard cases + x01 + x02 são publicamente elegíveis hoje", () => {
+  it("os seis standard cases + x01 + x02 + x03 são publicamente elegíveis hoje", () => {
     expect(getPublishedProjects(ALL_PROJECTS).map((project) => project.slug)).toEqual([
       ...PUBLIC_STANDARD_CASE_SLUGS,
       "x01",
       "x02",
+      "x03",
     ]);
   });
 });

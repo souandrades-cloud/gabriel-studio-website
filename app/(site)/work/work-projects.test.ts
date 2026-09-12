@@ -47,7 +47,7 @@ describe("getWorkProjects", () => {
     expect(getWorkProjects([])).toEqual([]);
   });
 
-  it("os seis standard cases + x01 + x02 (publicados) estão publicamente elegíveis, em ordem determinística", () => {
+  it("os seis standard cases + x01 + x02 + x03 (publicados) estão publicamente elegíveis, em ordem determinística", () => {
     expect(getWorkProjects(ALL_PROJECTS).map((project) => project.slug)).toEqual([
       "cora",
       "toledo-prado",
@@ -57,6 +57,7 @@ describe("getWorkProjects", () => {
       "vidra",
       "x01",
       "x02",
+      "x03",
     ]);
   });
 
@@ -68,8 +69,8 @@ describe("getWorkProjects", () => {
     expect(getWorkProjects(ALL_PROJECTS).map((project) => project.slug)).toContain("x02");
   });
 
-  it("x03 (studio-showcase review/unlisted) não aparece em /work", () => {
-    expect(getWorkProjects(ALL_PROJECTS).map((project) => project.slug)).not.toContain("x03");
+  it("x03 (studio-showcase published/public) aparece em /work — Publication Pilot 003", () => {
+    expect(getWorkProjects(ALL_PROJECTS).map((project) => project.slug)).toContain("x03");
   });
 });
 

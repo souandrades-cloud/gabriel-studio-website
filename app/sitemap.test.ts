@@ -46,10 +46,10 @@ describe("sitemap", () => {
     expect(urls.some((url) => url.includes("/work/x02/experience"))).toBe(false);
   });
 
-  it("não inclui /work/x03 (studio-showcase review/unlisted) nem /work/x03/experience", () => {
+  it("inclui /work/x03 (studio-showcase published/public — Publication Pilot 003) mas não /work/x03/experience", () => {
     const urls = sitemap().map((entry) => entry.url);
 
-    expect(urls.some((url) => url.endsWith("/work/x03"))).toBe(false);
+    expect(urls.some((url) => url.endsWith("/work/x03"))).toBe(true);
     expect(urls.some((url) => url.includes("/work/x03/experience"))).toBe(false);
   });
 });

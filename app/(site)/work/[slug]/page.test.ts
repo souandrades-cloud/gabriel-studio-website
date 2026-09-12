@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { generateMetadata, generateStaticParams, resolveOgImage } from "./page";
 
 describe("generateStaticParams", () => {
-  it("inclui exatamente os seis standard cases + x01 + x02 publicamente elegíveis", async () => {
+  it("inclui exatamente os seis standard cases + x01 + x02 + x03 publicamente elegíveis", async () => {
     const params = await generateStaticParams();
     expect(params).toEqual([
       { slug: "cora" },
@@ -14,6 +14,7 @@ describe("generateStaticParams", () => {
       { slug: "vidra" },
       { slug: "x01" },
       { slug: "x02" },
+      { slug: "x03" },
     ]);
   });
 
@@ -27,9 +28,9 @@ describe("generateStaticParams", () => {
     expect(params).toContainEqual({ slug: "x02" });
   });
 
-  it("não inclui x03 (studio-showcase review/unlisted)", async () => {
+  it("inclui x03 (studio-showcase published/public — Publication Pilot 003)", async () => {
     const params = await generateStaticParams();
-    expect(params).not.toContainEqual({ slug: "x03" });
+    expect(params).toContainEqual({ slug: "x03" });
   });
 });
 
@@ -103,6 +104,27 @@ describe("generateMetadata", () => {
 
     expect(metadata.openGraph?.images).toEqual([
       { url: "/images/x02/x02-a001-surface.png", width: 1440, height: 900 },
+    ]);
+  });
+
+  it("x03 (publicado — Publication Pilot 003) usa canonical /work/x03 e não declara noindex", async () => {
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ slug: "x03" }),
+      searchParams: Promise.resolve({}),
+    });
+
+    expect(metadata.alternates?.canonical).toBe("/work/x03");
+    expect(metadata.robots).toBeUndefined();
+  });
+
+  it("x03 usa o asset de OG aprovado com dimensões reais", async () => {
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ slug: "x03" }),
+      searchParams: Promise.resolve({}),
+    });
+
+    expect(metadata.openGraph?.images).toEqual([
+      { url: "/images/x03/x03-a001-pl1-master.png", width: 1086, height: 1448 },
     ]);
   });
 });

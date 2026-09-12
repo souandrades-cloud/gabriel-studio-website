@@ -107,8 +107,8 @@ export const STUDIO_SHOWCASE_PROJECTS: readonly StudioShowcaseProject[] = [
     shortTitle: "Proprio — PL-1",
     summary: "Portfolio Showcase Series — PL-1, an autonomous field robotics unit for Physical AI.",
     lifecycle: "production",
-    publication: "review",
-    visibility: "unlisted",
+    publication: "published",
+    visibility: "public",
     capabilities: ["Narrativa por scroll", "Composição editorial", "Cena 3D em tempo real"],
     technologies: ["React Three Fiber", "Three.js", "Framer Motion"],
     media: [
