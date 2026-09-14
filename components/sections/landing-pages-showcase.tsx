@@ -44,6 +44,14 @@ interface CaseStudy {
   image?: string;
   /** URL da demo real, quando existir. Sem URL = sem CTA de link externo. */
   url?: string;
+  /**
+   * Composição curada do screenshot (Gate: O2 PRODUCTION IMPLEMENTATION 001,
+   * técnica validada em `/visual-enhancement-lab/o2`, decisão humana
+   * congelada). Ausente = tratamento baseline (`object-cover object-top`,
+   * sem transform) — a curadoria é deliberada por case, não uma regra
+   * universal de crop.
+   */
+  crop?: { scale: number; origin: string };
 }
 
 const CASES: CaseStudy[] = [
@@ -55,6 +63,7 @@ const CASES: CaseStudy[] = [
     tags: ["Identidade editorial", "UI de agendamento"],
     image: "/images/projects/landing-pages/lp-clinica-cora.png",
     url: "https://portfolio-lp-clinica.vercel.app",
+    crop: { scale: 2.4, origin: "67% 56%" },
   },
   {
     icon: Scale,
@@ -83,6 +92,7 @@ const CASES: CaseStudy[] = [
     tags: ["Composição diagonal", "Fotografia autoral"],
     image: "/images/projects/landing-pages/lp-restaurante-lume.png",
     url: "https://portfolio-lp-restaurante.vercel.app",
+    crop: { scale: 1.6, origin: "59% 37%" },
   },
   {
     icon: Layers,
@@ -103,6 +113,7 @@ const CASES: CaseStudy[] = [
     tags: ["Fotografia macro", "Estética minimalista"],
     image: "/images/projects/landing-pages/lp-estetica-vidra.png",
     url: "https://portfolio-lp-estetica.vercel.app",
+    crop: { scale: 2.3, origin: "78% 45%" },
   },
 ];
 
@@ -341,7 +352,12 @@ function LandingPagesShowcase() {
                           alt={`Prévia da landing page demonstrativa — ${active.title}`}
                           fill
                           sizes="(min-width: 1024px) 55vw, 100vw"
-                          className="object-cover object-top"
+                          className={cn("object-cover", !active.crop && "object-top")}
+                          style={
+                            active.crop
+                              ? { transform: `scale(${active.crop.scale})`, transformOrigin: active.crop.origin }
+                              : undefined
+                          }
                           priority={index === 0}
                         />
                       ) : (
