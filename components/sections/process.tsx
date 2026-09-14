@@ -1,12 +1,12 @@
 "use client";
 
 import { MotionConfig, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import Image from "next/image";
 import { useRef } from "react";
 
 import { AmbientGlow } from "@/components/shared/ambient-glow";
 import { EdgeFade } from "@/components/shared/edge-fade";
 import { GrainTexture } from "@/components/shared/grain-texture";
+import { ProceduralVisual } from "@/components/shared/procedural-visual";
 import { TechGrid } from "@/components/shared/tech-grid";
 import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/ui/heading";
@@ -99,18 +99,17 @@ function Process() {
             style={{ y: imageParallax }}
             className="border-border relative aspect-[3/2] w-full overflow-hidden rounded-3xl border shadow-[0_30px_80px_-30px_rgba(34,181,115,0.25)]"
           >
-            <Image
-              src="/images/013-processo.png"
-              alt=""
-              aria-hidden="true"
-              fill
-              sizes="(min-width: 1024px) 45vw, 100vw"
-              className="object-cover"
-            />
+            <ProceduralVisual variant="flow" />
             {/* Cantos técnicos: marcam a imagem como artefato do sistema em vez
                 de foto solta numa moldura — sem texto novo, só geometria. */}
-            <div aria-hidden="true" className="border-brand/40 absolute top-4 left-4 size-5 border-t-2 border-l-2" />
-            <div aria-hidden="true" className="border-brand/40 absolute right-4 bottom-4 size-5 border-r-2 border-b-2" />
+            <div
+              aria-hidden="true"
+              className="border-brand/40 absolute top-4 left-4 size-5 border-t-2 border-l-2"
+            />
+            <div
+              aria-hidden="true"
+              className="border-brand/40 absolute right-4 bottom-4 size-5 border-r-2 border-b-2"
+            />
           </motion.div>
         </div>
 
@@ -152,14 +151,26 @@ function Process() {
                 aria-hidden="true"
                 className="bg-brand pointer-events-none absolute z-10 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0 blur-[0.5px] lg:hidden"
                 animate={{ top: ["1.25rem", "calc(100% - 1.25rem)"], opacity: [0, 0.35, 0.35, 0] }}
-                transition={{ duration: 3.2, repeat: Infinity, repeatDelay: 4.5, delay: 2, ease: "easeInOut" }}
+                transition={{
+                  duration: 3.2,
+                  repeat: Infinity,
+                  repeatDelay: 4.5,
+                  delay: 2,
+                  ease: "easeInOut",
+                }}
                 style={{ left: "1.25rem" }}
               />
               <motion.span
                 aria-hidden="true"
                 className="bg-brand pointer-events-none absolute z-10 hidden size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0 blur-[0.5px] lg:block"
                 animate={{ left: ["0%", "100%"], opacity: [0, 0.35, 0.35, 0] }}
-                transition={{ duration: 3.2, repeat: Infinity, repeatDelay: 4.5, delay: 2, ease: "easeInOut" }}
+                transition={{
+                  duration: 3.2,
+                  repeat: Infinity,
+                  repeatDelay: 4.5,
+                  delay: 2,
+                  ease: "easeInOut",
+                }}
                 style={{ top: "1.25rem" }}
               />
             </>
@@ -175,7 +186,7 @@ function Process() {
               variants={SCALE_IN}
               className="group relative flex items-start gap-4 lg:flex-1 lg:flex-col lg:items-center lg:text-center"
             >
-              <span className="border-brand/30 bg-background text-brand relative z-10 flex size-11 shrink-0 items-center justify-center rounded-full border text-base font-semibold transition-all duration-300 group-hover:border-brand group-hover:scale-110 group-hover:shadow-[0_0_0_5px_rgba(34,181,115,0.12)]">
+              <span className="border-brand/30 bg-background text-brand group-hover:border-brand relative z-10 flex size-11 shrink-0 items-center justify-center rounded-full border text-base font-semibold transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_0_5px_rgba(34,181,115,0.12)]">
                 {step.number}
               </span>
               <div className="lg:mt-2">

@@ -1,11 +1,11 @@
 "use client";
 
 import { MotionConfig, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import Image from "next/image";
 import { useRef, useState } from "react";
 
 import { AmbientGlow } from "@/components/shared/ambient-glow";
 import { EdgeFade } from "@/components/shared/edge-fade";
+import { ProceduralVisual } from "@/components/shared/procedural-visual";
 import { TechGrid } from "@/components/shared/tech-grid";
 import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/ui/heading";
@@ -100,7 +100,10 @@ function Differentials() {
             fica mais perceptível sobre claro à mesma opacidade. */}
         <TechGrid className="-z-10 opacity-[0.035]" />
 
-        <div ref={sectionRef} className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
+        <div
+          ref={sectionRef}
+          className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16"
+        >
           <div>
             <Badge variant="outline" className="tracking-wide uppercase">
               Diferenciais
@@ -121,7 +124,11 @@ function Differentials() {
               style={{ opacity: glowOpacity }}
               className="pointer-events-none absolute -inset-8 -z-10"
             >
-              <AmbientGlow className="inset-0 rounded-[3rem] opacity-100" amplitude={12} duration={19} />
+              <AmbientGlow
+                className="inset-0 rounded-[3rem] opacity-100"
+                amplitude={12}
+                duration={19}
+              />
             </motion.div>
             <motion.div
               initial={{ opacity: 0, scale: 0.97 }}
@@ -133,14 +140,7 @@ function Differentials() {
                 activeIndex !== null ? "border-brand/40" : "border-border",
               )}
             >
-              <Image
-                src="/images/014-diferenciais.png"
-                alt=""
-                aria-hidden="true"
-                fill
-                sizes="(min-width: 1024px) 45vw, 100vw"
-                className="object-cover"
-              />
+              <ProceduralVisual variant="signal" />
             </motion.div>
             <div
               aria-hidden="true"
@@ -170,7 +170,7 @@ function Differentials() {
               onMouseLeave={() => setActiveIndex(null)}
               onFocus={() => setActiveIndex(index)}
               onBlur={() => setActiveIndex(null)}
-              className="group border-border hover:bg-muted/50 focus-visible:bg-muted/50 flex flex-col gap-2 border-r border-b px-6 py-8 outline-none transition-colors duration-300 focus-visible:ring-3 focus-visible:ring-brand/50 focus-visible:ring-inset sm:px-8"
+              className="group border-border hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:ring-brand/50 flex flex-col gap-2 border-r border-b px-6 py-8 transition-colors duration-300 outline-none focus-visible:ring-3 focus-visible:ring-inset sm:px-8"
             >
               <motion.span
                 initial="hidden"

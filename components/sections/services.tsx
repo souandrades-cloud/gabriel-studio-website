@@ -2,11 +2,11 @@
 
 import { BrainCircuit, Globe, Rocket, Workflow, type LucideIcon } from "lucide-react";
 import { MotionConfig, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import Image from "next/image";
 import { useRef, type PointerEvent } from "react";
 
 import { AmbientGlow } from "@/components/shared/ambient-glow";
 import { EdgeFade } from "@/components/shared/edge-fade";
+import { ProceduralVisual } from "@/components/shared/procedural-visual";
 import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/ui/heading";
 import { Section } from "@/components/ui/section";
@@ -135,23 +135,26 @@ function Services() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="pointer-events-none absolute -inset-8 -z-10"
             >
-              <AmbientGlow className="inset-0 rounded-[3rem] opacity-70" amplitude={14} duration={17} />
+              <AmbientGlow
+                className="inset-0 rounded-[3rem] opacity-70"
+                amplitude={14}
+                duration={17}
+              />
             </motion.div>
             <motion.div
               ref={imageRef}
               style={{ y: imageParallax }}
               className="border-border relative aspect-[3/2] w-full overflow-hidden rounded-3xl border shadow-[0_30px_80px_-30px_rgba(34,181,115,0.2)]"
             >
-              <Image
-                src="/images/012-servicos.png"
-                alt=""
+              <ProceduralVisual variant="modules" />
+              <div
                 aria-hidden="true"
-                fill
-                sizes="(min-width: 1024px) 45vw, 100vw"
-                className="object-cover"
+                className="border-brand/40 absolute top-4 left-4 size-5 border-t-2 border-l-2"
               />
-              <div aria-hidden="true" className="border-brand/40 absolute top-4 left-4 size-5 border-t-2 border-l-2" />
-              <div aria-hidden="true" className="border-brand/40 absolute right-4 bottom-4 size-5 border-r-2 border-b-2" />
+              <div
+                aria-hidden="true"
+                className="border-brand/40 absolute right-4 bottom-4 size-5 border-r-2 border-b-2"
+              />
             </motion.div>
           </motion.div>
         </div>
