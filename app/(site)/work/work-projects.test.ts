@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import { ALL_PROJECTS } from "@/data/projects/registry";
 import type { StandardCaseProject } from "@/lib/portfolio/types";
 
-import { getWorkProjects } from "./work-projects";
+import { getShowcaseProjects, getStandardCaseProjects, getWorkProjects } from "./work-projects";
 
 function buildCase(overrides: Partial<StandardCaseProject> = {}): StandardCaseProject {
   return {
@@ -71,6 +71,55 @@ describe("getWorkProjects", () => {
 
   it("x03 (studio-showcase published/public) aparece em /work — Publication Pilot 003", () => {
     expect(getWorkProjects(ALL_PROJECTS).map((project) => project.slug)).toContain("x03");
+  });
+});
+
+describe("getShowcaseProjects", () => {
+  it("retorna exatamente x01, x02, x03, em ordem determinística (Featured Strip)", () => {
+    expect(getShowcaseProjects(ALL_PROJECTS).map((project) => project.slug)).toEqual([
+      "x01",
+      "x02",
+      "x03",
+    ]);
+  });
+
+  it("todo item retornado tem kind studio-showcase", () => {
+    for (const project of getShowcaseProjects(ALL_PROJECTS)) {
+      expect(project.kind).toBe("studio-showcase");
+    }
+  });
+
+  it("retorna array vazio quando nenhum showcase está publicado", () => {
+    const onlyCase = buildCase({ slug: "public" });
+    expect(getShowcaseProjects([onlyCase])).toEqual([]);
+  });
+});
+
+describe("getStandardCaseProjects", () => {
+  it("retorna exatamente os seis standard cases publicados, em ordem determinística (grid regular)", () => {
+    expect(getStandardCaseProjects(ALL_PROJECTS).map((project) => project.slug)).toEqual([
+      "cora",
+      "toledo-prado",
+      "vao",
+      "lume",
+      "nexo",
+      "vidra",
+    ]);
+  });
+
+  it("todo item retornado tem kind standard-case", () => {
+    for (const project of getStandardCaseProjects(ALL_PROJECTS)) {
+      expect(project.kind).toBe("standard-case");
+    }
+  });
+
+  it("getShowcaseProjects + getStandardCaseProjects juntos reconstroem getWorkProjects, sem perder nem duplicar projeto", () => {
+    const all = getWorkProjects(ALL_PROJECTS).map((project) => project.slug);
+    const split = [
+      ...getStandardCaseProjects(ALL_PROJECTS),
+      ...getShowcaseProjects(ALL_PROJECTS),
+    ].map((project) => project.slug);
+    expect(split.sort()).toEqual([...all].sort());
   });
 });
 

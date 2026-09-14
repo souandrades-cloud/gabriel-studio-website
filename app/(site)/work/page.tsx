@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 
+import { ShowcaseStripCard } from "@/components/portfolio/showcase-strip-card";
 import { WorkProjectCard } from "@/components/portfolio/work-project-card";
 import { Footer } from "@/components/sections/footer";
 import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/ui/heading";
 import { Section } from "@/components/ui/section";
 
-import { getWorkProjects } from "./work-projects";
+import { getShowcaseProjects, getStandardCaseProjects, getWorkProjects } from "./work-projects";
 
 const TITLE = "Projetos";
 const DESCRIPTION =
@@ -37,6 +38,8 @@ export const metadata: Metadata = {
 
 export default function WorkPage() {
   const projects = getWorkProjects();
+  const showcases = getShowcaseProjects(projects);
+  const standardCases = getStandardCaseProjects(projects);
 
   return (
     <>
@@ -52,11 +55,30 @@ export default function WorkPage() {
         </div>
 
         {projects.length > 0 ? (
-          <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {projects.map((project) => (
-              <WorkProjectCard key={project.slug} project={project} />
-            ))}
-          </div>
+          <>
+            {showcases.length > 0 ? (
+              <div className="mt-16">
+                <Badge variant="outline" className="tracking-wide uppercase">
+                  Studio Showcases
+                </Badge>
+                <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-3">
+                  {showcases.map((project) => (
+                    <ShowcaseStripCard key={project.slug} project={project} />
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {standardCases.length > 0 ? (
+              <div className={showcases.length > 0 ? "mt-20" : "mt-16"}>
+                <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                  {standardCases.map((project) => (
+                    <WorkProjectCard key={project.slug} project={project} />
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </>
         ) : (
           <div className="border-border mx-auto mt-16 max-w-xl rounded-2xl border border-dashed px-6 py-12 text-center">
             <p className="text-muted-foreground text-balance">
