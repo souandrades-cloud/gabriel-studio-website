@@ -25,6 +25,7 @@ export const STANDARD_CASE_PROJECTS: readonly StandardCaseProject[] = [
         src: "/images/projects/landing-pages/lp-clinica-cora.png",
         alt: previewAlt("Cora"),
         role: "thumbnail",
+        crop: { scale: 2.4, origin: "67% 56%" },
       },
       {
         src: "/images/projects/landing-pages/lp-clinica-cora-detail.png",
@@ -162,6 +163,7 @@ export const STANDARD_CASE_PROJECTS: readonly StandardCaseProject[] = [
         src: "/images/projects/landing-pages/lp-restaurante-lume.png",
         alt: previewAlt("Lume"),
         role: "thumbnail",
+        crop: { scale: 1.6, origin: "59% 37%" },
       },
       {
         src: "/images/projects/landing-pages/lp-restaurante-lume-detail.png",
@@ -254,6 +256,7 @@ export const STANDARD_CASE_PROJECTS: readonly StandardCaseProject[] = [
         src: "/images/projects/landing-pages/lp-estetica-vidra.png",
         alt: previewAlt("Vidra"),
         role: "thumbnail",
+        crop: { scale: 2.3, origin: "78% 45%" },
       },
       {
         src: "/images/projects/landing-pages/lp-estetica-vidra-detail.png",

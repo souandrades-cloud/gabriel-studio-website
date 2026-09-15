@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/ui/heading";
 import { Section } from "@/components/ui/section";
 import type { StandardCaseProject } from "@/lib/portfolio/types";
+import { cn } from "@/lib/utils";
 
 interface StandardCaseBodyProps {
   project: StandardCaseProject;
@@ -46,7 +47,12 @@ function StandardCaseBody({ project }: StandardCaseBodyProps) {
             alt={hero.alt}
             fill
             sizes="(min-width: 1024px) 960px, 100vw"
-            className="object-cover object-top"
+            className={cn("object-cover", !hero.crop && "object-top")}
+            style={
+              hero.crop
+                ? { transform: `scale(${hero.crop.scale})`, transformOrigin: hero.crop.origin }
+                : undefined
+            }
             priority
           />
         </div>

@@ -27,7 +27,21 @@ import { TechPlaceholder } from "@/components/shared/tech-placeholder";
 import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/ui/heading";
 import { useMounted } from "@/hooks/use-mounted";
+import { getPublishedProjectBySlug } from "@/lib/portfolio/selectors";
+import type { ProjectMedia } from "@/lib/portfolio/types";
 import { cn } from "@/lib/utils";
+
+/**
+ * Composição curada do screenshot (decisão humana, Gates O2/O3): fonte de
+ * verdade única é o registry (`data/projects/standard-cases.ts`, mídia
+ * `role: "thumbnail"`), reutilizada aqui, no grid `/work`
+ * (`WorkProjectCard`) e no hero `/work/[slug]` (`StandardCaseBody`). Ausente
+ * = tratamento baseline (`object-cover object-top`, sem transform) — a
+ * curadoria é deliberada por case, não uma regra universal de crop.
+ */
+function approvedCrop(slug: string): ProjectMedia["crop"] {
+  return getPublishedProjectBySlug(slug)?.media.find((media) => media.role === "thumbnail")?.crop;
+}
 
 interface CaseStudy {
   icon: LucideIcon;
@@ -44,14 +58,7 @@ interface CaseStudy {
   image?: string;
   /** URL da demo real, quando existir. Sem URL = sem CTA de link externo. */
   url?: string;
-  /**
-   * Composição curada do screenshot (Gate: O2 PRODUCTION IMPLEMENTATION 001,
-   * técnica validada em `/visual-enhancement-lab/o2`, decisão humana
-   * congelada). Ausente = tratamento baseline (`object-cover object-top`,
-   * sem transform) — a curadoria é deliberada por case, não uma regra
-   * universal de crop.
-   */
-  crop?: { scale: number; origin: string };
+  crop?: ProjectMedia["crop"];
 }
 
 const CASES: CaseStudy[] = [
@@ -63,7 +70,7 @@ const CASES: CaseStudy[] = [
     tags: ["Identidade editorial", "UI de agendamento"],
     image: "/images/projects/landing-pages/lp-clinica-cora.png",
     url: "https://portfolio-lp-clinica.vercel.app",
-    crop: { scale: 2.4, origin: "67% 56%" },
+    crop: approvedCrop("cora"),
   },
   {
     icon: Scale,
@@ -79,7 +86,8 @@ const CASES: CaseStudy[] = [
     icon: Building2,
     segment: "Imobiliária",
     title: "Vão",
-    description: "Identidade visual e landing page demonstrativa para uma curadoria imobiliária fictícia.",
+    description:
+      "Identidade visual e landing page demonstrativa para uma curadoria imobiliária fictícia.",
     tags: ["Fotografia full-bleed", "Curadoria imobiliária"],
     image: "/images/projects/landing-pages/lp-imobiliaria-vao.png",
     url: "https://portfolio-lp-imobiliaria.vercel.app",
@@ -88,11 +96,12 @@ const CASES: CaseStudy[] = [
     icon: UtensilsCrossed,
     segment: "Restaurante",
     title: "Lume",
-    description: "Identidade visual e landing page demonstrativa para um restaurante contemporâneo fictício.",
+    description:
+      "Identidade visual e landing page demonstrativa para um restaurante contemporâneo fictício.",
     tags: ["Composição diagonal", "Fotografia autoral"],
     image: "/images/projects/landing-pages/lp-restaurante-lume.png",
     url: "https://portfolio-lp-restaurante.vercel.app",
-    crop: { scale: 1.6, origin: "59% 37%" },
+    crop: approvedCrop("lume"),
   },
   {
     icon: Layers,
@@ -113,7 +122,7 @@ const CASES: CaseStudy[] = [
     tags: ["Fotografia macro", "Estética minimalista"],
     image: "/images/projects/landing-pages/lp-estetica-vidra.png",
     url: "https://portfolio-lp-estetica.vercel.app",
-    crop: { scale: 2.3, origin: "78% 45%" },
+    crop: approvedCrop("vidra"),
   },
 ];
 
@@ -240,7 +249,7 @@ function LandingPagesShowcase() {
             <div
               role="tablist"
               aria-label="Selecionar case"
-              className="scrollbar-hide -mx-1 order-3 flex min-w-0 flex-1 snap-x gap-x-6 gap-y-2 overflow-x-auto px-1 lg:order-2 lg:flex-wrap lg:overflow-visible"
+              className="scrollbar-hide order-3 -mx-1 flex min-w-0 flex-1 snap-x gap-x-6 gap-y-2 overflow-x-auto px-1 lg:order-2 lg:flex-wrap lg:overflow-visible"
             >
               {CASES.map((c, i) => (
                 <button
@@ -256,17 +265,19 @@ function LandingPagesShowcase() {
                   onClick={() => goTo(i)}
                   onKeyDown={(event) => handleTabKeyDown(event, i)}
                   className={cn(
-                    "group/tab focus-visible:ring-brand/50 flex shrink-0 snap-start items-baseline gap-2 rounded-sm py-1.5 text-base whitespace-nowrap outline-none transition-all focus-visible:ring-3",
+                    "group/tab focus-visible:ring-brand/50 flex shrink-0 snap-start items-baseline gap-2 rounded-sm py-1.5 text-base whitespace-nowrap transition-all outline-none focus-visible:ring-3",
                     i === index
                       ? "text-foreground font-semibold"
-                      : "text-muted-foreground hover:text-foreground hover:-translate-y-0.5 font-medium",
+                      : "text-muted-foreground hover:text-foreground font-medium hover:-translate-y-0.5",
                   )}
                 >
                   <span
                     aria-hidden="true"
                     className={cn(
                       "font-mono text-xs tracking-wider transition-colors",
-                      i === index ? "text-brand" : "text-muted-foreground/60 group-hover/tab:text-brand/70",
+                      i === index
+                        ? "text-brand"
+                        : "text-muted-foreground/60 group-hover/tab:text-brand/70",
                     )}
                   >
                     {pad(i + 1)}
@@ -281,7 +292,9 @@ function LandingPagesShowcase() {
                       aria-hidden="true"
                       className={cn(
                         "absolute inset-x-0 -bottom-1 h-0.5 rounded-full transition-colors",
-                        i === index ? "bg-brand" : "bg-muted-foreground/25 group-hover/tab:bg-brand/50",
+                        i === index
+                          ? "bg-brand"
+                          : "bg-muted-foreground/25 group-hover/tab:bg-brand/50",
                       )}
                     />
                   </span>
@@ -355,7 +368,10 @@ function LandingPagesShowcase() {
                           className={cn("object-cover", !active.crop && "object-top")}
                           style={
                             active.crop
-                              ? { transform: `scale(${active.crop.scale})`, transformOrigin: active.crop.origin }
+                              ? {
+                                  transform: `scale(${active.crop.scale})`,
+                                  transformOrigin: active.crop.origin,
+                                }
                               : undefined
                           }
                           priority={index === 0}

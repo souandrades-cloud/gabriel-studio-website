@@ -16,6 +16,14 @@ export interface ProjectMedia {
   readonly role: MediaRole;
   readonly width?: number;
   readonly height?: number;
+  /**
+   * Composição curada da imagem (`transform: scale()` + `transform-origin`).
+   * Decisão humana caso a caso (Gates O2/O3) — ausente = tratamento baseline
+   * (`object-cover object-top`, sem transform). Fonte de verdade única,
+   * reutilizada por todos os contextos que exibem esta mídia (Home
+   * carousel, grid `/work`, hero `/work/[slug]`).
+   */
+  readonly crop?: { readonly scale: number; readonly origin: string };
 }
 
 export interface ProjectSEO {
