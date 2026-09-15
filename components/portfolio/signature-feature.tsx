@@ -13,8 +13,9 @@ interface SignatureFeatureProps {
 
 /**
  * Tratamento "protagonista" para um único Signature Work — full-bleed, maior
- * que os cards padrão de `/work` (ver `ShowcaseStripCard`). Usado onde o
- * protótipo pede X03 como peça dominante (Prototype A e C).
+ * que os cards padrão de `/work` (ver `ShowcaseStripCard`). Usado na Home
+ * real para X03 como peça dominante, e nos protótipos que testaram essa
+ * hierarquia.
  */
 function SignatureFeature({ project }: SignatureFeatureProps) {
   const thumbnail = project.media.find((media) => media.role === "thumbnail");

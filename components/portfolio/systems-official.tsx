@@ -4,17 +4,18 @@ import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/ui/heading";
 
 /**
- * Representação OFICIAL de FIS/Outbound para a Home Portfolio B — Gate HOME
- * PORTFOLIO B — SYSTEMS ASSET INTEGRATION 001. Os assets são capturas fiéis
- * das rotas canônicas aprovadas nos projetos de origem (FIS checkpoint
- * 5ee76de, hipótese C1 "Product Presentation"; Outbound checkpoint 9d62f69,
- * hipótese C1 "Depth Stack") — não são mockups fictícios construídos dentro
- * do Website V2. Cada imagem já traz sua própria composição de "janela de
- * produto" (chrome, glow, tipografia) definida no projeto de origem, por
- * isso NÃO é envolvida em `BrowserFrame` aqui (evita chrome duplicado).
+ * Representação OFICIAL de FIS/Outbound — promovida para a Home real no
+ * Gate HOME PORTFOLIO B — PRODUCTION INTEGRATION 001, validada antes em
+ * `/lab/home-portfolio/b` (Gate SYSTEMS ASSET INTEGRATION 001 / SYSTEMS
+ * PROMOTION 001). Os assets são capturas fiéis das rotas canônicas
+ * aprovadas nos projetos de origem (FIS checkpoint 5ee76de, hipótese C1
+ * "Product Presentation"; Outbound checkpoint 9d62f69, hipótese C1 "Depth
+ * Stack") — não são mockups fictícios construídos dentro do Website V2.
+ * Cada imagem já traz sua própria composição de "janela de produto" (chrome,
+ * glow, tipografia) definida no projeto de origem, por isso NÃO é envolvida
+ * em `BrowserFrame` aqui (evita chrome duplicado).
  *
- * Copy idêntica à usada em `systems-compact.tsx` (Home real) — factual,
- * sem afirmar uso interno pelo Gabriel Studio.
+ * Copy factual — não afirma uso interno pelo Gabriel Studio.
  */
 interface SystemEntry {
   title: string;

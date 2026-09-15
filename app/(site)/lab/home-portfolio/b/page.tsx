@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 
 import { ContextBridge } from "@/components/lab/home-portfolio/context-bridge";
 import { LabBanner } from "@/components/lab/home-portfolio/lab-banner";
-import { PortfolioCta } from "@/components/lab/home-portfolio/portfolio-cta";
-import { withPrototypeThumbnail } from "@/components/lab/home-portfolio/project-overrides";
-import { PROTOTYPE_THUMBNAILS } from "@/components/lab/home-portfolio/prototype-thumbnails";
-import { SignatureFeature } from "@/components/lab/home-portfolio/signature-feature";
-import { SystemsOfficial } from "@/components/lab/home-portfolio/systems-official";
+import { PortfolioCta } from "@/components/portfolio/portfolio-cta";
+import { withPrototypeThumbnail } from "@/components/portfolio/project-overrides";
+import { PROTOTYPE_THUMBNAILS } from "@/components/portfolio/prototype-thumbnails";
+import { SignatureFeature } from "@/components/portfolio/signature-feature";
+import { SystemsOfficial } from "@/components/portfolio/systems-official";
 import { ShowcaseStripCard } from "@/components/portfolio/showcase-strip-card";
 import { WorkProjectCard } from "@/components/portfolio/work-project-card";
 import { Footer } from "@/components/sections/footer";

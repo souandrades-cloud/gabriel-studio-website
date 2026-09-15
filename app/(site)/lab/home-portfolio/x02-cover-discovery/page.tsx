@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 import { LabBanner } from "@/components/lab/home-portfolio/lab-banner";
-import { withPrototypeThumbnail } from "@/components/lab/home-portfolio/project-overrides";
-import { PROTOTYPE_THUMBNAILS } from "@/components/lab/home-portfolio/prototype-thumbnails";
+import { withPrototypeThumbnail } from "@/components/portfolio/project-overrides";
+import { PROTOTYPE_THUMBNAILS } from "@/components/portfolio/prototype-thumbnails";
 import { ShowcaseStripCard } from "@/components/portfolio/showcase-strip-card";
 import { Footer } from "@/components/sections/footer";
 import { Heading } from "@/components/ui/heading";

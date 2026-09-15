@@ -1,11 +1,12 @@
 import type { ProjectMedia } from "@/lib/portfolio/types";
 
 /**
- * Capas alternativas para X01/X02/X03 nos protótipos A/B (X03 e X01
- * aprovados no Gate 002/003; X02 é uma nova captura autorizada pelo Gate
- * HOME PORTFOLIO B — FINAL POLISH DISCOVERY 001, Missão 1 — ver o arquivo
- * daquele asset para a ressalva completa). A auditoria/discovery completa
- * de cada escolha está no RETURN de cada gate.
+ * Capas aprovadas para X01/X02/X03 — usadas na Home real (Signature) e nos
+ * protótipos `/lab/home-portfolio/*` que as compararam (X03 e X01 aprovados
+ * no Gate 002/003; X02 é uma nova captura autorizada pelo Gate HOME
+ * PORTFOLIO B — FINAL POLISH DISCOVERY 001, Missão 1 — ver o arquivo daquele
+ * asset para a ressalva completa). A auditoria/discovery completa de cada
+ * escolha está no RETURN de cada gate.
  */
 export const PROTOTYPE_THUMBNAILS: Record<"x01" | "x02" | "x03", ProjectMedia> = {
   /**

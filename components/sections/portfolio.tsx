@@ -1,22 +1,15 @@
-import type { Metadata } from "next";
-
-import { ContextBridge } from "@/components/lab/home-portfolio/context-bridge";
-import { LabBanner } from "@/components/lab/home-portfolio/lab-banner";
 import { PortfolioCta } from "@/components/portfolio/portfolio-cta";
 import { withPrototypeThumbnail } from "@/components/portfolio/project-overrides";
 import { PROTOTYPE_THUMBNAILS } from "@/components/portfolio/prototype-thumbnails";
+import { ShowcaseStripCard } from "@/components/portfolio/showcase-strip-card";
 import { SignatureFeature } from "@/components/portfolio/signature-feature";
 import { SystemsOfficial } from "@/components/portfolio/systems-official";
-import { ShowcaseStripCard } from "@/components/portfolio/showcase-strip-card";
 import { WorkProjectCard } from "@/components/portfolio/work-project-card";
-import { Footer } from "@/components/sections/footer";
 import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/ui/heading";
 import { Section } from "@/components/ui/section";
 import { getPublishedProjectBySlug } from "@/lib/portfolio/selectors";
 import type { StandardCaseProject, StudioShowcaseProject } from "@/lib/portfolio/types";
-
-export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 const x03raw = getPublishedProjectBySlug("x03") as StudioShowcaseProject;
 const x02raw = getPublishedProjectBySlug("x02") as StudioShowcaseProject;
@@ -43,24 +36,20 @@ function FamilyHeader({ eyebrow, heading }: { eyebrow: string; heading: string }
 }
 
 /**
- * Home Portfolio B completa — Gate HOME PORTFOLIO B — SYSTEMS ASSET
- * INTEGRATION 001. Mesma arquitetura congelada de `b-polish-discovery`
- * (Signature X03/X02/X01, Websites Cora/Lume/Vidra/Vão), mas Systems agora
- * usa os assets OFICIAIS (`SystemsOfficial`) em vez dos mockups artificiais
- * do discovery anterior. Isolado em /lab — não integrado à Home pública.
+ * Composição de portfólio aprovada pelo Human Director em
+ * `/lab/home-portfolio/b` (Gates HOME PORTFOLIO B — SYSTEMS ASSET
+ * INTEGRATION 001 / SYSTEMS PROMOTION 001 / PRODUCTION INTEGRATION 001):
+ * Signature (X03 protagonista, X02/X01 secundários) → Websites (Cora, Lume,
+ * Vidra, Vão) → Systems (FIS/Outbound, apresentações C1 oficiais) → CTA de
+ * exploração do trabalho. Substitui as antigas seções `Projects` (carrossel
+ * de 6 landing pages) e `Systems` (mockups com copy de "uso interno") — mesma
+ * função de portfólio, evitando duplicação. `id="projetos"`/`id="sistemas"`
+ * preservados para os anchors existentes (Navbar, Footer, Hero, FinalCta).
  */
-export default function HomePortfolioBSystemsIntegrationPage() {
+function Portfolio() {
   return (
     <>
-      <LabBanner label="B — Systems Asset Integration" />
-
-      <ContextBridge
-        eyebrow="Capacidades"
-        heading="Três frentes, uma mesma disciplina técnica."
-        description="Signature Works, sites de negócio e software de gestão comercial — capacidades distintas, organizadas para que cada uma seja julgada no seu próprio padrão."
-      />
-
-      <Section background="default" className="pt-12">
+      <Section id="projetos" background="default" className="pt-12">
         <FamilyHeader
           eyebrow="Signature"
           heading="Trabalho autoral, conduzido sem as restrições de um projeto comercial."
@@ -84,7 +73,7 @@ export default function HomePortfolioBSystemsIntegrationPage() {
         </div>
       </Section>
 
-      <Section background="default">
+      <Section id="sistemas" background="default">
         <FamilyHeader eyebrow="Systems" heading="Software para gestão e prospecção comercial." />
         <div className="mt-10">
           <SystemsOfficial />
@@ -92,8 +81,8 @@ export default function HomePortfolioBSystemsIntegrationPage() {
 
         <PortfolioCta />
       </Section>
-
-      <Footer />
     </>
   );
 }
+
+export { Portfolio };

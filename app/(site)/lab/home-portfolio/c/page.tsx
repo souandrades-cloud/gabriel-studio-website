@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 
 import { ContextBridge } from "@/components/lab/home-portfolio/context-bridge";
 import { LabBanner } from "@/components/lab/home-portfolio/lab-banner";
-import { PortfolioCta } from "@/components/lab/home-portfolio/portfolio-cta";
-import { SignatureFeature } from "@/components/lab/home-portfolio/signature-feature";
+import { PortfolioCta } from "@/components/portfolio/portfolio-cta";
+import { SignatureFeature } from "@/components/portfolio/signature-feature";
 import { SignatureQuickLinks } from "@/components/lab/home-portfolio/signature-quick-links";
 import { SystemsCompact } from "@/components/lab/home-portfolio/systems-compact";
 import { WorkProjectCard } from "@/components/portfolio/work-project-card";

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-/** CTA final compartilhado pelos três protótipos — mesmo destino, "/work", pedido pelo Gate para as três hipóteses. */
+/** CTA de exploração do trabalho — mesmo destino, "/work", usado na Home real e nos protótipos que a compararam. */
 function PortfolioCta() {
   return (
     <div className="mt-16 flex justify-center sm:mt-20">
