@@ -6,7 +6,7 @@ import { PortfolioCta } from "@/components/lab/home-portfolio/portfolio-cta";
 import { withPrototypeThumbnail } from "@/components/lab/home-portfolio/project-overrides";
 import { PROTOTYPE_THUMBNAILS } from "@/components/lab/home-portfolio/prototype-thumbnails";
 import { SignatureFeature } from "@/components/lab/home-portfolio/signature-feature";
-import { SystemsCompact } from "@/components/lab/home-portfolio/systems-compact";
+import { SystemsOfficial } from "@/components/lab/home-portfolio/systems-official";
 import { ShowcaseStripCard } from "@/components/portfolio/showcase-strip-card";
 import { WorkProjectCard } from "@/components/portfolio/work-project-card";
 import { Footer } from "@/components/sections/footer";
@@ -27,6 +27,7 @@ const x01 = withPrototypeThumbnail(x01raw, PROTOTYPE_THUMBNAILS.x01);
 const cora = getPublishedProjectBySlug("cora") as StandardCaseProject;
 const lume = getPublishedProjectBySlug("lume") as StandardCaseProject;
 const vidra = getPublishedProjectBySlug("vidra") as StandardCaseProject;
+const vao = getPublishedProjectBySlug("vao") as StandardCaseProject;
 
 function FamilyHeader({ eyebrow, heading }: { eyebrow: string; heading: string }) {
   return (
@@ -68,17 +69,18 @@ export default function HomePortfolioPrototypeB() {
 
       <Section background="muted" className="dark bg-muted">
         <FamilyHeader eyebrow="Websites" heading="Identidade e landing page, do zero ao ar." />
-        <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-3">
+        <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {cora ? <WorkProjectCard project={cora} /> : null}
           {lume ? <WorkProjectCard project={lume} /> : null}
           {vidra ? <WorkProjectCard project={vidra} /> : null}
+          {vao ? <WorkProjectCard project={vao} /> : null}
         </div>
       </Section>
 
       <Section background="default">
         <FamilyHeader eyebrow="Systems" heading="Software para gestão e prospecção comercial." />
         <div className="mt-10">
-          <SystemsCompact variant="family" />
+          <SystemsOfficial />
         </div>
 
         <PortfolioCta />
