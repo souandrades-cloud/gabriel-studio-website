@@ -55,7 +55,7 @@ export default function HomePortfolioPrototypeB() {
       <Section background="default" className="pt-12">
         <FamilyHeader
           eyebrow="Signature"
-          heading="Pesquisa própria, sem cliente, sem limite de escopo."
+          heading="Trabalho autoral, conduzido sem as restrições de um projeto comercial."
         />
         <div className="mt-10">
           {x03 ? <SignatureFeature project={x03} /> : null}

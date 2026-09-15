@@ -1,10 +1,11 @@
 import type { ProjectMedia } from "@/lib/portfolio/types";
 
 /**
- * Capas alternativas para X01/X02/X03 nos protótipos A/B — Gate HOME
- * PORTFOLIO PROTOTYPE 002, Problema 1. Todas as três são assets JÁ
- * EXISTENTES e já aprovados (nenhuma geração nova); a auditoria completa,
- * incluindo os assets descartados e por quê, está no RETURN do gate.
+ * Capas alternativas para X01/X02/X03 nos protótipos A/B (X03 e X01
+ * aprovados no Gate 002/003; X02 é uma nova captura autorizada pelo Gate
+ * HOME PORTFOLIO B — FINAL POLISH DISCOVERY 001, Missão 1 — ver o arquivo
+ * daquele asset para a ressalva completa). A auditoria/discovery completa
+ * de cada escolha está no RETURN de cada gate.
  */
 export const PROTOTYPE_THUMBNAILS: Record<"x01" | "x02" | "x03", ProjectMedia> = {
   /**
@@ -21,15 +22,24 @@ export const PROTOTYPE_THUMBNAILS: Record<"x01" | "x02" | "x03", ProjectMedia> =
     height: 1402,
   },
   /**
-   * X02 — "Fracture" (x02-a002), no lugar da silhueta minimalista atual
-   * (x02-a001-surface). O X02 só tem 3 assets no total (auditoria
-   * completa) — surface e resolution são quase inteiramente vazios/pretos
-   * num crop de card pequeno; fracture é o único dos três que preenche o
-   * quadro com composição e contraste legíveis a esse tamanho.
+   * X02 — "Chamber (Release)", t≈0.26 da própria trajetória de câmera de
+   * x02/experience.tsx (camera-rig.tsx) — substitui "Fracture" (x02-a002),
+   * que por sua vez tinha substituído "Surface" no Gate 002. Captura NOVA
+   * (não pré-existente em public/), autorizada pelo Gate FINAL POLISH
+   * DISCOVERY 001, Missão 1: browser real + WebGL real (ANGLE/AMD Radeon,
+   * confirmado via WEBGL_debug_renderer_info), canvas isolado (overlay de
+   * caption DOM ocultado só nesta captura, nunca no código-fonte). Vence
+   * Fracture/Surface/Resolution nos critérios do gate — profundidade em
+   * camadas (colunas próximas/médias/distantes), silhueta legível como
+   * arquitetura, contraste consistente sem quase-vazio. Ressalva honesta
+   * preservada do Gate 002: ainda é sombreamento flat de WebGL em tempo
+   * real, sem o polish fotográfico de X01/X03 — combina melhor com elas em
+   * IMPACTO/leitura do que as opções anteriores, mas o gap de acabamento
+   * entre "render em tempo real" e "still fotográfico" continua.
    */
   x02: {
-    src: "/images/x02/x02-a002-fracture.png",
-    alt: "X02 — Abyss, Fracture state. An angular arrangement of fractured geometric block forms in olive and pale grey, seen from within the 3D scene.",
+    src: "/images/x02/x02-lab-chamber-release.png",
+    alt: "X02 — Abyss, Chamber state. A field of tall pale monoliths receding in layered depth across a textured floor, seen from within the 3D scene.",
     role: "thumbnail",
     width: 1440,
     height: 900,
