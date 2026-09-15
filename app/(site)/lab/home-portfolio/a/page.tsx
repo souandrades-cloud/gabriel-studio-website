@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { ContextBridge } from "@/components/lab/home-portfolio/context-bridge";
 import { LabBanner } from "@/components/lab/home-portfolio/lab-banner";
 import { PortfolioCta } from "@/components/lab/home-portfolio/portfolio-cta";
+import { withPrototypeThumbnail } from "@/components/lab/home-portfolio/project-overrides";
+import { PROTOTYPE_THUMBNAILS } from "@/components/lab/home-portfolio/prototype-thumbnails";
 import { SignatureFeature } from "@/components/lab/home-portfolio/signature-feature";
 import { SystemsCompact } from "@/components/lab/home-portfolio/systems-compact";
 import { ShowcaseStripCard } from "@/components/portfolio/showcase-strip-card";
@@ -16,9 +18,12 @@ import type { StandardCaseProject, StudioShowcaseProject } from "@/lib/portfolio
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
-const x03 = getPublishedProjectBySlug("x03") as StudioShowcaseProject;
-const x02 = getPublishedProjectBySlug("x02") as StudioShowcaseProject;
-const x01 = getPublishedProjectBySlug("x01") as StudioShowcaseProject;
+const x03raw = getPublishedProjectBySlug("x03") as StudioShowcaseProject;
+const x02raw = getPublishedProjectBySlug("x02") as StudioShowcaseProject;
+const x01raw = getPublishedProjectBySlug("x01") as StudioShowcaseProject;
+const x03 = withPrototypeThumbnail(x03raw, PROTOTYPE_THUMBNAILS.x03);
+const x02 = withPrototypeThumbnail(x02raw, PROTOTYPE_THUMBNAILS.x02);
+const x01 = withPrototypeThumbnail(x01raw, PROTOTYPE_THUMBNAILS.x01);
 const cora = getPublishedProjectBySlug("cora") as StandardCaseProject;
 const lume = getPublishedProjectBySlug("lume") as StandardCaseProject;
 
@@ -63,7 +68,7 @@ export default function HomePortfolioPrototypeA() {
             Sistemas
           </Badge>
           <Heading as="h2" size="h1" className="mt-6">
-            E os sistemas que sustentam a própria operação.
+            Sistemas digitais para gestão e prospecção comercial.
           </Heading>
         </div>
         <div className="mt-10">

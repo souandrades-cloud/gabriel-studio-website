@@ -11,9 +11,15 @@ import { Heading } from "@/components/ui/heading";
  * assets já aprovados e publicados na Home real (`components/sections/
  * systems.tsx`, "Interface real · dados demonstrativos"). Nenhum dado
  * operacional novo é exposto; nenhum registry é tocado.
+ *
+ * Gate HOME PORTFOLIO PROTOTYPE 002 — Problema 2: a copy foi reescrita para
+ * nunca comunicar que Gabriel/Gabriel Studio usa estes sistemas ("nosso",
+ * "nossa operação", "usado pelo próprio estúdio" etc.) — só o que cada
+ * produto FAZ, factual e sem métricas/claims inventados.
  */
 interface SystemEntry {
   title: string;
+  description: string;
   image: string;
   imageAlt: string;
   aspect: string;
@@ -22,16 +28,17 @@ interface SystemEntry {
 const SYSTEMS: readonly SystemEntry[] = [
   {
     title: "FIS Dashboard",
+    description:
+      "Sistema para coleta, organização, classificação e análise de oportunidades freelance.",
     image: "/images/products/fis-dashboard-overview.png",
-    imageAlt:
-      "Prévia do FIS Dashboard, sistema interno do Gabriel Studio para gestão de oportunidades comerciais, com dados demonstrativos.",
+    imageAlt: "Prévia de interface do FIS Dashboard, com dados demonstrativos.",
     aspect: "480/379",
   },
   {
-    title: "Outbound — Gabriel Studio",
+    title: "Outbound",
+    description: "Sistema para estruturar, organizar e acompanhar prospecção comercial.",
     image: "/images/products/outbound-dashboard-overview.png",
-    imageAlt:
-      "Prévia do Outbound, sistema interno do Gabriel Studio para prospecção comercial, com dados demonstrativos.",
+    imageAlt: "Prévia de interface do Outbound, com dados demonstrativos.",
     aspect: "288/187",
   },
 ];
@@ -48,15 +55,20 @@ function SystemsCompact({ variant }: SystemsCompactProps) {
       <div className="border-border/60 rounded-2xl border p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Heading as="h3" size="h4">
-            Sistemas internos
+            Sistemas
           </Heading>
           <Badge variant="outline">Interface real · dados demonstrativos</Badge>
         </div>
-        <ul className="text-muted-foreground mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm">
+        <dl className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
           {SYSTEMS.map((system) => (
-            <li key={system.title}>{system.title}</li>
+            <div key={system.title}>
+              <dt className="text-sm font-medium">{system.title}</dt>
+              <dd className="text-muted-foreground mt-1 text-sm text-balance">
+                {system.description}
+              </dd>
+            </div>
           ))}
-        </ul>
+        </dl>
       </div>
     );
   }
@@ -84,9 +96,9 @@ function SystemsCompact({ variant }: SystemsCompactProps) {
               </div>
             </BrowserFrame>
           </div>
-          <div className="mt-3 flex items-center justify-between gap-2">
+          <div className="mt-3">
             <p className="text-sm font-medium">{system.title}</p>
-            {isFamily ? <Badge variant="outline">Sistema interno</Badge> : null}
+            <p className="text-muted-foreground mt-1 text-sm text-balance">{system.description}</p>
           </div>
         </div>
       ))}
