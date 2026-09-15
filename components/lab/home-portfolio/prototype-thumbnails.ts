@@ -22,27 +22,28 @@ export const PROTOTYPE_THUMBNAILS: Record<"x01" | "x02" | "x03", ProjectMedia> =
     height: 1402,
   },
   /**
-   * X02 — "Chamber (Release)", t≈0.26 da própria trajetória de câmera de
-   * x02/experience.tsx (camera-rig.tsx) — substitui "Fracture" (x02-a002),
-   * que por sua vez tinha substituído "Surface" no Gate 002. Captura NOVA
-   * (não pré-existente em public/), autorizada pelo Gate FINAL POLISH
-   * DISCOVERY 001, Missão 1: browser real + WebGL real (ANGLE/AMD Radeon,
-   * confirmado via WEBGL_debug_renderer_info), canvas isolado (overlay de
-   * caption DOM ocultado só nesta captura, nunca no código-fonte). Vence
-   * Fracture/Surface/Resolution nos critérios do gate — profundidade em
-   * camadas (colunas próximas/médias/distantes), silhueta legível como
-   * arquitetura, contraste consistente sem quase-vazio. Ressalva honesta
-   * preservada do Gate 002: ainda é sombreamento flat de WebGL em tempo
-   * real, sem o polish fotográfico de X01/X03 — combina melhor com elas em
-   * IMPACTO/leitura do que as opções anteriores, mas o gap de acabamento
-   * entre "render em tempo real" e "still fotográfico" continua.
+   * X02 — "Monolithic Abyss" key art dedicado, Gate HOME PORTFOLIO B — X02
+   * KEY ART INTEGRATION 001. Substitui "Chamber (Release)"
+   * (x02-lab-chamber-release.png, captura literal do WebGL em tempo real —
+   * ver Gate 003) depois que X02 PREMIUM COVER DISCOVERY 001/KEY ART 001
+   * concluíram que nenhum recorte do renderer real-time fecha o gap de
+   * acabamento contra X01/X03 (sombreamento flat, sem atmosfera/grão/DOF).
+   * Esta imagem foi gerada externamente (fora do WebGL) seguindo a direção
+   * "A — MONOLITHIC ABYSS" do gate de KEY ART (pale monoliths monumentais,
+   * vazio negro absoluto, iluminação cinematográfica de fonte única,
+   * névoa/profundidade atmosférica, piso escuro refletivo, acabamento
+   * fotográfico) e colocada manualmente no projeto por Gabriel; 1122×1402
+   * — já nasce em proporção ≈4:5, o mesmo aspect-ratio do card
+   * ShowcaseStripCard, então não depende de crop customizado. Preserva os
+   * invariantes de X02 (monólitos, vazio negro, escala, profundidade,
+   * austeridade) sem virar cidade/nave/cyberpunk genérico.
    */
   x02: {
-    src: "/images/x02/x02-lab-chamber-release.png",
-    alt: "X02 — Abyss, Chamber state. A field of tall pale monoliths receding in layered depth across a textured floor, seen from within the 3D scene.",
+    src: "/images/x02/x02-key-art-001-monolithic-abyss.png",
+    alt: "X02 — Abyss. Tall pale monolithic structures flanking a dark corridor, cinematic single-source light and atmospheric haze receding into an absolute black void, reflective dark floor.",
     role: "thumbnail",
-    width: 1440,
-    height: 900,
+    width: 1122,
+    height: 1402,
   },
   /**
    * X03 — "Final Signature" (x03-a009), no lugar do product shot em
