@@ -1,6 +1,7 @@
 "use client";
 
-import { useReducedMotion, motion } from "framer-motion";
+import { useInView, useReducedMotion, motion } from "framer-motion";
+import Link from "next/link";
 import { useRef } from "react";
 
 import { useMounted } from "@/hooks/use-mounted";
@@ -36,6 +37,22 @@ function Closing() {
    * reduced-motion final state only happens from the next render onward.
    */
   const reducedMotionReady = mounted && prefersReducedMotion;
+  /**
+   * X01 Final Lockup Fix (Browser-Real QA / MAJOR 3): each word used its own
+   * `whileInView`, observing itself — but in its hidden state every word is
+   * translated a full line-height inside an `overflow-hidden` mask, so its
+   * own visible (post-clip) area is zero. Per spec, IntersectionObserver
+   * reports 0 intersection for a target with zero visible area regardless of
+   * where the viewport actually is — confirmed via direct WebKit
+   * IntersectionObserver instrumentation: the second word in each pair
+   * (masked furthest out at rest) never got a `isIntersecting: true` entry
+   * and stayed stuck at its hidden transform at max scroll. Observing the
+   * stable, unclipped, untransformed `<section>` once and driving every
+   * word's `animate` off that shared result sidesteps the bug entirely
+   * while keeping the exact same per-word stagger via `custom`.
+   */
+  const sectionInView = useInView(sectionRef, { once: true, margin: "0px 0px -10% 0px" });
+  const revealVisible = reducedMotionReady || sectionInView;
 
   return (
     <section
@@ -60,9 +77,7 @@ function Closing() {
               <motion.p
                 custom={i}
                 initial="hidden"
-                animate={reducedMotionReady ? "visible" : undefined}
-                whileInView={reducedMotionReady ? undefined : "visible"}
-                viewport={{ once: true, margin: "-10% 0px" }}
+                animate={revealVisible ? "visible" : undefined}
                 variants={LINE_REVEAL}
                 transition={reducedMotionReady ? { duration: 0 } : undefined}
                 className="x01-display"
@@ -83,9 +98,7 @@ function Closing() {
                 <motion.p
                   custom={i + 2}
                   initial="hidden"
-                  animate={reducedMotionReady ? "visible" : undefined}
-                  whileInView={reducedMotionReady ? undefined : "visible"}
-                  viewport={{ once: true, margin: "-10% 0px" }}
+                  animate={revealVisible ? "visible" : undefined}
                   variants={LINE_REVEAL}
                   transition={reducedMotionReady ? { duration: 0 } : undefined}
                   className="x01-display"
@@ -102,8 +115,7 @@ function Closing() {
             linhas discretas (§ Micro Metadata). */}
         <motion.div
           initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-10% 0px" }}
+          animate={{ opacity: revealVisible ? 1 : 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
           className="x01-mono mt-[9vh] flex flex-col gap-1 text-[9px] tracking-[0.08em] uppercase sm:mt-[11vh] sm:text-[10px]"
           style={{ color: "var(--x01-ink-faint)" }}
@@ -111,6 +123,24 @@ function Closing() {
           <p>X01 / Tension</p>
           <p>Object Study / 001—006</p>
           <p>Gabriel Studio / 2026</p>
+        </motion.div>
+
+        {/* Saída da experiência (Browser-Real QA / MAJOR 2): mínima e no
+            mesmo registro da micro metadata acima — não um footer, só uma
+            linha de saída discreta que só aparece já resolvido o Closing. */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: revealVisible ? 1 : 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="mt-[3vh]"
+        >
+          <Link
+            href="/work/x01"
+            className="x01-mono text-[9px] tracking-[0.08em] uppercase transition-colors sm:text-[10px]"
+            style={{ color: "var(--x01-ink-faint)" }}
+          >
+            ← Voltar ao projeto
+          </Link>
         </motion.div>
       </div>
     </section>

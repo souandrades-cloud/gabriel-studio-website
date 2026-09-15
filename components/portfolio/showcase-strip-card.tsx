@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Heading } from "@/components/ui/heading";
 import { getProjectEntryPath } from "@/lib/portfolio/paths";
 import type { StudioShowcaseProject } from "@/lib/portfolio/types";
+import { cn } from "@/lib/utils";
 
 interface ShowcaseStripCardProps {
   project: StudioShowcaseProject;
@@ -25,7 +26,18 @@ function ShowcaseStripCard({ project }: ShowcaseStripCardProps) {
             alt={thumbnail.alt}
             fill
             sizes="(min-width: 640px) 33vw, 100vw"
-            className="object-cover object-top transition-transform duration-300 group-hover:scale-[1.03]"
+            className={cn(
+              "object-cover transition-transform duration-300",
+              thumbnail.crop ? null : "object-top group-hover:scale-[1.03]",
+            )}
+            style={
+              thumbnail.crop
+                ? {
+                    transform: `scale(${thumbnail.crop.scale})`,
+                    transformOrigin: thumbnail.crop.origin,
+                  }
+                : undefined
+            }
           />
         ) : null}
       </div>

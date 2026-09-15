@@ -20,6 +20,7 @@ import {
   type Variants,
 } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import { useId, useRef, useState, type KeyboardEvent } from "react";
 
 import { BrowserFrame } from "@/components/shared/browser-frame";
@@ -58,6 +59,14 @@ interface CaseStudy {
   image?: string;
   /** URL da demo real, quando existir. Sem URL = sem CTA de link externo. */
   url?: string;
+  /**
+   * Slug do case em `/work/{slug}` quando já existe página editorial
+   * publicada (Browser-Real QA / MINOR 1: CTA deve entrar na página
+   * editorial primeiro, não abrir a demo externa direto). Sem slug = CTA
+   * continua indo direto para `url`, como antes — nem todo case do carrossel
+   * tem uma entry editorial ainda.
+   */
+  editorialSlug?: string;
   crop?: ProjectMedia["crop"];
 }
 
@@ -70,6 +79,7 @@ const CASES: CaseStudy[] = [
     tags: ["Identidade editorial", "UI de agendamento"],
     image: "/images/projects/landing-pages/lp-clinica-cora.png",
     url: "https://portfolio-lp-clinica.vercel.app",
+    editorialSlug: "cora",
     crop: approvedCrop("cora"),
   },
   {
@@ -416,11 +426,9 @@ function LandingPagesShowcase() {
                     </li>
                   ))}
                 </ul>
-                {active.url && (
-                  <a
-                    href={active.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                {active.editorialSlug ? (
+                  <Link
+                    href={`/work/${active.editorialSlug}`}
                     className="group/cta text-brand focus-visible:ring-brand/50 mt-7 inline-flex items-center gap-1.5 rounded-md text-sm font-medium outline-none focus-visible:ring-3"
                   >
                     Ver o case
@@ -428,7 +436,22 @@ function LandingPagesShowcase() {
                       className="size-4 transition-transform duration-300 group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5"
                       aria-hidden="true"
                     />
-                  </a>
+                  </Link>
+                ) : (
+                  active.url && (
+                    <a
+                      href={active.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group/cta text-brand focus-visible:ring-brand/50 mt-7 inline-flex items-center gap-1.5 rounded-md text-sm font-medium outline-none focus-visible:ring-3"
+                    >
+                      Ver o case
+                      <ArrowUpRight
+                        className="size-4 transition-transform duration-300 group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5"
+                        aria-hidden="true"
+                      />
+                    </a>
+                  )
                 )}
               </div>
             </motion.div>

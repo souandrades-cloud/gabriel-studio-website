@@ -55,7 +55,15 @@ const HEADLINE_SETTLE = { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const, dela
 
 const LEGEND = ["Sites institucionais", "Landing pages", "Automações", "Inteligência artificial"];
 
-function MetaTag({ children, className, delay }: { children: ReactNode; className?: string; delay: number }) {
+function MetaTag({
+  children,
+  className,
+  delay,
+}: {
+  children: ReactNode;
+  className?: string;
+  delay: number;
+}) {
   return (
     <motion.div
       aria-hidden="true"
@@ -120,7 +128,9 @@ function TelemetryCluster({
           align === "right" ? "right-0" : "left-0",
         )}
       />
-      <span className="text-muted-foreground/40 font-mono text-[9px] tracking-[0.2em] uppercase">{label}</span>
+      <span className="text-muted-foreground/40 font-mono text-[9px] tracking-[0.2em] uppercase">
+        {label}
+      </span>
       {items.map((item) => (
         <span
           key={item}
@@ -164,7 +174,7 @@ function StaticFallbackCore() {
         <div className="absolute top-[22%] -left-[30%] h-[54%] w-[74%] -rotate-[16deg] rounded-lg border border-white/[0.045] bg-white/[0.018]" />
 
         {/* BACKGROUND — gate pequeno, alto à direita */}
-        <div className="absolute top-0 left-[64%] h-[17%] w-[22%] -rotate-[8deg] rounded border-[5px] border-r-[13px] border-t-[#4a534f] border-l-[#3e4744] border-r-[#222826] border-b-[#1b201e]" />
+        <div className="absolute top-0 left-[64%] h-[17%] w-[22%] -rotate-[8deg] rounded border-[5px] border-r-[13px] border-t-[#4a534f] border-r-[#222826] border-b-[#1b201e] border-l-[#3e4744]" />
 
         {/* Conexões estruturais — do núcleo para cada plano */}
         <div className="absolute top-[44%] left-[34%] h-[4px] w-[40%] origin-left -rotate-[36deg] rounded-full bg-[#0f1312]" />
@@ -176,8 +186,8 @@ function StaticFallbackCore() {
         <div className="bg-brand/22 absolute top-[44%] left-[35%] h-px w-[38%] origin-left -rotate-[34deg]" />
 
         {/* MIDGROUND — núcleo: frame externo claro + camada concêntrica + emissor em lâmina */}
-        <div className="absolute top-[20%] left-[4%] h-[46%] w-[38%] -rotate-[6deg] rounded-md border-[11px] border-t-[#75807a] border-l-[#616b66] border-r-[#333b38] border-b-[#272d2b] shadow-[0_24px_50px_-26px_rgba(0,0,0,0.9)]" />
-        <div className="absolute top-[27%] left-[9%] h-[32%] w-[26%] -rotate-[2deg] rounded-[3px] border-[8px] border-t-[#2e3532] border-l-[#282e2c] border-r-[#151917] border-b-[#121614]" />
+        <div className="absolute top-[20%] left-[4%] h-[46%] w-[38%] -rotate-[6deg] rounded-md border-[11px] border-t-[#75807a] border-r-[#333b38] border-b-[#272d2b] border-l-[#616b66] shadow-[0_24px_50px_-26px_rgba(0,0,0,0.9)]" />
+        <div className="absolute top-[27%] left-[9%] h-[32%] w-[26%] -rotate-[2deg] rounded-[3px] border-[8px] border-t-[#2e3532] border-r-[#151917] border-b-[#121614] border-l-[#282e2c]" />
         <div className="bg-brand shadow-brand/60 absolute top-[31%] left-[13%] h-[23%] w-[4px] rounded-[1px] shadow-[0_0_14px]" />
 
         {/* MIDGROUND — block, contrapeso em cima à esquerda */}
@@ -193,7 +203,7 @@ function StaticFallbackCore() {
         </div>
 
         {/* FOREGROUND — wedge, canto cortado, embaixo à esquerda */}
-        <div className="absolute top-[68%] left-[2%] h-[24%] w-[24%] -rotate-[6deg] rounded-sm border border-white/[0.06] bg-[linear-gradient(145deg,#202523_0%,#0e1211_100%)] [clip-path:polygon(0_0,100%_0,100%_72%,80%_100%,0_100%)] shadow-[0_28px_50px_-28px_rgba(0,0,0,0.9)]">
+        <div className="absolute top-[68%] left-[2%] h-[24%] w-[24%] -rotate-[6deg] rounded-sm border border-white/[0.06] bg-[linear-gradient(145deg,#202523_0%,#0e1211_100%)] shadow-[0_28px_50px_-28px_rgba(0,0,0,0.9)] [clip-path:polygon(0_0,100%_0,100%_72%,80%_100%,0_100%)]">
           <div className="bg-brand/50 absolute top-[46%] left-[42%] size-[3px] rounded-[1px]" />
         </div>
       </div>
@@ -287,11 +297,11 @@ function HeroDigitalCore3D() {
           <TechGrid
             drift
             size={112}
-            className="opacity-[0.045] [mask-image:radial-gradient(105%_85%_at_78%_18%,black_28%,transparent_82%)]"
+            className="[mask-image:radial-gradient(105%_85%_at_78%_18%,black_28%,transparent_82%)] opacity-[0.045]"
           />
           <TechGrid
             drift
-            className="opacity-[0.055] [mask-image:radial-gradient(ellipse_42%_40%_at_44%_62%,black_20%,transparent_88%)]"
+            className="[mask-image:radial-gradient(ellipse_42%_40%_at_44%_62%,black_20%,transparent_88%)] opacity-[0.055]"
           />
         </motion.div>
         <GrainTexture className="-z-10" />
@@ -343,12 +353,19 @@ function HeroDigitalCore3D() {
           className="from-background pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t to-transparent"
         />
 
-        <div ref={heroRef} className="relative mx-auto w-full max-w-[1800px] flex-1 px-4 sm:px-6 lg:px-10">
+        <div
+          ref={heroRef}
+          className="relative mx-auto w-full max-w-[1800px] flex-1 px-4 sm:px-6 lg:px-10"
+        >
           {/* Headline — protagonista da cena. No desktop o Core 3D ocupa o
               espaço à direita/centro e pode passar visualmente atrás dela
               (z-index abaixo), nunca na frente do texto. */}
           <div className="relative z-40 lg:absolute lg:top-0 lg:left-0 lg:w-[42%] lg:max-w-xl">
-            <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.6 }}>
+            <motion.div
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
               <Badge variant="outline" className="tracking-wide uppercase">
                 Tecnologia para empresas
               </Badge>
@@ -365,13 +382,28 @@ function HeroDigitalCore3D() {
                 sequência como o briefing sugeria em §9 — ela já está lá, e a
                 arquitetura se monta ao redor dela. §20 é requisito técnico
                 duro; os tempos de §9 são explicitamente aproximados. */}
+            {/* Browser-Real QA / MINOR 2: as duas variantes abaixo (quebra de
+                linha diferente em mobile vs. desktop) sempre coexistiram no
+                DOM — só uma fica visível por vez via `lg:hidden`/`hidden
+                lg:block`, mas ambas continuavam expostas ao nome acessível do
+                h1 (textContent, leitores de tela, crawlers), duplicando o
+                texto. `aria-label` no h1 fixa o nome acessível numa única
+                versão limpa; `aria-hidden` nas duas variantes internas as
+                torna puramente apresentacionais — mesmo texto, mesma
+                animação, zero mudança perceptual. */}
             <Heading
               as="h1"
               size="display"
+              aria-label="Transformamos problemas em soluções digitais."
               className="mt-4 text-4xl leading-[1.02] sm:text-5xl lg:mt-5 lg:leading-[0.98] xl:text-7xl 2xl:text-[5rem]"
             >
-              <span className="block lg:hidden">
-                <motion.span className="block" initial={{ y: 14 }} animate={{ y: 0 }} transition={HEADLINE_SETTLE}>
+              <span className="block lg:hidden" aria-hidden="true">
+                <motion.span
+                  className="block"
+                  initial={{ y: 14 }}
+                  animate={{ y: 0 }}
+                  transition={HEADLINE_SETTLE}
+                >
                   Transformamos problemas
                 </motion.span>
                 <motion.span
@@ -383,8 +415,13 @@ function HeroDigitalCore3D() {
                   em <span className="text-brand">soluções digitais.</span>
                 </motion.span>
               </span>
-              <span className="hidden lg:block">
-                <motion.span className="block" initial={{ y: 16 }} animate={{ y: 0 }} transition={HEADLINE_SETTLE}>
+              <span className="hidden lg:block" aria-hidden="true">
+                <motion.span
+                  className="block"
+                  initial={{ y: 16 }}
+                  animate={{ y: 0 }}
+                  transition={HEADLINE_SETTLE}
+                >
                   Transformamos
                 </motion.span>
                 <motion.span
@@ -422,7 +459,10 @@ function HeroDigitalCore3D() {
               transition={{ duration: 0.5, delay: 1.25, ease: "easeOut" }}
               className="mt-6 flex flex-wrap items-center gap-4 lg:mt-8"
             >
-              <Link href="#servicos" className={cn(buttonVariants({ variant: "brand", size: "xl" }), "group")}>
+              <Link
+                href="#servicos"
+                className={cn(buttonVariants({ variant: "brand", size: "xl" }), "group")}
+              >
                 Conhecer soluções
                 <ArrowRight
                   data-icon="inline-end"

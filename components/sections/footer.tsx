@@ -12,15 +12,15 @@ import { cn } from "@/lib/utils";
 import type { NavLink } from "@/types/nav";
 
 const NAV_LINKS: NavLink[] = [
-  { label: "Serviços", href: "#servicos" },
-  { label: "Processo", href: "#processo" },
-  { label: "Projetos", href: "#projetos" },
-  { label: "Sistemas", href: "#sistemas" },
-  { label: "Tecnologias", href: "#tecnologias" },
-  { label: "Diferenciais", href: "#diferenciais" },
-  { label: "Sobre", href: "#sobre" },
-  { label: "FAQ", href: "#faq" },
-  { label: "Contato", href: "#contato" },
+  { label: "Serviços", href: "/#servicos" },
+  { label: "Processo", href: "/#processo" },
+  { label: "Projetos", href: "/#projetos" },
+  { label: "Sistemas", href: "/#sistemas" },
+  { label: "Tecnologias", href: "/#tecnologias" },
+  { label: "Diferenciais", href: "/#diferenciais" },
+  { label: "Sobre", href: "/#sobre" },
+  { label: "FAQ", href: "/#faq" },
+  { label: "Contato", href: "/#contato" },
 ];
 
 /*
@@ -42,7 +42,12 @@ const linkClassName = "hover:text-brand text-sm transition-colors";
 
 function Footer() {
   return (
-    <footer className={cn(sectionVariants({ background: "muted" }), "dark bg-muted relative overflow-hidden")}>
+    <footer
+      className={cn(
+        sectionVariants({ background: "muted" }),
+        "dark bg-muted relative overflow-hidden",
+      )}
+    >
       {/* CTA → Footer era o único corte seco entre seções (auditado na
           Sprint 3O) — mesmo tom escuro dos dois lados, então a dissolução é
           sutil, mas existe: sem ela, o glow verde do CTA parava de golpe. */}
@@ -85,7 +90,9 @@ function Footer() {
                     href={link.href}
                     target={link.external ? "_blank" : undefined}
                     rel={link.external ? "noopener noreferrer" : undefined}
-                    aria-label={link.label === "E-mail" ? `Enviar e-mail para ${EMAIL_ADDRESS}` : undefined}
+                    aria-label={
+                      link.label === "E-mail" ? `Enviar e-mail para ${EMAIL_ADDRESS}` : undefined
+                    }
                     onClick={() => track(link.event)}
                     className={cn(linkClassName, "text-muted-foreground")}
                   >

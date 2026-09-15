@@ -13,10 +13,10 @@ import { cn } from "@/lib/utils";
 import type { NavLink } from "@/types/nav";
 
 const NAV_LINKS: NavLink[] = [
-  { label: "Serviços", href: "#servicos" },
-  { label: "Projetos", href: "#projetos" },
-  { label: "Sobre", href: "#sobre" },
-  { label: "Contato", href: "#contato" },
+  { label: "Serviços", href: "/#servicos" },
+  { label: "Projetos", href: "/#projetos" },
+  { label: "Sobre", href: "/#sobre" },
+  { label: "Contato", href: "/#contato" },
 ];
 
 function Navbar() {
@@ -122,7 +122,7 @@ function Navbar() {
                       <Link
                         href={link.href}
                         onClick={() => setMobileOpen(false)}
-                        className="text-muted-foreground hover:text-foreground hover:bg-muted focus-visible:ring-ring/50 block rounded-lg px-3 py-2.5 text-base font-medium outline-none transition-colors focus-visible:ring-3"
+                        className="text-muted-foreground hover:text-foreground hover:bg-muted focus-visible:ring-ring/50 block rounded-lg px-3 py-2.5 text-base font-medium transition-colors outline-none focus-visible:ring-3"
                       >
                         {link.label}
                       </Link>

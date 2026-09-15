@@ -39,7 +39,9 @@ export const metadata: Metadata = {
 export default function X03ExperienceLayout({ children }: LayoutProps<"/work/x03/experience">) {
   return (
     <html lang="en" className={`${barlowCondensed.variable} ${ibmPlexMono.variable}`}>
-      <body className="x03-root">{children}</body>
+      <body className="x03-root">
+        <main>{children}</main>
+      </body>
     </html>
   );
 }

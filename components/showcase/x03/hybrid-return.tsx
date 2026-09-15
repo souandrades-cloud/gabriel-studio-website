@@ -9,6 +9,7 @@ import {
   type MotionValue,
 } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import { useRef, useState } from "react";
 
 import { useIsMobileViewport } from "@/hooks/use-is-mobile-viewport";
@@ -112,7 +113,13 @@ function smoothstep(t: number): number {
 
 /** 0 before `riseStart`, eases to 1 by `riseEnd`, holds, eases back to 0
  *  across `fallStart`..`fallEnd`. Shared shape for both CONTEXT and MEANING. */
-function riseHoldFall(p: number, riseStart: number, riseEnd: number, fallStart: number, fallEnd: number): number {
+function riseHoldFall(
+  p: number,
+  riseStart: number,
+  riseEnd: number,
+  fallStart: number,
+  fallEnd: number,
+): number {
   if (p < riseStart) return 0;
   if (p < riseEnd) return smoothstep((p - riseStart) / (riseEnd - riseStart));
   if (p < fallStart) return 1;
@@ -132,9 +139,16 @@ function HybridReturn() {
   const trackRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ["start start", "end end"] });
 
-  const carryLabelOpacity = useTransform(scrollYProgress, (p) => piecewiseLerp(p, CARRY_EXIT_RANGE, [1, 0]));
-  const routeLineOpacity = useTransform(scrollYProgress, (p) => piecewiseLerp(p, ROUTE_EXIT_RANGE, [0.5, 0]));
-  const fieldBreathScale = useTransform(scrollYProgress, (p) => 1 + piecewiseLerp(p, BREATH_RANGE, [0, 0.015]));
+  const carryLabelOpacity = useTransform(scrollYProgress, (p) =>
+    piecewiseLerp(p, CARRY_EXIT_RANGE, [1, 0]),
+  );
+  const routeLineOpacity = useTransform(scrollYProgress, (p) =>
+    piecewiseLerp(p, ROUTE_EXIT_RANGE, [0.5, 0]),
+  );
+  const fieldBreathScale = useTransform(
+    scrollYProgress,
+    (p) => 1 + piecewiseLerp(p, BREATH_RANGE, [0, 0.015]),
+  );
   const contextCaptionOpacity = useTransform(scrollYProgress, (p) =>
     riseHoldFall(p, CONTEXT_RISE[0], CONTEXT_RISE[1], CONTEXT_FALL[0], CONTEXT_FALL[1]),
   );
@@ -145,8 +159,9 @@ function HybridReturn() {
   // WITHHOLD — A-008 fades out alone, revealing the already-dark field
   // ground beneath it. No scrim, no ground color shift: #0a0908 already
   // reads as "near-darkness," so removing the image is the entire effect.
-  const fieldOpacity = useTransform(scrollYProgress, (p) =>
-    1 - smoothstep(piecewiseLerp(p, WITHHOLD_RANGE, [0, 1])),
+  const fieldOpacity = useTransform(
+    scrollYProgress,
+    (p) => 1 - smoothstep(piecewiseLerp(p, WITHHOLD_RANGE, [0, 1])),
   );
 
   // FINAL REVEAL — A-009 arrives alone, on the field ground ABSENCE just
@@ -174,7 +189,11 @@ function HybridReturn() {
           {/* Ground — the same near-black FieldAction ends on, held constant
               for the whole section. WITHHOLD reveals it by removing A-008;
               ABSENCE is this color and nothing else. */}
-          <div className="absolute inset-0 z-0" style={{ background: FIELD_GROUND }} aria-hidden="true" />
+          <div
+            className="absolute inset-0 z-0"
+            style={{ background: FIELD_GROUND }}
+            aria-hidden="true"
+          />
 
           {/* CONSEQUENCE/CONTEXT — the exact frame FieldAction ends on, held.
               No pan, no re-crop: the substation is already in this photograph. */}
@@ -183,8 +202,19 @@ function HybridReturn() {
             style={{ opacity: fieldOpacity, scale: fieldBreathScale }}
             aria-hidden="true"
           >
-            <Image src={A008} alt="" fill sizes="100vw" className="object-cover" style={{ objectPosition }} />
-            <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full">
+            <Image
+              src={A008}
+              alt=""
+              fill
+              sizes="100vw"
+              className="object-cover"
+              style={{ objectPosition }}
+            />
+            <svg
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              className="absolute inset-0 h-full w-full"
+            >
               <motion.path
                 d="M 74 60 C 54 78, 29 84, 6 90"
                 fill="none"
@@ -206,10 +236,16 @@ function HybridReturn() {
             className="x03-container x03-mono absolute inset-x-0 bottom-0 z-20 flex flex-col gap-2 py-8 lg:py-12"
             style={{ opacity: carryLabelOpacity }}
           >
-            <p className="text-[11px] tracking-[0.14em] uppercase" style={{ color: "var(--x03-accent)" }}>
+            <p
+              className="text-[11px] tracking-[0.14em] uppercase"
+              style={{ color: "var(--x03-accent)" }}
+            >
               Adaptive Mobility
             </p>
-            <p className="max-w-[42ch] text-[13px] sm:text-[15px]" style={{ color: "var(--x03-ink-soft)" }}>
+            <p
+              className="max-w-[42ch] text-[13px] sm:text-[15px]"
+              style={{ color: "var(--x03-ink-soft)" }}
+            >
               Contact becomes commitment. The chosen route carries into the body.
             </p>
           </motion.div>
@@ -219,10 +255,16 @@ function HybridReturn() {
             className="x03-container x03-mono absolute inset-x-0 bottom-0 z-20 flex flex-col gap-2 py-8 lg:py-12"
             style={{ opacity: contextCaptionOpacity }}
           >
-            <p className="text-[11px] tracking-[0.14em] uppercase" style={{ color: "var(--x03-accent)" }}>
+            <p
+              className="text-[11px] tracking-[0.14em] uppercase"
+              style={{ color: "var(--x03-accent)" }}
+            >
               Where
             </p>
-            <p className="max-w-[42ch] text-[13px] sm:text-[15px]" style={{ color: "var(--x03-ink-soft)" }}>
+            <p
+              className="max-w-[42ch] text-[13px] sm:text-[15px]"
+              style={{ color: "var(--x03-ink-soft)" }}
+            >
               Live infrastructure — where access and adaptation matter as much as perception.
             </p>
           </motion.div>
@@ -240,10 +282,16 @@ function HybridReturn() {
             className="x03-container x03-mono pointer-events-none absolute inset-x-0 top-1/2 z-30 flex -translate-y-1/2 flex-col items-center gap-2 text-center"
             style={{ opacity: meaningCaptionOpacity }}
           >
-            <p className="text-[11px] tracking-[0.14em] uppercase" style={{ color: "var(--x03-accent)" }}>
+            <p
+              className="text-[11px] tracking-[0.14em] uppercase"
+              style={{ color: "var(--x03-accent)" }}
+            >
               Why
             </p>
-            <p className="max-w-[36ch] text-[13px] sm:text-[15px]" style={{ color: "var(--x03-ink-soft)" }}>
+            <p
+              className="max-w-[36ch] text-[13px] sm:text-[15px]"
+              style={{ color: "var(--x03-ink-soft)" }}
+            >
               Understanding becomes motion. The work continues through what it finds.
             </p>
           </motion.div>
@@ -262,7 +310,7 @@ function HybridReturn() {
               tolerates. No scale/pan on this layer at all — see
               productOpacity above for why. */}
           <motion.div
-            className={`absolute inset-0 z-20${isMobile ? " px-[4%] py-[10%]" : ""}`}
+            className={`absolute inset-0 z-20${isMobile ? "px-[4%] py-[10%]" : ""}`}
             style={{ opacity: productOpacity }}
           >
             <div className="relative h-full w-full">
@@ -298,6 +346,18 @@ function HybridReturn() {
             <span className="text-[13px] sm:text-[14px]" style={{ color: "var(--x03-ink-soft)" }}>
               Perception, decided into motion.
             </span>
+            {/* Saída da experiência (Browser-Real QA / MAJOR 2): mínima,
+                no mesmo beat de STILLNESS/RESOLUTION — nunca toca A-009
+                (frozen) nem os timings acima, só herda o fade já existente
+                deste bloco. `pointer-events-auto` porque o container pai é
+                `pointer-events-none`. */}
+            <Link
+              href="/work/x03"
+              className="pointer-events-auto text-[11px] tracking-[0.1em] uppercase underline-offset-4 hover:underline"
+              style={{ color: "var(--x03-accent)" }}
+            >
+              ← Voltar ao projeto
+            </Link>
           </motion.div>
 
           {process.env.NODE_ENV !== "production" && (
@@ -319,7 +379,10 @@ function HybridReturn() {
 function HybridReturnFallback() {
   return (
     <div>
-      <section className="relative h-[90svh] w-full overflow-hidden border-t" style={{ borderColor: "var(--x03-hairline)" }}>
+      <section
+        className="relative h-[90svh] w-full overflow-hidden border-t"
+        style={{ borderColor: "var(--x03-hairline)" }}
+      >
         <Image
           src={A008}
           alt=""
@@ -335,7 +398,10 @@ function HybridReturnFallback() {
           style={{ background: "linear-gradient(to top, rgba(10,9,8,0.72), transparent)" }}
         />
         <div className="x03-container x03-mono absolute inset-x-0 bottom-0 z-10 flex flex-col gap-2 py-8">
-          <p className="text-[11px] tracking-[0.14em] uppercase" style={{ color: "var(--x03-accent)" }}>
+          <p
+            className="text-[11px] tracking-[0.14em] uppercase"
+            style={{ color: "var(--x03-accent)" }}
+          >
             Where
           </p>
           <p className="max-w-[42ch] text-[13px]" style={{ color: "var(--x03-ink-soft)" }}>
@@ -382,6 +448,13 @@ function HybridReturnFallback() {
           <span className="text-[13px]" style={{ color: "var(--x03-ink-soft)" }}>
             Perception, decided into motion.
           </span>
+          <Link
+            href="/work/x03"
+            className="text-[11px] tracking-[0.1em] uppercase underline-offset-4 hover:underline"
+            style={{ color: "var(--x03-accent)" }}
+          >
+            ← Voltar ao projeto
+          </Link>
         </div>
       </section>
     </div>

@@ -10,6 +10,7 @@ import {
   useTransform,
 } from "framer-motion";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useRef, useState, type PointerEvent } from "react";
 
 import { CanvasErrorBoundary } from "@/components/three/canvas-error-boundary";
@@ -223,6 +224,14 @@ function X02Experience() {
           <p className="x02-eyebrow">The Impossible Structure</p>
           <h2 className="x02-headline">01</h2>
         </div>
+        {/* Saída da experiência (Browser-Real QA / MAJOR 2): só X02 e X03
+            não tinham caminho de volta visível. Vive dentro da RESOLUTION —
+            o mesmo beat em que o DOM já retorna — e herda seu fade, então
+            nunca compete com a jornada em si, só aparece quando ela já
+            resolveu. */}
+        <Link href="/work/x02" className="x02-exit">
+          ← Voltar ao projeto
+        </Link>
       </motion.div>
 
       <div className="x02-caption" aria-hidden="true">

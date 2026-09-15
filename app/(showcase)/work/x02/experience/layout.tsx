@@ -39,7 +39,9 @@ export const metadata: Metadata = {
 export default function X02ExperienceLayout({ children }: LayoutProps<"/work/x02/experience">) {
   return (
     <html lang="en" className={fraunces.variable}>
-      <body className="x02-root">{children}</body>
+      <body className="x02-root">
+        <main>{children}</main>
+      </body>
     </html>
   );
 }

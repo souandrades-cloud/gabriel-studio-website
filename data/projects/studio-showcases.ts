@@ -16,9 +16,25 @@ export const STUDIO_SHOWCASE_PROJECTS: readonly StudioShowcaseProject[] = [
     technologies: ["GSAP", "ScrollTrigger", "Framer Motion"],
     media: [
       {
+        /**
+         * Browser-Real QA / MINOR 4: A03 (Balance, o antigo thumbnail) é
+         * quase inteiramente claro — parede bege + painel de alumínio quase
+         * branco — e sumia ao lado de X02 (fundo preto) e X03 (robô com
+         * contraste interno forte) no grid `/work`. A06 já é um asset
+         * aprovado do próprio arquivo X01 (não gerado para esta correção)
+         * com peso tonal real (têxtil escuro cobrindo a maior parte do
+         * quadro); só a atribuição de `role` mudou entre os dois.
+         */
+        src: "/images/x01/X01-A06.png",
+        alt: "Material macro study for Pressure — close, cropped detail of the archive's material surface under compression.",
+        role: "thumbnail",
+        width: 1122,
+        height: 1402,
+      },
+      {
         src: "/images/x01/x01-a03-alternate.png",
         alt: "Object Study 001 — Balance. A brushed-aluminium plane held upright by a blackened steel base and counterweight, shown in full.",
-        role: "thumbnail",
+        role: "gallery",
         width: 1122,
         height: 1402,
       },
@@ -32,13 +48,6 @@ export const STUDIO_SHOWCASE_PROJECTS: readonly StudioShowcaseProject[] = [
       {
         src: "/images/x01/X01-A05.png",
         alt: "Object Study 006 — Pendulum. A suspended mass held in potential, its counterweight resting against a fixed support.",
-        role: "gallery",
-        width: 1122,
-        height: 1402,
-      },
-      {
-        src: "/images/x01/X01-A06.png",
-        alt: "Material macro study for Pressure — close, cropped detail of the archive's material surface under compression.",
         role: "gallery",
         width: 1122,
         height: 1402,

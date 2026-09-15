@@ -257,6 +257,25 @@
   font-weight: 600;
 }
 
+.x02-exit {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(28px, 6vh, 64px);
+  transform: translateX(-50%);
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(201, 208, 204, 0.6);
+  pointer-events: auto;
+  transition: color 0.2s ease;
+}
+
+.x02-exit:hover,
+.x02-exit:focus-visible {
+  color: rgba(201, 208, 204, 0.9);
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
