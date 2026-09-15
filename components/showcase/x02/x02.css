@@ -52,6 +52,13 @@
   padding: clamp(16px, 3vw, 32px);
 }
 
+/* V2 Final Minor Fix 001: em viewports estreitos, a coluna 3D clara do
+   estado CHAMBER pode passar diretamente atrás desta legenda, reduzindo o
+   contraste do texto (canto superior esquerdo, alpha baixo por design). Um
+   text-shadow escuro e sutil garante legibilidade contra qualquer geometria
+   clara sem alterar a cor/opacidade em si — invisível sobre o fundo #050506
+   já quase preto dos demais estados, então o desktop permanece
+   perceptualmente inalterado. */
 .x02-caption-tag {
   position: absolute;
   top: clamp(16px, 3vw, 32px);
@@ -60,6 +67,9 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(201, 208, 204, 0.4);
+  text-shadow:
+    0 0 2px rgba(0, 0, 0, 0.85),
+    0 1px 5px rgba(0, 0, 0, 0.6);
 }
 
 .x02-caption-state {
