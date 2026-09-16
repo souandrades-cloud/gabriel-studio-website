@@ -359,8 +359,14 @@ function HeroDigitalCore3D() {
         >
           {/* Headline — protagonista da cena. No desktop o Core 3D ocupa o
               espaço à direita/centro e pode passar visualmente atrás dela
-              (z-index abaixo), nunca na frente do texto. */}
-          <div className="relative z-40 lg:absolute lg:top-0 lg:left-0 lg:w-[42%] lg:max-w-xl">
+              (z-index abaixo), nunca na frente do texto.
+              `lg:left-10` (não `lg:left-0`): um filho absoluto ignora o
+              padding do ancestral posicionado (a caixa de conteúdo resolve
+              contra a borda, não contra a borda interna do padding) — com
+              `left-0` a headline ficava colada na borda da viewport em
+              qualquer largura entre `lg:` e ~1800px, apesar do `lg:px-10` do
+              container. `left-10` reaplica manualmente o mesmo respiro. */}
+          <div className="relative z-40 lg:absolute lg:top-0 lg:left-10 lg:w-[42%] lg:max-w-xl">
             <motion.div
               initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
@@ -459,9 +465,20 @@ function HeroDigitalCore3D() {
               transition={{ duration: 0.5, delay: 1.25, ease: "easeOut" }}
               className="mt-6 flex flex-wrap items-center gap-4 lg:mt-8"
             >
+              {/* Ring padrão (`ring-ring/50`, cinza neutro) some contra o fundo
+                  quase preto da Hero — troca para `ring-brand`, já usado como
+                  focus-visible em outras seções (Diferenciais, Signature).
+                  No CTA `brand` (preenchimento já verde), o mesmo ring verde
+                  colado na borda lê como parte do próprio botão em vez de um
+                  indicador separado — ring cheio + `ring-offset` abre um vão
+                  visível entre botão e anel, o que resolve sem depender de
+                  contraste de matiz igual. */}
               <Link
                 href="#servicos"
-                className={cn(buttonVariants({ variant: "brand", size: "xl" }), "group")}
+                className={cn(
+                  buttonVariants({ variant: "brand", size: "xl" }),
+                  "group focus-visible:border-brand focus-visible:ring-brand focus-visible:ring-offset-background focus-visible:ring-offset-2",
+                )}
               >
                 Conhecer soluções
                 <ArrowRight
@@ -469,7 +486,13 @@ function HeroDigitalCore3D() {
                   className="size-4 transition-transform duration-200 group-hover:translate-x-1"
                 />
               </Link>
-              <Link href="#projetos" className={buttonVariants({ variant: "outline", size: "xl" })}>
+              <Link
+                href="#projetos"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "xl" }),
+                  "focus-visible:border-brand focus-visible:ring-brand/50",
+                )}
+              >
                 Ver projetos
               </Link>
             </motion.div>
@@ -480,8 +503,10 @@ function HeroDigitalCore3D() {
               módulos mais ao fundo (veil, block) alcançam a região da
               tipografia e a peça lê como uma composição única, em vez de
               "texto à esquerda + 3D à direita". A headline fica em z-40,
-              sempre acima do canvas — o objeto passa ATRÁS, nunca por cima. */}
-          <div className="relative mt-10 h-[380px] sm:h-[440px] lg:absolute lg:inset-y-0 lg:top-0 lg:left-0 lg:mt-0 lg:h-full lg:w-full">
+              sempre acima do canvas — o objeto passa ATRÁS, nunca por cima.
+              `lg:inset-x-10` (não `lg:left-0 lg:w-full`) pelo mesmo motivo da
+              headline acima: reaplica o gutter que `left-0` ignorava. */}
+          <div className="relative mt-10 h-[380px] sm:h-[440px] lg:absolute lg:inset-x-10 lg:inset-y-0 lg:top-0 lg:mt-0 lg:h-full">
             {showScene ? (
               <CanvasErrorBoundary fallback={<StaticFallbackCore />}>
                 <DigitalCoreScene

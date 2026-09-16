@@ -29,6 +29,26 @@ extend({ ThreeLine: THREE.Line });
  * Princípio de validação herdado da 3H: com NEUTRAL_TEST ligado o objeto
  * renderiza sem verde. Se continuar interessante só com geometria e luz, a
  * silhueta funciona; se depender do verde, a geometria ainda está fraca.
+ *
+ * HERO FINAL REFINEMENT (Gate "A+B Assembly + Signal", promovida à Home após
+ * discovery isolado em `/lab/hero-refinement`) — geometria, materiais,
+ * câmera, iluminação e saída no scroll continuam os da 3H–3J, intocados. O
+ * que mudou é só a ENCENAÇÃO TEMPORAL da montagem e da energia, para a peça
+ * contar um arco em vez de assentar numa pose estática logo na entrada:
+ *
+ *   FRAGMENTAÇÃO → APROXIMAÇÃO  módulos partem de mais longe (DOCK_DISTANCE
+ *     maior) e com mais atraso relativo entre si, com um easing mais "pesado"
+ *     (easeOutQuart) do que o resto da peça — a leitura passa de "tudo
+ *     encaixa de uma vez" para "peças convergindo com pesos diferentes".
+ *   ENCAIXE  ao final da montagem, um beat estrutural único e discreto
+ *     (T_COMPLETE_BEAT) marca "sistema completo": pulso central, resposta de
+ *     rim light e uma intensificação breve das linhas de conexão — ainda sem
+ *     tráfego de dados.
+ *   ATIVAÇÃO → CONEXÃO → SISTEMA VIVO  depois de uma pausa curta e legível
+ *     (T_ACTIVATE), o núcleo liga e a peça entra num batimento periódico de
+ *     energia (core→módulos) seguido por relays module→module em cadeia,
+ *     repetidos indefinidamente como estado de repouso — em vez do surge
+ *     único seguido de loop assíncrono quase imperceptível de antes.
  */
 
 /** Teste B&W temporário — ver §20 do relatório da Sprint 3H. Nunca `true` no entregue. */
@@ -36,6 +56,8 @@ const NEUTRAL_TEST = false;
 
 const ENERGY_COLOR = NEUTRAL_TEST ? "#b3bcb7" : "#22b573";
 const RIM_COLOR = NEUTRAL_TEST ? "#8d9691" : "#22b573";
+const RIM_BASE_INTENSITY = NEUTRAL_TEST ? 0.55 : 0.8;
+const CORE_LIGHT_BASE_INTENSITY = NEUTRAL_TEST ? 0 : 0.34;
 
 // ---------------------------------------------------------------------------
 // Geometria — helpers
@@ -115,8 +137,13 @@ type ModuleDef = {
  */
 const CORE_SCALE = 1.05;
 
-/** Distância de onde cada plano "chega" durante a montagem — o foreground vem de mais longe. */
-const DOCK_DISTANCE: Record<Depth, number> = { fore: 2.4, mid: 1.5, back: 1.1 };
+/**
+ * Distância de onde cada plano "chega" durante a montagem. Aumentada no
+ * Hero Final Refinement (era 2.4/1.5/1.1): os módulos agora nascem
+ * visivelmente fora do enquadramento do núcleo, não a meio caminho — é o que
+ * dá à Fase 1 (Fragmentação) tempo de ser lida antes da convergência.
+ */
+const DOCK_DISTANCE: Record<Depth, number> = { fore: 3.3, mid: 2.2, back: 1.7 };
 /** Quanto cada plano se afasta ao sair da Hero — o foreground se separa primeiro e mais (§14). */
 const EXIT_SPREAD: Record<Depth, number> = { fore: 2.2, mid: 1.05, back: 1.5 };
 
@@ -133,6 +160,10 @@ const EXIT_SPREAD: Record<Depth, number> = { fore: 2.2, mid: 1.05, back: 1.5 };
  *
  * A assimetria da 3H foi mantida: massa à direita e abaixo, block como
  * contrapeso em cima à esquerda, nada equidistante do núcleo.
+ *
+ * `delay` de cada módulo foi quase dobrado no Hero Final Refinement (o
+ * espalhamento original — 0 a 0.38s — era rápido demais para ler como
+ * chegada escalonada; ver MODULE_DURATION/T_PRIMARY/T_SECONDARY abaixo).
  */
 const MODULES: ModuleDef[] = [
   {
@@ -160,7 +191,7 @@ const MODULES: ModuleDef[] = [
     depth: "mid",
     recess: { w: 0.24, h: 0.16, z: 0.105 },
     breathe: [0.026, 0.37, 3.4],
-    delay: 0.11,
+    delay: 0.2,
   },
   {
     id: "gate",
@@ -171,7 +202,7 @@ const MODULES: ModuleDef[] = [
     tier: "primary",
     depth: "back",
     breathe: [0.042, 0.31, 1.9],
-    delay: 0.19,
+    delay: 0.34,
   },
   {
     id: "veil",
@@ -182,7 +213,7 @@ const MODULES: ModuleDef[] = [
     tier: "primary",
     depth: "back",
     breathe: [0.05, 0.22, 2.4],
-    delay: 0.24,
+    delay: 0.43,
   },
   {
     id: "shard",
@@ -193,7 +224,7 @@ const MODULES: ModuleDef[] = [
     tier: "secondary",
     depth: "back",
     breathe: [0.018, 0.6, 5.2],
-    delay: 0.28,
+    delay: 0.5,
   },
   {
     id: "fin",
@@ -204,7 +235,7 @@ const MODULES: ModuleDef[] = [
     tier: "secondary",
     depth: "mid",
     breathe: [0.02, 0.55, 0.9],
-    delay: 0.33,
+    delay: 0.59,
   },
   {
     // Segundo foreground: pequeno, na borda inferior, preenchendo a faixa
@@ -217,7 +248,7 @@ const MODULES: ModuleDef[] = [
     tier: "secondary",
     depth: "fore",
     breathe: [0.024, 0.47, 4.1],
-    delay: 0.38,
+    delay: 0.68,
   },
 ];
 
@@ -229,17 +260,21 @@ const MOBILE_IDS = new Set(["deck", "block", "veil", "wedge"]);
 // o deck já fazia essa ponte visualmente, isto só encurta a distância.
 const CORE_POSITION = new THREE.Vector3(0.4, 0.02, 0);
 
-/** Conexões estruturais: barras escuras que parecem sustentar fisicamente os módulos. */
+/**
+ * Conexões estruturais: barras escuras que parecem sustentar fisicamente os
+ * módulos. `delay` alargado no Hero Final Refinement, acompanhando a
+ * aproximação mais longa dos módulos (ver STRUT_DURATION/T_STRUT abaixo).
+ */
 const STRUTS: Array<{ id: string; to: string; thickness: number; delay: number }> = [
   { id: "strut-deck", to: "deck", thickness: 0.034, delay: 0.0 },
-  { id: "strut-block", to: "block", thickness: 0.03, delay: 0.06 },
+  { id: "strut-block", to: "block", thickness: 0.03, delay: 0.11 },
   // A barra até o gate atravessa quase 2 unidades de profundidade — é ela que
   // torna o eixo Z legível na imagem congelada.
-  { id: "strut-gate", to: "gate", thickness: 0.024, delay: 0.12 },
+  { id: "strut-gate", to: "gate", thickness: 0.024, delay: 0.21 },
   // O segundo foreground também precisa de amarração estrutural: sem ela ele
   // lê como uma forma solta flutuando na frente da cena, não como parte da
   // mesma máquina.
-  { id: "strut-wedge", to: "wedge", thickness: 0.022, delay: 0.18 },
+  { id: "strut-wedge", to: "wedge", thickness: 0.022, delay: 0.32 },
 ];
 
 /**
@@ -248,6 +283,11 @@ const STRUTS: Array<{ id: string; to: string; thickness: number; delay: number }
  * um spoke de roda — é o que separa "sistema" de "molécula".
  * Sequência CORE → ROTA → MÓDULO → STATUS: cada rota acende o chip de status
  * do módulo que ela alimenta ao chegar, nunca todos ao mesmo tempo.
+ *
+ * `rest` recalibrado (mais baixo) para o modelo de batimento periódico do
+ * Hero Final Refinement: a rede fica com um brilho residual bem discreto
+ * entre batimentos, para o PULSO em trânsito continuar sendo o evento que
+ * chama atenção, não a linha em repouso.
  */
 const ROUTES: Array<{
   id: string;
@@ -263,38 +303,115 @@ const ROUTES: Array<{
    */
   rest: number;
 }> = [
-  { id: "route-deck", to: "deck", elbow: [1.18, -0.42, 0.62], speed: 0.29, offset: 0.0, rest: 0.44 },
-  { id: "route-block", to: "block", elbow: [0.04, 0.32, 0.16], speed: 0.26, offset: 0.38, rest: 0.3 },
-  { id: "route-gate", to: "gate", elbow: [1.54, 0.6, -0.86], speed: 0.22, offset: 0.66, rest: 0.22 },
+  {
+    id: "route-deck",
+    to: "deck",
+    elbow: [1.18, -0.42, 0.62],
+    speed: 0.29,
+    offset: 0.0,
+    rest: 0.24,
+  },
+  {
+    id: "route-block",
+    to: "block",
+    elbow: [0.04, 0.32, 0.16],
+    speed: 0.26,
+    offset: 0.38,
+    rest: 0.16,
+  },
+  {
+    id: "route-gate",
+    to: "gate",
+    elbow: [1.54, 0.6, -0.86],
+    speed: 0.22,
+    offset: 0.66,
+    rest: 0.12,
+  },
   // O foreground também é alimentado — sem isso ele leria como decoração solta
   // em vez de parte da mesma máquina.
-  { id: "route-fin", to: "fin", elbow: [1.06, 0.14, 0.1], speed: 0.31, offset: 0.86, rest: 0.36 },
+  { id: "route-fin", to: "fin", elbow: [1.06, 0.14, 0.1], speed: 0.31, offset: 0.86, rest: 0.18 },
+];
+
+/**
+ * Fase 5 (Conexão) — conexões module→module ("relays"), novas no Hero Final
+ * Refinement. É o que muda a leitura de "spokes saindo de um centro" para
+ * "rede: os módulos também conversam entre si". Disparam em cadeia logo
+ * depois do batimento principal (ver RELAY_START abaixo). `deck→wedge`
+ * também existe no conjunto mobile simplificado; `block→fin` só roda no
+ * desktop.
+ */
+const RELAYS: Array<{ id: string; from: string; to: string; elbow: [number, number, number] }> = [
+  { id: "relay-deck-wedge", from: "deck", to: "wedge", elbow: [1.02, -0.94, 1.32] },
+  { id: "relay-block-fin", from: "block", to: "fin", elbow: [0.62, 0.72, 0.24] },
 ];
 
 // ---------------------------------------------------------------------------
-// Cronograma da montagem (§15) — alvo ~2,0s até estabilizar
+// Cronograma — FRAGMENTAÇÃO → APROXIMAÇÃO → ENCAIXE → ATIVAÇÃO → CONEXÃO →
+// SISTEMA VIVO (alvo ~2,8s até o núcleo ligar; ver docblock do arquivo)
 // ---------------------------------------------------------------------------
 
 const T_EMITTER = 0.12; // 1. emissor sobe para dentro do núcleo (microevento)
 const T_CORE_FRAME = 0.2; // 2. estrutura central encaixa
 const T_CORE_LOCK = 0.3; // 2b. camada concêntrica gira e trava (microevento)
-const T_PRIMARY = 0.32; // 3. módulos primários chegam em profundidade
-const T_STRUT = 0.7; // 4. conexões estruturais fecham
-const T_SECONDARY = 0.6; // 5. secundários entram (delay próprio por módulo)
-const T_PANEL = 0.78; // 5b. painel do deck desliza e abre (microevento)
-const T_ENERGY = 0.95; // 6. energia percorre o sistema
-const T_STABLE = 1.62; // 8. estabiliza
 
-/* Parâmetros da onda de energização (§16 da 3J) — o único "tchan" da Hero. */
-/** Atraso entre o disparo de uma rota e o da seguinte, durante a onda. */
+/**
+ * Fases 1–2 (Fragmentação → Aproximação). Tiers atrasados e delays por
+ * módulo bem mais espaçados que a encenação original (que tinha T_PRIMARY
+ * = 0.32/T_SECONDARY = 0.6): dá tempo de ler "peças ainda separadas,
+ * convergindo com pesos e ritmos diferentes" antes do encaixe.
+ */
+const T_PRIMARY = 0.46; // 3. módulos primários começam a aproximar
+const T_SECONDARY = 0.85; // 5. secundários começam (delay próprio por módulo)
+const T_STRUT = 1.23; // 4. conexões estruturais começam a fechar
+const T_PANEL = 1.27; // 5b. painel do deck desliza e abre (microevento)
+/** Duração da aproximação por tier — quase o dobro da original (0.55/0.45). */
+const MODULE_DURATION: Record<Tier, number> = { primary: 0.95, secondary: 0.8 };
+const STRUT_DURATION = 0.735;
+
+/**
+ * Fase 3 (Encaixe) — instante em que o último strut/módulo assenta. Marca o
+ * beat estrutural "sistema completo": pulso central + resposta de rim light
+ * + intensificação breve das conexões, ainda sem tráfego de dados.
+ */
+const T_ASSEMBLY_DONE = 2.35;
+const T_COMPLETE_BEAT = T_ASSEMBLY_DONE;
+const COMPLETE_BEAT_DECAY = 6.5;
+
+/**
+ * Fase 4 (Ativação) — pausa curta e legível antes do núcleo ligar. A partir
+ * daqui a peça entra no batimento periódico de energia (Fase 5, Conexão),
+ * repetido indefinidamente como estado de repouso (Fase 6, Sistema vivo).
+ */
+const T_ACTIVATE = T_COMPLETE_BEAT + 0.45;
+/** Ponto em que a rotação/respiração idle atinge amplitude plena. */
+const T_STABLE = T_ACTIVATE;
+
+/**
+ * Parâmetros do batimento de energia. A primeira ativação usa esta mesma
+ * coreografia (core → rota → módulo); a partir de T_ACTIVATE ela SE REPETE a
+ * cada HEARTBEAT_PERIOD segundos, com uma pausa em repouso entre um
+ * batimento e o próximo — é a pausa que torna o pulso seguinte legível como
+ * evento, e não como ruído constante (o problema da encenação anterior, que
+ * caía num loop assíncrono contínuo e quase imperceptível logo após a
+ * montagem).
+ */
+const HEARTBEAT_PERIOD = 6.4;
 const SURGE_STAGGER = 0.11;
-/** Tempo que o pulso leva para percorrer sua rota durante a onda (rápido). */
 const SURGE_TRAVEL = 0.34;
-/** Duração total da onda; depois dela a energia cai no regime lento do idle. */
 const SURGE_WINDOW = 0.78;
+/** Início da onda de relay, relativo ao início do batimento — logo depois da onda primária assentar. */
+const RELAY_START = SURGE_WINDOW + 0.4;
+const RELAY_STAGGER = 0.18;
+const RELAY_TRAVEL = 0.42;
+const RELAY_WINDOW = RELAY_START + 1.1;
 
 function easeOutCubic(t: number) {
   return 1 - Math.pow(1 - t, 3);
+}
+
+/** Fase 2 — curva mais "pesada" que easeOutCubic, só para a aproximação dos módulos. */
+function easeOutQuart(t: number) {
+  return 1 - Math.pow(1 - t, 4);
 }
 
 function phase(elapsed: number, delay: number, duration: number) {
@@ -312,7 +429,10 @@ function phase(elapsed: number, delay: number, duration: number) {
  * transforma "objeto centrado no quadro" em enquadramento cinematográfico,
  * com o foreground cortado pela borda.
  */
-const CAMERA: Record<"desktop" | "mobile", { fov: number; pos: [number, number, number]; target: [number, number, number] }> = {
+const CAMERA: Record<
+  "desktop" | "mobile",
+  { fov: number; pos: [number, number, number]; target: [number, number, number] }
+> = {
   // Variante C do teste de câmera: mais alta e olhando para baixo. É a que
   // constrói a diagonal espacial gate (fundo) → núcleo (meio) → deck
   // (foreground), com a barra estrutural funcionando como espinha da cena.
@@ -381,10 +501,13 @@ function ModularEngine({
   active,
   simplified,
   scrollRef,
+  rimLightRef,
 }: {
   active: boolean;
   simplified: boolean;
   scrollRef: RefObject<number>;
+  /** Luz de rim vive no `<Canvas>` do componente pai — só a intensidade é mutada aqui, no beat de encaixe. */
+  rimLightRef: RefObject<THREE.DirectionalLight | null>;
 }) {
   const modules = useMemo(
     () => (simplified ? MODULES.filter((m) => MOBILE_IDS.has(m.id)) : MODULES),
@@ -392,6 +515,13 @@ function ModularEngine({
   );
   const routes = useMemo(() => ROUTES.filter((r) => modules.some((m) => m.id === r.to)), [modules]);
   const struts = useMemo(() => STRUTS.filter((s) => modules.some((m) => m.id === s.to)), [modules]);
+  const relays = useMemo(
+    () =>
+      RELAYS.filter(
+        (r) => modules.some((m) => m.id === r.from) && modules.some((m) => m.id === r.to),
+      ),
+    [modules],
+  );
 
   const groupRef = useRef<THREE.Group>(null);
   const coreGroupRef = useRef<THREE.Group>(null);
@@ -399,12 +529,15 @@ function ModularEngine({
   const coreMidRef = useRef<THREE.Mesh>(null);
   const coreInnerRef = useRef<THREE.Mesh>(null);
   const emitterRef = useRef<THREE.Mesh>(null);
+  const coreLightRef = useRef<THREE.PointLight>(null);
   const moduleRefs = useRef<Array<THREE.Group | null>>([]);
   const recessRefs = useRef<Array<THREE.Mesh | null>>([]);
   const strutRefs = useRef<Array<THREE.Mesh | null>>([]);
   const pulseRefs = useRef<Array<THREE.Mesh | null>>([]);
   const chipRefs = useRef<Array<THREE.Mesh | null>>([]);
   const lineMatRefs = useRef<Array<THREE.LineBasicMaterial | null>>([]);
+  const relayPulseRefs = useRef<Array<THREE.Mesh | null>>([]);
+  const relayLineMatRefs = useRef<Array<THREE.LineBasicMaterial | null>>([]);
 
   /**
    * Catálogo compartilhado de geometrias — cada forma é criada uma única vez
@@ -487,13 +620,25 @@ function ModularEngine({
          explícita, do primeiro plano (quase silhueta) até o núcleo (o mais
          claro), que é o que faz a hierarquia sobreviver ao borrão. */
       /** FOREGROUND — quase silhueta, emoldura a cena sem competir com ela. */
-      graphiteDeep: new THREE.MeshStandardMaterial({ color: "#141817", roughness: 0.78, metalness: 0.16 }),
-      graphite: new THREE.MeshStandardMaterial({ color: "#252b28", roughness: 0.72, metalness: 0.2 }),
+      graphiteDeep: new THREE.MeshStandardMaterial({
+        color: "#141817",
+        roughness: 0.78,
+        metalness: 0.16,
+      }),
+      graphite: new THREE.MeshStandardMaterial({
+        color: "#252b28",
+        roughness: 0.72,
+        metalness: 0.2,
+      }),
       metal: new THREE.MeshStandardMaterial({ color: "#4a534f", roughness: 0.31, metalness: 0.44 }),
       /* Material exclusivo do núcleo: o mais claro e o menos rugoso da
          família. É por ele — não pelo verde — que o centro vira o elemento
          de maior hierarquia da peça. */
-      coreMetal: new THREE.MeshStandardMaterial({ color: "#6b7570", roughness: 0.22, metalness: 0.5 }),
+      coreMetal: new THREE.MeshStandardMaterial({
+        color: "#6b7570",
+        roughness: 0.22,
+        metalness: 0.5,
+      }),
       veil: new THREE.MeshStandardMaterial({
         color: "#141918",
         roughness: 0.42,
@@ -502,16 +647,27 @@ function ModularEngine({
         opacity: 0.36,
         depthWrite: false,
       }),
-      recess: new THREE.MeshStandardMaterial({ color: "#0c0f0e", roughness: 0.85, metalness: 0.06 }),
+      recess: new THREE.MeshStandardMaterial({
+        color: "#0c0f0e",
+        roughness: 0.85,
+        metalness: 0.06,
+      }),
       /* Barras estruturais mais finas e mais escuras que na 3I: no blur test
          elas liam como vigas industriais pesadas. Agora são traços de
          estrutura, não vigas. */
       strut: new THREE.MeshStandardMaterial({ color: "#0d1110", roughness: 0.74, metalness: 0.3 }),
       emitter: new THREE.MeshStandardMaterial({ ...energyBase, emissiveIntensity: 1.6 }),
-      chips: modules.map(() => new THREE.MeshStandardMaterial({ ...energyBase, emissiveIntensity: 0.12 })),
-      pulses: routes.map(() => new THREE.MeshStandardMaterial({ ...energyBase, emissiveIntensity: 1.4 })),
+      chips: modules.map(
+        () => new THREE.MeshStandardMaterial({ ...energyBase, emissiveIntensity: 0.12 }),
+      ),
+      pulses: routes.map(
+        () => new THREE.MeshStandardMaterial({ ...energyBase, emissiveIntensity: 1.4 }),
+      ),
+      relayPulses: relays.map(
+        () => new THREE.MeshStandardMaterial({ ...energyBase, emissiveIntensity: 1.2 }),
+      ),
     };
-  }, [modules, routes]);
+  }, [modules, routes, relays]);
 
   /** Geometrias das rotas de energia (polilinha de 3 pontos, reescrita por frame). */
   const routeGeometries = useMemo(
@@ -524,6 +680,17 @@ function ModularEngine({
     [routes],
   );
 
+  /** Geometrias dos relays (Fase 5) — mesmo formato das rotas: polilinha de 3 pontos por frame. */
+  const relayGeometries = useMemo(
+    () =>
+      relays.map(() => {
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(9), 3));
+        return geo;
+      }),
+    [relays],
+  );
+
   // Vetores de trabalho reutilizados — nunca alocar dentro do loop de frame.
   const scratch = useMemo(
     () => ({
@@ -533,13 +700,12 @@ function ModularEngine({
       quat: new THREE.Quaternion(),
       axis: new THREE.Vector3(1, 0, 0),
       /** Posição corrente (pós-explode) de cada módulo, por id. */
-      current: new Map<string, THREE.Vector3>(modules.map((m) => [m.id, new THREE.Vector3(...m.position)])),
+      current: new Map<string, THREE.Vector3>(
+        modules.map((m) => [m.id, new THREE.Vector3(...m.position)]),
+      ),
       /** Direção de afastamento no scroll, por id. */
       outward: new Map<string, THREE.Vector3>(
-        modules.map((m) => [
-          m.id,
-          new THREE.Vector3(...m.position).sub(CORE_POSITION).normalize(),
-        ]),
+        modules.map((m) => [m.id, new THREE.Vector3(...m.position).sub(CORE_POSITION).normalize()]),
       ),
     }),
     [modules],
@@ -551,8 +717,10 @@ function ModularEngine({
     return () => {
       Object.values(geometries).forEach((g) => g.dispose());
       routeGeometries.forEach((g) => g.dispose());
+      relayGeometries.forEach((g) => g.dispose());
       materials.chips.forEach((m) => m.dispose());
       materials.pulses.forEach((m) => m.dispose());
+      materials.relayPulses.forEach((m) => m.dispose());
       [
         materials.graphite,
         materials.metal,
@@ -563,7 +731,7 @@ function ModularEngine({
         materials.emitter,
       ].forEach((m) => m.dispose());
     };
-  }, [geometries, routeGeometries, materials]);
+  }, [geometries, routeGeometries, relayGeometries, materials]);
 
   useFrame((state) => {
     const group = groupRef.current;
@@ -576,6 +744,12 @@ function ModularEngine({
     const idle = active ? 1 : 0;
     const scrollT = active ? (scrollRef.current ?? 0) : 0;
 
+    // Fase 3 (Encaixe) — beat estrutural único quando a montagem termina.
+    // Decai exponencialmente logo após T_COMPLETE_BEAT; sob reduced-motion
+    // `idle=0` zera o termo inteiro, igual ao resto da camada de energia.
+    const completeSpike =
+      idle && t >= T_COMPLETE_BEAT ? Math.exp(-(t - T_COMPLETE_BEAT) * COMPLETE_BEAT_DECAY) : 0;
+
     // --- 1. MICROEVENTO: o emissor DESLIZA para dentro do núcleo ---
     // Não é um fade nem um scale: a lâmina sobe por dentro da cavidade e
     // acende ao chegar. É o primeiro sinal de que o sistema ligou.
@@ -584,13 +758,23 @@ function ModularEngine({
       emitterRef.current.position.y = -0.34 + emitterP * 0.34;
       emitterRef.current.scale.set(1, 0.25 + emitterP * 0.75, 1);
       const breath = 0.82 + Math.sin(t * 1.4) * 0.18 * idle;
-      // Pico no instante em que a energia parte do núcleo: é o núcleo
-      // "descarregando" para o sistema, e é o que dá causa visível à onda.
-      const surgeSpike = idle && t > T_ENERGY ? Math.exp(-(t - T_ENERGY) * 5.5) * 1.15 : 0;
+      // Pico no instante da Ativação (Fase 4): é o núcleo "descarregando"
+      // para o sistema, e é o que dá causa visível ao primeiro batimento.
+      const activateSpike = idle && t > T_ACTIVATE ? Math.exp(-(t - T_ACTIVATE) * 5.5) * 1.15 : 0;
       // Materiais são lidos pelo ref da mesh, nunca pelo objeto do useMemo:
       // mutar o retorno de um hook por frame é o que o React Compiler proíbe.
       (emitterRef.current.material as THREE.MeshStandardMaterial).emissiveIntensity =
-        emitterP * breath + surgeSpike;
+        emitterP * breath + activateSpike + completeSpike * 0.8;
+    }
+
+    // Fase 3 — resposta de luz do beat de encaixe: rim e luz interna do
+    // núcleo recebem um pico breve e moderado, sincronizado com o pulso
+    // central abaixo. Com extrema moderação, por instrução da Gate.
+    if (rimLightRef.current) {
+      rimLightRef.current.intensity = RIM_BASE_INTENSITY + completeSpike * 0.9;
+    }
+    if (coreLightRef.current) {
+      coreLightRef.current.intensity = CORE_LIGHT_BASE_INTENSITY + completeSpike * 0.6;
     }
 
     // --- 2. Estrutura central encaixa (translação em Z, não scale) ---
@@ -608,7 +792,8 @@ function ModularEngine({
       coreMidRef.current.rotation.z = 0.11 + (1 - lockP) * 0.46 - overshoot;
     }
     if (coreInnerRef.current) {
-      coreInnerRef.current.scale.setScalar(coreP);
+      // +5% de escala no beat de encaixe — parte do mesmo "pulso central".
+      coreInnerRef.current.scale.setScalar(coreP * (1 + completeSpike * 0.05));
       // O bloco interno preenche a cavidade, então ele não gira (rasparia no
       // frame): ele se ajusta. Micro-oscilação angular + um vaivém de
       // profundidade — lê como mecanismo operando, nunca como vitrine girando.
@@ -623,13 +808,20 @@ function ModularEngine({
         CORE_POSITION.y - scrollT * 0.12,
         CORE_POSITION.z - scrollT * 0.5,
       );
+      // "Pulso central" (Fase 3) — o cluster inteiro do núcleo respira uma
+      // vez no beat de encaixe.
+      coreGroupRef.current.scale.setScalar(1.16 * (1 + completeSpike * 0.035));
     }
 
     // --- 3/5. Módulos: ENCAIXE, não scale 0→1 (§10) ---
     modules.forEach((m, i) => {
       const ref = moduleRefs.current[i];
       const start = m.tier === "primary" ? T_PRIMARY : T_SECONDARY;
-      const p = easeOutCubic(phase(t, start + m.delay, m.tier === "primary" ? 0.55 : 0.45));
+      // Fase 2 (Aproximação) — easeOutQuart no lugar de easeOutCubic: curva
+      // mais "pesada", só para a posição dos módulos (núcleo/struts
+      // continuam em easeOutCubic, por instrução explícita de preservar a
+      // lógica estrutural).
+      const p = easeOutQuart(phase(t, start + m.delay, MODULE_DURATION[m.tier]));
 
       const outward = scratch.outward.get(m.id)!;
       const [amp, speed, ph] = m.breathe;
@@ -660,11 +852,19 @@ function ModularEngine({
         ref.scale.setScalar(0.93 + p * 0.07);
         ref.visible = p > 0.002;
         // Rotação de acoplamento: o módulo chega desalinhado e desenrola até o
-        // ângulo final — é isso que faz a chegada ler como encaixe.
-        const dock = (1 - p) * 0.5;
+        // ângulo final — é isso que faz a chegada ler como encaixe. Amplitude
+        // (0.5→0.68) levemente maior que a original: mais diferença de
+        // rotação visível durante a Fragmentação/Aproximação.
+        const dock = (1 - p) * 0.68;
         ref.rotation.set(
-          m.rotation[0] + Math.sin(t * speed * 0.7 + ph) * 0.012 * idle + dock * 0.4 + scrollT * 0.12,
-          m.rotation[1] + Math.sin(t * speed * 0.5 + ph * 1.7) * 0.016 * idle - dock * 0.7 - scrollT * 0.26,
+          m.rotation[0] +
+            Math.sin(t * speed * 0.7 + ph) * 0.012 * idle +
+            dock * 0.4 +
+            scrollT * 0.12,
+          m.rotation[1] +
+            Math.sin(t * speed * 0.5 + ph * 1.7) * 0.016 * idle -
+            dock * 0.7 -
+            scrollT * 0.26,
           m.rotation[2] + dock + scrollT * 0.16,
         );
       }
@@ -694,7 +894,7 @@ function ModularEngine({
       const corePos = coreGroupRef.current?.position ?? CORE_POSITION;
       scratch.dir.subVectors(target, corePos);
       const len = scratch.dir.length();
-      const p = easeOutCubic(phase(t, T_STRUT + s.delay, 0.42));
+      const p = easeOutCubic(phase(t, T_STRUT + s.delay, STRUT_DURATION));
       // A barra "fecha" crescendo do núcleo em direção ao módulo.
       const grown = len * p;
       scratch.a.copy(corePos).addScaledVector(scratch.dir.normalize(), grown / 2);
@@ -704,8 +904,16 @@ function ModularEngine({
       mesh.visible = p > 0.01;
     });
 
-    // --- 6. Energia: CORE → ROTA → MÓDULO → STATUS ---
-    const energyIn = easeOutCubic(phase(t, T_ENERGY, 0.45));
+    // --- Fases 4–6: ATIVAÇÃO → CONEXÃO → SISTEMA VIVO ---
+    // Batimento periódico ancorado em T_ACTIVATE (não mais um surge único
+    // seguido de loop assíncrono lento): a primeira ativação dispara a MESMA
+    // coreografia core→rota→módulo que se repete a cada HEARTBEAT_PERIOD, com
+    // uma pausa legível entre um batimento e o próximo.
+    const sinceEnergy = active ? t - T_ACTIVATE : -1;
+    const beatT = sinceEnergy >= 0 ? sinceEnergy % HEARTBEAT_PERIOD : -1;
+    const inSurge = beatT >= 0 && beatT < SURGE_WINDOW;
+    const preEnergy = t < T_ACTIVATE || !active;
+
     routes.forEach((r, i) => {
       const target = scratch.current.get(r.to);
       const geo = routeGeometries[i];
@@ -731,65 +939,102 @@ function ModularEngine({
       // de tudo escurecer junto.
       const fadeStart = 0.1 + i * 0.11;
       const fadeK = Math.min(1, Math.max(0, (scrollT - fadeStart) / 0.26));
-      if (mat) mat.opacity = energyIn * r.rest * (1 - fadeK);
+      // Estrutura sempre levemente visível em repouso: a rede existe mesmo
+      // sem tráfego — só o TRÁFEGO é periódico. Antes de T_ACTIVATE, o beat
+      // de encaixe (Fase 3) ainda dá um brilho breve e residual às conexões,
+      // sem chegar a ser tráfego real.
+      const restGlow = preEnergy ? completeSpike * 0.3 : r.rest * (1 - fadeK);
+      if (mat) mat.opacity = restGlow;
 
       const pulse = pulseRefs.current[i];
       const moduleIndex = modules.findIndex((m) => m.id === r.to);
-      const chipMat = chipRefs.current[moduleIndex]?.material as THREE.MeshStandardMaterial | undefined;
+      const chipMat = chipRefs.current[moduleIndex]?.material as
+        THREE.MeshStandardMaterial | undefined;
 
-      if (t < T_ENERGY || !active || scrollT > 0.6) {
+      if (preEnergy || scrollT > 0.6) {
         if (pulse) pulse.visible = false;
         if (chipMat) chipMat.emissiveIntensity = 0.22;
         return;
       }
-
-      // --- O MOMENTO DE ENERGIA (§16 da 3J) ---
-      // A primeira passagem NÃO usa o ciclo lento de repouso. Logo que a
-      // estrutura fecha, as rotas disparam em onda rápida e escalonada — é o
-      // "tchan" único da Hero: o sistema é energizado de uma vez, em cascata
-      // visível, e só DEPOIS entra no regime lento e dessincronizado do idle.
-      // Sem essa distinção a energia entrava sem que nada acontecesse.
-      const sinceEnergy = t - T_ENERGY;
-      const surgeLocal = (sinceEnergy - i * SURGE_STAGGER) / SURGE_TRAVEL;
-      const inSurge = sinceEnergy < SURGE_WINDOW;
-
-      const localT = inSurge
-        ? Math.min(0.999, Math.max(0, surgeLocal)) * 0.78
-        : ((sinceEnergy - SURGE_WINDOW) * r.speed + r.offset) % 1;
 
       // Durante a onda, a rota ainda não disparada fica invisível em vez de
       // aparecer parada na origem.
-      if (inSurge && surgeLocal < 0) {
+      const surgeLocal = (beatT - i * SURGE_STAGGER) / SURGE_TRAVEL;
+
+      if (!inSurge || surgeLocal < 0 || surgeLocal >= 1) {
+        // Fora da janela de disparo: pulso escondido, chip em repouso até o próximo batimento.
         if (pulse) pulse.visible = false;
         if (chipMat) chipMat.emissiveIntensity = 0.22;
         return;
       }
 
-      // 0–0.78 é o trajeto; o resto do ciclo é a pausa antes do próximo disparo.
-      if (localT < 0.78) {
-        const s = localT / 0.78;
-        scratch.a.set(corePos.x, corePos.y, corePos.z);
-        scratch.b.set(ex, ey, ez);
-        if (s < 0.5) {
-          scratch.a.lerp(scratch.b, s / 0.5);
-        } else {
-          scratch.a.copy(scratch.b).lerp(target, (s - 0.5) / 0.5);
-        }
-        if (pulse) {
-          pulse.visible = true;
-          pulse.position.copy(scratch.a);
-          const fade = Math.sin(s * Math.PI);
-          (pulse.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.2 + fade * 1.8;
-          pulse.scale.setScalar(0.6 + fade * 0.6);
-        }
-        if (chipMat) chipMat.emissiveIntensity = 0.22;
+      const s = surgeLocal;
+      scratch.a.set(corePos.x, corePos.y, corePos.z);
+      scratch.b.set(ex, ey, ez);
+      if (s < 0.5) {
+        scratch.a.lerp(scratch.b, s / 0.5);
       } else {
-        // Chegou: o status do módulo alimentado acende e decai.
+        scratch.a.copy(scratch.b).lerp(target, (s - 0.5) / 0.5);
+      }
+      if (pulse) {
+        pulse.visible = true;
+        pulse.position.copy(scratch.a);
+        const fade = Math.sin(s * Math.PI);
+        (pulse.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.2 + fade * 1.8;
+        pulse.scale.setScalar(0.6 + fade * 0.6);
+      }
+      if (chipMat) {
+        // Sobe com a chegada do pulso e decai em seguida.
+        const arrival =
+          s > 0.85 ? Math.exp(-((s - 0.85) / 0.15) * 3.4) : Math.sin(s * Math.PI) * 0.4;
+        chipMat.emissiveIntensity = 0.22 + arrival * 2.1;
+      }
+    });
+
+    // Fase 5 (Conexão) — cadeia module→module logo após o batimento.
+    const inRelay = beatT >= RELAY_START && beatT < RELAY_WINDOW;
+    relays.forEach((r, i) => {
+      const geo = relayGeometries[i];
+      const mat = relayLineMatRefs.current[i];
+      const pulse = relayPulseRefs.current[i];
+      const fromPos = scratch.current.get(r.from);
+      const toPos = scratch.current.get(r.to);
+      if (!geo || !fromPos || !toPos) return;
+
+      const pos = geo.attributes.position as THREE.BufferAttribute;
+      pos.setXYZ(0, fromPos.x, fromPos.y, fromPos.z);
+      pos.setXYZ(1, r.elbow[0], r.elbow[1], r.elbow[2]);
+      pos.setXYZ(2, toPos.x, toPos.y, toPos.z);
+      pos.needsUpdate = true;
+
+      if (preEnergy || scrollT > 0.5) {
+        if (mat) mat.opacity = 0;
         if (pulse) pulse.visible = false;
-        if (chipMat) {
-          const k = (localT - 0.78) / 0.22;
-          chipMat.emissiveIntensity = 0.22 + Math.exp(-k * 3.4) * 2.1;
-        }
+        return;
+      }
+
+      const local = (beatT - RELAY_START - i * RELAY_STAGGER) / RELAY_TRAVEL;
+      const firing = inRelay && local >= 0 && local < 1;
+
+      if (mat) mat.opacity = firing ? 0.5 : 0;
+      if (!firing) {
+        if (pulse) pulse.visible = false;
+        return;
+      }
+
+      scratch.a.set(fromPos.x, fromPos.y, fromPos.z);
+      scratch.b.set(r.elbow[0], r.elbow[1], r.elbow[2]);
+      if (local < 0.5) {
+        scratch.a.lerp(scratch.b, local / 0.5);
+      } else {
+        scratch.a.copy(scratch.b).lerp(toPos, (local - 0.5) / 0.5);
+      }
+      if (pulse) {
+        pulse.visible = true;
+        pulse.position.copy(scratch.a);
+        const fade = Math.sin(local * Math.PI);
+        (pulse.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.2 + fade * 1.6;
+        pulse.scale.setScalar(0.5 + fade * 0.5);
       }
     });
 
@@ -807,7 +1052,12 @@ function ModularEngine({
   return (
     <group ref={groupRef} scale={CORE_SCALE}>
       {/* ---------- NÚCLEO ---------- */}
-      <group ref={coreGroupRef} position={CORE_POSITION} rotation={[0.05, -0.22, 0.04]} scale={1.16}>
+      <group
+        ref={coreGroupRef}
+        position={CORE_POSITION}
+        rotation={[0.05, -0.22, 0.04]}
+        scale={1.16}
+      >
         <group ref={coreFrameRef}>
           <mesh geometry={geometries.coreOuter} material={materials.coreMetal} />
           <mesh
@@ -833,11 +1083,12 @@ function ModularEngine({
         />
         {/* Luz interna discreta: dá o vazamento verde nas paredes da cavidade
             sem criar um hotspot redondo. O que se vê é a lâmina emissiva,
-            não a luz. */}
+            não a luz. Intensidade recebe um pico breve no beat de encaixe. */}
         <pointLight
+          ref={coreLightRef}
           position={[-0.14, 0, 0.16]}
           color={ENERGY_COLOR}
-          intensity={NEUTRAL_TEST ? 0 : 0.34}
+          intensity={CORE_LIGHT_BASE_INTENSITY}
           distance={1.1}
           decay={2}
         />
@@ -895,7 +1146,7 @@ function ModularEngine({
         />
       ))}
 
-      {/* ---------- CONEXÕES ENERGÉTICAS ---------- */}
+      {/* ---------- CONEXÕES ENERGÉTICAS (core → módulo) ---------- */}
       {routes.map((r, i) => (
         <threeLine key={r.id} geometry={routeGeometries[i]}>
           <lineBasicMaterial
@@ -920,6 +1171,32 @@ function ModularEngine({
           visible={false}
         />
       ))}
+
+      {/* ---------- CONEXÕES ENERGÉTICAS (Fase 5 — module → module) ---------- */}
+      {relays.map((r, i) => (
+        <threeLine key={r.id} geometry={relayGeometries[i]}>
+          <lineBasicMaterial
+            ref={(m) => {
+              relayLineMatRefs.current[i] = m;
+            }}
+            color={ENERGY_COLOR}
+            transparent
+            opacity={0}
+          />
+        </threeLine>
+      ))}
+
+      {relays.map((r, i) => (
+        <mesh
+          key={`relay-pulse-${r.id}`}
+          ref={(m) => {
+            relayPulseRefs.current[i] = m;
+          }}
+          geometry={geometries.pulse}
+          material={materials.relayPulses[i]}
+          visible={false}
+        />
+      ))}
     </group>
   );
 }
@@ -939,6 +1216,10 @@ function DigitalCoreScene({
   pointerRef: RefObject<{ x: number; y: number }>;
   onContextLost?: () => void;
 }) {
+  // Ref vive aqui (fora de ModularEngine) porque a luz é um elemento irmão
+  // do <ModularEngine> dentro do <Canvas>, não um filho dele.
+  const rimLightRef = useRef<THREE.DirectionalLight>(null);
+
   return (
     <Canvas
       dpr={[1, simplified ? 1 : 1.5]}
@@ -976,10 +1257,21 @@ function DigitalCoreScene({
       <directionalLight position={[-2.4, 3.4, 3.6]} intensity={4.75} color="#f4f7f4" />
       <directionalLight position={[3.4, -1.4, 1.8]} intensity={0.3} color="#4a534e" />
       {/* Rim contido: recorta algumas arestas do fundo sem virar contorno
-          neon — o verde é sinal, não a estética dominante da peça. */}
-      <directionalLight position={[2.2, 1.2, -3.4]} intensity={NEUTRAL_TEST ? 0.55 : 0.8} color={RIM_COLOR} />
+          neon — o verde é sinal, não a estética dominante da peça. Recebe um
+          pico breve de intensidade no beat de encaixe (Fase 3). */}
+      <directionalLight
+        ref={rimLightRef}
+        position={[2.2, 1.2, -3.4]}
+        intensity={RIM_BASE_INTENSITY}
+        color={RIM_COLOR}
+      />
 
-      <ModularEngine active={active} simplified={simplified} scrollRef={scrollRef} />
+      <ModularEngine
+        active={active}
+        simplified={simplified}
+        scrollRef={scrollRef}
+        rimLightRef={rimLightRef}
+      />
     </Canvas>
   );
 }
