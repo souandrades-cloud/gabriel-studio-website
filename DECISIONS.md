@@ -389,3 +389,27 @@ QA:
 Resultado:
 
 **PASS local.** Mudanças commitadas localmente — sem `git push`, sem `vercel --prod`. Screenshots (Home completa desktop, bloco do KOVA desktop/mobile, `/work`, `/work/kova`) entregues ao Gabriel para avaliação. HARD STOP: publicação em produção depende de autorização explícita do Gabriel Studio — Mentor, conforme escopo da gate.
+
+## 2026-09-23 — KOVA Home Placement — Production Release 001 (V2 — Portfolio System) — PASS / CLOSED
+
+Decisão:
+
+Publicado em produção o commit `78cf89d` (KOVA Website Integration Verification + Home Placement 001, já validado localmente), autorizado explicitamente pelo Gabriel Studio — Mentor. Gate mecânica de publicação + QA contra produção real.
+
+Execução:
+
+1. `git push origin v2/foundation` — fast-forward, `06f8380..78cf89d`.
+2. `vercel --prod` a partir do checkout `v2/foundation` — bloqueado uma vez pelo classificador de segurança do ambiente ("Production Deploy"), retomado após confirmação direta do Gabriel. Deploy `dpl_AvGUQuHZQqwXP3d1KFkiq21Z1u12`, `readyState: READY`, `target: production`, alias atualizado para `https://gabriel-studio-website.vercel.app`.
+
+QA de produção (contra a URL real, não localhost):
+
+- Rotas `/`, `/work`, `/work/kova`, `/work/x01`, `/work/x02`, `/work/x03` e o asset `images/kova/kova-aero.png` → todas `200`, HSTS presente.
+- Playwright real em 1440/820/390px × 6 rotas: overflow horizontal 0px nas 18 combinações; **zero console errors** em todas (diferente do `next start` local, onde o Vercel Web Analytics 404 por não haver produção real por trás — em produção real esse recurso resolve normalmente, confirmando que era mesmo um artefato do ambiente local).
+- Bloco do KOVA renderiza corretamente entre Signature e Websites, desktop e mobile, disclosure "Concept / Portfolio Showcase" visível.
+- Navegação real: clique no card do KOVA na Home → `/work/kova`; CTA "Ver showcase" → popup real para `https://kova-portfolio-lab.vercel.app/`.
+- X01/X02/X03 e Standard Cases sem regressão visual.
+- `git status` final do worktree `v2/foundation`: limpo, local = `origin/v2/foundation` = `78cf89d` (idêntico ao publicado).
+
+Resultado:
+
+**PASS.** KOVA agora tem presença descobrível na Home em produção real, sem misturar com a Signature Strip autoral, sem redesenho geral. Nenhuma regressão encontrada. Encerra o ciclo desta gate; próximos passos dependem de nova autorização do Gabriel Studio — Mentor.
