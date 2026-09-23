@@ -341,3 +341,27 @@ Continuam proibidos nesta gate (sem alteração de escopo):
 - Deploy do site principal — mudanças commitadas localmente, sem `git push`, sem deploy Vercel.
 - Alteração do showcase KOVA em si (Portfolio Lab) — apenas leitura/cópia do asset aprovado.
 - Criação de novas features além do necessário para representar corretamente um showcase externo no schema existente.
+
+## 2026-09-23 — KOVA Integration Publication 001 (V2 — Portfolio System) — PASS / CLOSED
+
+Decisão:
+
+Publicado em produção o commit `662a130` (KOVA Commerce Showcase Integration 001, já validado localmente na gate anterior). Sem nenhuma mudança de código adicional — gate puramente mecânico de publicação + QA contra produção real.
+
+Execução:
+
+1. `git push origin v2/foundation` — fast-forward, `e142ec9..662a130`, sem conflito (branch local já estava exatamente em sincronia de conteúdo com `origin/v2/foundation` antes deste commit).
+2. Confirmado que este projeto **não** tem deploy automático via push — não há GitHub Actions configurado, e todo o histórico de deploys de produção deste projeto (ver Sprints anteriores em `TASKS.md`) foi feito via `vercel --prod` a partir do CLI, não por integração Git nativa da Vercel. O push, portanto, apenas sincroniza o histórico remoto; não publica nada por si só.
+3. `vercel --prod` executado a partir do checkout `v2/foundation` — deploy `dpl_Anxs89w1aRWvYbTyk3NAC3gqJNmF`, alias de produção atualizado para `https://gabriel-studio-website.vercel.app`. Ação sensível (produção real); bloqueada uma vez pelo classificador de segurança do ambiente ("Production Deploy"), retomada após autorização explícita do Gabriel via pergunta direta — mesmo padrão já usado na Publication 001 do KOVA (Portfolio Lab) para a desativação da proteção SSO da Vercel.
+
+QA de produção (contra `https://gabriel-studio-website.vercel.app`, não localhost nem build local):
+
+- Rotas: `/`, `/work`, `/work/kova`, `/work/x01`, `/work/x02`, `/work/x03` → todas `200`; HSTS presente.
+- Asset `images/kova/kova-aero.png` → `200`.
+- QA visual real via Playwright em 1440/820/390px: overflow horizontal 0px nas três larguras, tanto em `/work` quanto em `/work/kova`; card do KOVA e página de detalhe renderizam corretamente (disclosure "Concept / Portfolio Showcase" visível, capability tags, CTA); X01/X02/X03 sem nenhuma regressão visual.
+- CTA "Ver showcase" clicado de verdade (não apenas inspecionado no HTML): abre uma nova aba real via evento de popup do browser, URL confirmada `https://kova-portfolio-lab.vercel.app/`.
+- Console: zero erros/warnings em todas as páginas testadas (diferente do ambiente local via `next start`, onde o script do Vercel Web Analytics retornava 404 por não haver produção real por trás — em produção de verdade esse recurso resolve normalmente).
+
+Resultado:
+
+**PASS.** Publicação puramente mecânica de uma integração já validada — nenhum código adicional, nenhuma decisão arquitetural nova, nenhuma regressão encontrada. Home, Standard Cases e X01/X02/X03 permanecem intactos em produção. Encerra o ciclo de publicação do KOVA como Studio Showcase; próximos gates (se houver) dependem de nova autorização do Gabriel Studio — Mentor.
