@@ -545,3 +545,39 @@ Integrar o KOVA (Portfolio Lab, COMMERCE-001) — um showcase de e-commerce hosp
 ## Resultado
 
 KOVA aparece em `/work` (grade de Studio Showcases) e `/work/kova` (detalhe, CTA externo para `https://kova-portfolio-lab.vercel.app`), com rótulo Concept/Portfolio Showcase visível. Nenhum redesign de `/work`, Home ou Standard Cases. X01/X02/X03 intocados. Mudanças commitadas localmente — sem `git push`, sem deploy do site principal (hard stop do gate).
+
+---
+
+# Sprint 18 — KOVA Website Integration Verification + Home Placement 001
+
+## Objetivo
+
+Verificar o estado real da integração do KOVA (relatada como publicada em produção pela gate anterior) e dar a ele presença descobrível na Home, sem misturá-lo com a Signature Strip autoral (X01/X02/X03) nem redesenhar a Home.
+
+## TASK 18.1 — Verificação de estado real (Fase 1)
+
+- [x] `git worktree list` confirma `v2/foundation` em `C:\Users\Gabriel\Desktop\Gabriel Studio Sites V2`, HEAD idêntico a `origin/v2/foundation` (commit `06f8380`), working tree limpo
+- [x] Commit `662a130` presente no histórico local e remoto
+- [x] Produção real (`https://gabriel-studio-website.vercel.app`, não localhost) verificada por HTTP: `/`, `/work`, `/work/kova`, `/work/x01`, `/work/x02`, `/work/x03` e `images/kova/kova-aero.png` → todas `200`
+- [x] Conteúdo de produção verificado (não só status code): `/work` mostra KOVA como 4º card "Studio Showcase"; `/work/kova` mostra disclosure "Concept / Portfolio Showcase" e CTA externo correto; Home **não** mostra KOVA em lugar nenhum — bate exatamente com o relatório da gate anterior e com a verificação visual do Gabriel
+- [x] Nenhuma divergência encontrada entre local/remoto/produção
+
+## TASK 18.2 — Presença dedicada na Home (Fase 2)
+
+- [x] Arquitetura da Home inspecionada (`components/sections/portfolio.tsx`): seção Signature (`id="projetos"`) é explicitamente "trabalho autoral, sem restrições comerciais" — misturar KOVA ali prejudicaria a semântica (já reconhecido no próprio commit `662a130`, que por isso deixou a Home intocada)
+- [x] Decisão de arquitetura (confirmada com o Gabriel via pergunta direta): pequena sub-seção dedicada entre Signature e Websites, não um redesign — reaproveita a linguagem visual clara do `WorkProjectCard` (não o tratamento escuro do Signature), badge distinto "KOVA · Commerce Experience", disclosure sempre visível
+- [x] `components/portfolio/commerce-showcase-feature.tsx` criado — card único, claro, com thumbnail, badge, título, resumo, CTA interno para `/work/kova` e disclosure visível abaixo
+- [x] `components/sections/portfolio.tsx`: nova `<Section>` compacta (`py-10 sm:py-12`, sem `FamilyHeader` grande) entre Signature e Websites; comentário de topo do arquivo atualizado explicando a decisão
+
+## TASK 18.3 — Validação
+
+- [x] `npm run typecheck`, `npm run lint`, `npm run test` (160/160), `npm run build` (com `validate:registry` — 10 projetos, zero issues) limpos
+- [x] QA visual real via Playwright contra `next start` local, 1440/820/390px, 6 rotas (`/`, `/work`, `/work/kova`, `/work/x01`, `/work/x02`, `/work/x03`): overflow horizontal 0px em todas as 18 combinações
+- [x] Único console error encontrado: 404 do Vercel Web Analytics, presente em **todas** as rotas testadas (incluindo as que não mudaram) — mesmo artefato pré-existente já documentado nas gates anteriores, não uma regressão desta gate
+- [x] Navegação real testada: clique no card do KOVA na Home leva a `/work/kova`; clique em "Ver showcase" abre popup real para `https://kova-portfolio-lab.vercel.app/`
+- [x] X01/X02/X03 e demais Standard Cases sem alteração de código — nenhuma regressão visual observada nos screenshots
+- [x] Screenshots entregues ao Gabriel (Home completa desktop, bloco do KOVA desktop e mobile, `/work`, `/work/kova`)
+
+## Resultado
+
+KOVA agora tem presença descobrível na Home — sub-seção "Fora do repositório principal" entre Signature e Websites, card claro distinto do tratamento escuro da Signature Strip, disclosure sempre visível. Signature Strip (X01/X02/X03) intocada. Nenhum redesign geral da Home. Mudanças commitadas localmente — sem `git push`, sem deploy do site principal (hard stop do gate, aguardando autorização do Gabriel Studio — Mentor).

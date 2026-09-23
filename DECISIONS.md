@@ -365,3 +365,27 @@ QA de produção (contra `https://gabriel-studio-website.vercel.app`, não local
 Resultado:
 
 **PASS.** Publicação puramente mecânica de uma integração já validada — nenhum código adicional, nenhuma decisão arquitetural nova, nenhuma regressão encontrada. Home, Standard Cases e X01/X02/X03 permanecem intactos em produção. Encerra o ciclo de publicação do KOVA como Studio Showcase; próximos gates (se houver) dependem de nova autorização do Gabriel Studio — Mentor.
+
+## 2026-09-23 — KOVA Website Integration Verification + Home Placement 001 (V2 — Portfolio System) — PASS / AGUARDANDO PUBLICAÇÃO
+
+Decisão:
+
+Fase 1 (verificação): estado real de produção conferido diretamente (HTTP + conteúdo renderizado em `https://gabriel-studio-website.vercel.app`, não apenas os relatórios anteriores) — KOVA está de fato em `/work` e `/work/kova`, a Home de fato não o mostra. Nenhuma divergência entre local (`v2/foundation` @ `06f8380`, idêntico a `origin/v2/foundation`), remoto e produção.
+
+Fase 2 (Home): a seção Signature (`id="projetos"`) é "trabalho autoral, sem restrições comerciais" — o próprio commit `662a130` já havia identificado que inserir KOVA ali prejudicaria essa semântica, e por isso a deixou intocada. Confirmada essa leitura, a menor intervenção coerente não é inserir KOVA no grid Signature, mas criar uma pequena presença dedicada entre Signature e Websites, reaproveitando a linguagem visual clara do `WorkProjectCard` (distinta do tratamento escuro do Signature/`ShowcaseStripCard`), com disclosure "Concept / Portfolio Showcase" sempre visível. Decisão de placement confirmada com o Gabriel antes da implementação (mudança estrutural na Home).
+
+Execução:
+
+- `components/portfolio/commerce-showcase-feature.tsx` — novo componente, card único claro com badge "KOVA · Commerce Experience", thumbnail, resumo, CTA interno para `/work/kova` e disclosure.
+- `components/sections/portfolio.tsx` — nova `<Section>` compacta entre a Signature e a Websites; Signature (`SignatureFeature`/`ShowcaseStripCard` de X01/X02/X03) não alterada.
+
+QA:
+
+- `npm run typecheck`, `npm run lint`, `npm run test` (160/160), `npm run build` (`validate:registry` — 10 projetos, zero issues) limpos.
+- Playwright contra `next start` local, 1440/820/390px × 6 rotas: overflow horizontal 0px em todas as 18 combinações. Único console error é o 404 pré-existente do Vercel Web Analytics em ambiente local (presente em toda rota, não uma regressão).
+- Navegação real: card do KOVA na Home → `/work/kova`; CTA "Ver showcase" → popup real para `https://kova-portfolio-lab.vercel.app/`.
+- X01/X02/X03 e Standard Cases sem alteração de código; sem regressão visual nos screenshots.
+
+Resultado:
+
+**PASS local.** Mudanças commitadas localmente — sem `git push`, sem `vercel --prod`. Screenshots (Home completa desktop, bloco do KOVA desktop/mobile, `/work`, `/work/kova`) entregues ao Gabriel para avaliação. HARD STOP: publicação em produção depende de autorização explícita do Gabriel Studio — Mentor, conforme escopo da gate.

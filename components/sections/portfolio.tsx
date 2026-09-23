@@ -1,3 +1,4 @@
+import { CommerceShowcaseFeature } from "@/components/portfolio/commerce-showcase-feature";
 import { PortfolioCta } from "@/components/portfolio/portfolio-cta";
 import { withPrototypeThumbnail } from "@/components/portfolio/project-overrides";
 import { PROTOTYPE_THUMBNAILS } from "@/components/portfolio/prototype-thumbnails";
@@ -17,6 +18,7 @@ const x01raw = getPublishedProjectBySlug("x01") as StudioShowcaseProject;
 const x03 = withPrototypeThumbnail(x03raw, PROTOTYPE_THUMBNAILS.x03);
 const x02 = withPrototypeThumbnail(x02raw, PROTOTYPE_THUMBNAILS.x02);
 const x01 = withPrototypeThumbnail(x01raw, PROTOTYPE_THUMBNAILS.x01);
+const kova = getPublishedProjectBySlug("kova") as StudioShowcaseProject;
 const cora = getPublishedProjectBySlug("cora") as StandardCaseProject;
 const lume = getPublishedProjectBySlug("lume") as StandardCaseProject;
 const vidra = getPublishedProjectBySlug("vidra") as StandardCaseProject;
@@ -45,6 +47,14 @@ function FamilyHeader({ eyebrow, heading }: { eyebrow: string; heading: string }
  * de 6 landing pages) e `Systems` (mockups com copy de "uso interno") — mesma
  * função de portfólio, evitando duplicação. `id="projetos"`/`id="sistemas"`
  * preservados para os anchors existentes (Navbar, Footer, Hero, FinalCta).
+ *
+ * KOVA (Gate KOVA WEBSITE INTEGRATION VERIFICATION + HOME PLACEMENT 001) fica
+ * fora do grid Signature de propósito: aquela seção é "trabalho autoral, sem
+ * restrições comerciais" e KOVA é o oposto — uma demonstração de capability
+ * comercial hospedada fora deste repositório. Por isso ganha um pequeno bloco
+ * dedicado entre Signature e Websites, com linguagem visual própria
+ * (`CommerceShowcaseFeature`, tratamento claro como `WorkProjectCard`, não o
+ * tratamento escuro do Signature) e disclosure sempre visível.
  */
 function Portfolio() {
   return (
@@ -61,6 +71,18 @@ function Portfolio() {
             {x01 ? <ShowcaseStripCard project={x01} /> : null}
           </div>
         </div>
+      </Section>
+
+      <Section background="default" className="py-10 sm:py-12">
+        <div className="mx-auto max-w-lg text-center">
+          <Badge variant="outline" className="tracking-wide uppercase">
+            Fora do repositório principal
+          </Badge>
+          <p className="text-muted-foreground mt-4 text-sm text-balance">
+            Também demonstramos capability em e-commerce como Studio Showcase independente.
+          </p>
+        </div>
+        <div className="mt-6">{kova ? <CommerceShowcaseFeature project={kova} /> : null}</div>
       </Section>
 
       <Section background="muted" className="dark bg-muted">
