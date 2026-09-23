@@ -185,6 +185,28 @@ describe("validateRegistry — invariantes", () => {
     expect(codesFor(projects)).toContain("showcase-published-without-legacy-path");
   });
 
+  it("aceita studio-showcase publicado sem rota legada quando possui externalDestination válido (ex. KOVA)", () => {
+    const unmappedCode = "X99" as unknown as ShowcaseCode;
+    const projects = [
+      buildShowcase({
+        publication: "published",
+        showcaseCode: unmappedCode,
+        externalDestination: { url: "https://example.com" },
+      }),
+    ];
+    expect(codesFor(projects)).not.toContain("showcase-published-without-legacy-path");
+  });
+
+  it("detecta invalid-external-destination num studio-showcase com scheme não permitido", () => {
+    const projects = [
+      buildShowcase({
+        publication: "published",
+        externalDestination: { url: "javascript:alert(1)" },
+      }),
+    ];
+    expect(codesFor(projects)).toContain("invalid-external-destination");
+  });
+
   it("detecta internal-system-public-without-eligibility", () => {
     const projects = [buildInternalSystem({ visibility: "public", publication: "published" })];
     expect(codesFor(projects)).toContain("internal-system-public-without-eligibility");

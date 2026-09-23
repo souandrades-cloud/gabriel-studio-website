@@ -159,4 +159,52 @@ export const STUDIO_SHOWCASE_PROJECTS: readonly StudioShowcaseProject[] = [
       ogImage: "/images/x03/x03-a001-pl1-master.png",
     },
   },
+  {
+    id: "kova",
+    slug: "kova",
+    kind: "studio-showcase",
+    showcaseCode: "KOVA",
+    title: "KOVA — E-commerce / Commerce Experience",
+    shortTitle: "KOVA",
+    summary:
+      "E-commerce premium de áudio pessoal (fones, earbuds, speaker) com catálogo filtrável, página de produto completa e carrinho persistente — showcase de capability em frontend de e-commerce, não uma loja real.",
+    disclosure:
+      "Concept / Portfolio Showcase — marca e catálogo fictícios, sem cliente real, sem checkout/pagamento real.",
+    lifecycle: "production",
+    publication: "published",
+    visibility: "public",
+    capabilities: [
+      "Catálogo filtrável e ordenável",
+      "PDP com galeria e relacionados",
+      "Carrinho com persistência local",
+    ],
+    technologies: [
+      "Next.js 16 (App Router, Turbopack)",
+      "TypeScript",
+      "Tailwind CSS v4",
+      "Framer Motion",
+      "React Context + localStorage",
+    ],
+    media: [
+      {
+        src: "/images/kova/kova-aero.png",
+        alt: "KOVA — showcase de e-commerce: fone over-ear KOVA Aero em grafite escovado com detalhe âmbar-latão",
+        role: "thumbnail",
+        width: 1672,
+        height: 941,
+      },
+    ],
+    relations: { relatedSlugs: [] },
+    featured: false,
+    externalDestination: {
+      url: "https://kova-portfolio-lab.vercel.app",
+      label: "Ver showcase",
+    },
+    seo: {
+      title: "KOVA — E-commerce / Commerce Experience",
+      description:
+        "E-commerce premium de áudio pessoal com catálogo, página de produto e carrinho funcionais. Concept / Portfolio Showcase, sem cliente real.",
+      ogImage: "/images/kova/kova-aero.png",
+    },
+  },
 ];

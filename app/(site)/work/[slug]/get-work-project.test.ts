@@ -31,15 +31,20 @@ describe("getWorkProject", () => {
   it("resolve x03 (studio-showcase published/public) pelo lookup público — Publication Pilot 003", () => {
     expect(getWorkProject("x03")?.slug).toBe("x03");
   });
+
+  it("resolve kova (studio-showcase externo, published/public) pelo lookup público — KOVA Commerce Showcase Integration 001", () => {
+    expect(getWorkProject("kova")?.slug).toBe("kova");
+  });
 });
 
 describe("estado público do registry real", () => {
-  it("os seis standard cases + x01 + x02 + x03 são publicamente elegíveis hoje", () => {
+  it("os seis standard cases + x01 + x02 + x03 + kova são publicamente elegíveis hoje", () => {
     expect(getPublishedProjects(ALL_PROJECTS).map((project) => project.slug)).toEqual([
       ...PUBLIC_STANDARD_CASE_SLUGS,
       "x01",
       "x02",
       "x03",
+      "kova",
     ]);
   });
 });

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { generateMetadata, generateStaticParams, resolveOgImage } from "./page";
 
 describe("generateStaticParams", () => {
-  it("inclui exatamente os seis standard cases + x01 + x02 + x03 publicamente elegíveis", async () => {
+  it("inclui exatamente os seis standard cases + x01 + x02 + x03 + kova publicamente elegíveis", async () => {
     const params = await generateStaticParams();
     expect(params).toEqual([
       { slug: "cora" },
@@ -15,6 +15,7 @@ describe("generateStaticParams", () => {
       { slug: "x01" },
       { slug: "x02" },
       { slug: "x03" },
+      { slug: "kova" },
     ]);
   });
 
@@ -31,6 +32,11 @@ describe("generateStaticParams", () => {
   it("inclui x03 (studio-showcase published/public — Publication Pilot 003)", async () => {
     const params = await generateStaticParams();
     expect(params).toContainEqual({ slug: "x03" });
+  });
+
+  it("inclui kova (studio-showcase externo, published/public — KOVA Commerce Showcase Integration 001)", async () => {
+    const params = await generateStaticParams();
+    expect(params).toContainEqual({ slug: "kova" });
   });
 });
 

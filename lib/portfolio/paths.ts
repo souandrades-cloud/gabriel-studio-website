@@ -12,9 +12,11 @@ export function getTargetExperiencePath(slug: string): string {
 /**
  * Rota atual (pré-migração) de cada showcase, ex. `/showcase/x03`. Distinta da
  * target experience path (`/work/{slug}/experience`): esta é a rota legada
- * onde X01/X02/X03 realmente vivem hoje.
+ * onde X01/X02/X03 realmente vivem hoje. `Partial` porque showcases com
+ * `externalDestination` (ex. KOVA) nunca ganham uma entrada aqui — a
+ * experiência real deles vive fora deste repositório.
  */
-const LEGACY_SHOWCASE_PATHS: Readonly<Record<ShowcaseCode, string>> = {
+const LEGACY_SHOWCASE_PATHS: Partial<Readonly<Record<ShowcaseCode, string>>> = {
   X01: "/showcase/x01",
   X02: "/showcase/x02",
   X03: "/showcase/x03",

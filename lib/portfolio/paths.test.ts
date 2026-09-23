@@ -24,4 +24,8 @@ describe("getLegacyShowcasePath", () => {
     expect(getLegacyShowcasePath("X02")).toBe("/showcase/x02");
     expect(getLegacyShowcasePath("X03")).toBe("/showcase/x03");
   });
+
+  it("retorna undefined para KOVA — showcase externo, sem rota legada interna", () => {
+    expect(getLegacyShowcasePath("KOVA")).toBeUndefined();
+  });
 });

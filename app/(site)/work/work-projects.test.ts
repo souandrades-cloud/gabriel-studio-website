@@ -47,7 +47,7 @@ describe("getWorkProjects", () => {
     expect(getWorkProjects([])).toEqual([]);
   });
 
-  it("os seis standard cases + x01 + x02 + x03 (publicados) estão publicamente elegíveis, em ordem determinística", () => {
+  it("os seis standard cases + x01 + x02 + x03 + kova (publicados) estão publicamente elegíveis, em ordem determinística", () => {
     expect(getWorkProjects(ALL_PROJECTS).map((project) => project.slug)).toEqual([
       "cora",
       "toledo-prado",
@@ -58,6 +58,7 @@ describe("getWorkProjects", () => {
       "x01",
       "x02",
       "x03",
+      "kova",
     ]);
   });
 
@@ -72,14 +73,19 @@ describe("getWorkProjects", () => {
   it("x03 (studio-showcase published/public) aparece em /work — Publication Pilot 003", () => {
     expect(getWorkProjects(ALL_PROJECTS).map((project) => project.slug)).toContain("x03");
   });
+
+  it("kova (studio-showcase externo, published/public) aparece em /work — KOVA Commerce Showcase Integration 001", () => {
+    expect(getWorkProjects(ALL_PROJECTS).map((project) => project.slug)).toContain("kova");
+  });
 });
 
 describe("getShowcaseProjects", () => {
-  it("retorna exatamente x01, x02, x03, em ordem determinística (Featured Strip)", () => {
+  it("retorna exatamente x01, x02, x03, kova, em ordem determinística (Featured Strip)", () => {
     expect(getShowcaseProjects(ALL_PROJECTS).map((project) => project.slug)).toEqual([
       "x01",
       "x02",
       "x03",
+      "kova",
     ]);
   });
 

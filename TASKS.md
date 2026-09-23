@@ -519,3 +519,29 @@ A auditoria comercial final (Finalization 001) encontrou um bloqueador P0: nenhu
 ## Resultado
 
 Todo caminho de intenção de compra agora chega a um canal real. Nenhuma seção redesenhada, nenhum layout alterado.
+
+---
+
+# Sprint 17 — KOVA Commerce Showcase Integration 001
+
+## Objetivo
+
+Integrar o KOVA (Portfolio Lab, COMMERCE-001) — um showcase de e-commerce hospedado externamente na Vercel — como um Studio Showcase, sem redesenhar `/work`, a Home ou tocar em X01/X02/X03.
+
+## TASK 17.1 — Schema + integração
+
+- [x] `lib/portfolio/types.ts`: `ShowcaseCode` ganhou `"KOVA"`; `StudioShowcaseProject` ganhou `externalDestination?` e `disclosure?` (opcionais, X01/X02/X03 não usam)
+- [x] `lib/portfolio/paths.ts`: `LEGACY_SHOWCASE_PATHS` virou `Partial<Record<...>>` — KOVA nunca terá rota legada
+- [x] `lib/portfolio/validation.ts`: studio-showcase publicado é válido com rota legada OU `externalDestination` válido
+- [x] `data/projects/studio-showcases.ts`: entrada KOVA adicionada (metadata exata do `INTEGRATION-HANDOFF.md` do Portfolio Lab)
+- [x] `public/images/kova/kova-aero.png` copiado do asset já aprovado (`prototype-002/public/products/aero.png`, 1672×941, sem crop)
+- [x] `components/portfolio/studio-showcase-body.tsx`: disclosure box condicional + CTA externo (`target="_blank" rel="noopener noreferrer"`) quando `externalDestination` presente
+- [x] `app/(site)/work/page.tsx`: grid de showcases `sm:grid-cols-3` → `sm:grid-cols-2 lg:grid-cols-4` (4 cards agora, não 3)
+- [x] Home (`components/sections/portfolio.tsx`) **não alterada** — Signature Strip é composição curada aprovada pelo Human Director, tematicamente distinta de um showcase comercial
+- [x] 8 testes novos (schema + integração KOVA); 6 asserts pré-existentes com contagem hardcoded atualizados para incluir `kova`
+- [x] `npm run typecheck`, `npm run lint`, `npm run test` (160/160), `npm run validate:registry` (10 projetos, zero issues), `npm run build` limpos
+- [x] QA visual real via Playwright contra `next start` local — 1440/820/390px, overflow 0px, CTA externo confirmado por evento de popup real, dois falsos-positivos investigados e descartados (analytics 404 pré-existente; blank-image de screenshot pós-navegação client-side, mesmo artefato já documentado no Portfolio Lab)
+
+## Resultado
+
+KOVA aparece em `/work` (grade de Studio Showcases) e `/work/kova` (detalhe, CTA externo para `https://kova-portfolio-lab.vercel.app`), com rótulo Concept/Portfolio Showcase visível. Nenhum redesign de `/work`, Home ou Standard Cases. X01/X02/X03 intocados. Mudanças commitadas localmente — sem `git push`, sem deploy do site principal (hard stop do gate).

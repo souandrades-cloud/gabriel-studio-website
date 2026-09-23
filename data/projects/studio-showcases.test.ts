@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { STUDIO_SHOWCASE_PROJECTS } from "@/data/projects/studio-showcases";
+import { getLegacyShowcasePath } from "@/lib/portfolio/paths";
 
 describe("STUDIO_SHOWCASE_PROJECTS — x01", () => {
   const x01 = STUDIO_SHOWCASE_PROJECTS.find((p) => p.slug === "x01");
@@ -140,5 +141,44 @@ describe("STUDIO_SHOWCASE_PROJECTS — x03", () => {
   it("possui SEO title/description não vazios", () => {
     expect(x03?.seo.title.trim().length).toBeGreaterThan(0);
     expect(x03?.seo.description.trim().length).toBeGreaterThan(0);
+  });
+});
+
+describe("STUDIO_SHOWCASE_PROJECTS — kova (KOVA Commerce Showcase Integration 001)", () => {
+  const kova = STUDIO_SHOWCASE_PROJECTS.find((p) => p.slug === "kova");
+
+  it("existe e usa kind/showcaseCode corretos", () => {
+    expect(kova?.kind).toBe("studio-showcase");
+    expect(kova?.showcaseCode).toBe("KOVA");
+  });
+
+  it("está publicado", () => {
+    expect(kova?.publication).toBe("published");
+    expect(kova?.visibility).toBe("public");
+  });
+
+  it("lifecycle é production", () => {
+    expect(kova?.lifecycle).toBe("production");
+  });
+
+  it("possui exatamente 1 thumbnail com width/height reais (> 0)", () => {
+    const thumbnails = kova?.media.filter((media) => media.role === "thumbnail") ?? [];
+    expect(thumbnails).toHaveLength(1);
+    expect(thumbnails[0]?.width ?? 0).toBeGreaterThan(0);
+    expect(thumbnails[0]?.height ?? 0).toBeGreaterThan(0);
+  });
+
+  it("possui SEO title/description não vazios", () => {
+    expect(kova?.seo.title.trim().length).toBeGreaterThan(0);
+    expect(kova?.seo.description.trim().length).toBeGreaterThan(0);
+  });
+
+  it("possui externalDestination válido (showcase hospedado fora deste repositório) e nenhuma rota legada", () => {
+    expect(kova?.externalDestination?.url).toBe("https://kova-portfolio-lab.vercel.app");
+    expect(getLegacyShowcasePath("KOVA")).toBeUndefined();
+  });
+
+  it("possui disclosure de transparência conceitual (concept/showcase, sem cliente real)", () => {
+    expect(kova?.disclosure?.trim().length ?? 0).toBeGreaterThan(0);
   });
 });

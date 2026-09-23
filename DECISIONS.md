@@ -296,3 +296,48 @@ Continuam proibidos nesta fase (sem alteração de escopo):
 Motivo:
 
 QA técnico completo (testes, typecheck, lint, format, registry validation, build, checagem HTTP ao vivo da fronteira de publicação e da metadata) não encontrou nenhuma regressão nos 6 Standard Cases nem no dual-run legacy/nova rota. Com a confirmação visual humana, o primeiro Publication Pilot da série Studio Showcase está formalmente encerrado, provando que a arquitetura registry → fronteira de publicação (`isPubliclyVisible`) → `/work` → `/work/{slug}` → sitemap/SEO, já validada pelos Migration Pilots e pelo Media Gate 001, também suporta publicação real sem exigir nenhuma mudança estrutural — apenas a virada de dois campos no registro. A decisão sobre um eventual tratamento visual "premium" diferenciado para Studio Showcases dentro da grade `/work` permanece **futura** e não bloqueia este piloto. Próximo gate (X02 Publication Pilot, diferenciação visual, ou remoção de legacy) depende de decisão do Gabriel Studio — Mentor.
+
+## 2026-09-23 — KOVA Commerce Showcase Integration 001 (V2 — Portfolio System)
+
+Decisão:
+
+KOVA (Portfolio Lab, projeto COMMERCE-001) foi integrado como o **quarto Studio Showcase** — primeiro cujo `kind: "studio-showcase"` não corresponde a uma experiência cinematográfica interna (GSAP/Three.js) com rota legada, mas a um showcase de e-commerce hospedado **fora deste repositório** (deploy isolado na Vercel: `https://kova-portfolio-lab.vercel.app`). Fonte de verdade: `Portfolio Lab/projects/commerce-001/INTEGRATION-HANDOFF.md` (commit `de71bc4` do Portfolio Lab) — metadata usada sem reinvenção.
+
+Mudança de schema (motivo técnico real, não redesign):
+
+O contrato existente (`StudioShowcaseProject.showcaseCode: "X01"|"X02"|"X03"` + `LEGACY_SHOWCASE_PATHS: Record<ShowcaseCode, string>` completo + invariante `showcase-published-without-legacy-path`) assume que todo Studio Showcase publicado tem uma rota interna `/showcase/x0N`. KOVA nunca terá essa rota — sua experiência real vive num deploy Next.js separado. Em vez de forçar KOVA num molde que não descreve a realidade (ou de rebaixá-lo a Standard Case, que o Mentor explicitamente vetou), o schema foi estendido:
+
+- `ShowcaseCode` ganhou o literal `"KOVA"`.
+- `LEGACY_SHOWCASE_PATHS` virou `Partial<Record<ShowcaseCode, string>>` — X01/X02/X03 inalterados, KOVA deliberadamente sem entrada (nunca terá).
+- `StudioShowcaseProject` ganhou dois campos opcionais: `externalDestination?: ExternalDestination` (mesmo tipo já usado por `StandardCaseProject`) e `disclosure?: string` (mesmo papel do `disclosure` de Standard Case, mas opcional porque X01/X02/X03 são trabalho autoral, não uma simulação de projeto comercial — não precisam do rótulo).
+- `validateProjectSelf`: um studio-showcase publicado agora é válido se tiver **ou** rota legada resolvível (X01/X02/X03), **ou** `externalDestination` com scheme http/https válido (KOVA) — nunca as duas coisas exigidas ao mesmo tempo, nunca nenhuma das duas.
+
+X01/X02/X03 não mudaram nenhum campo, nenhum teste que os cobre mudou de comportamento — apenas ganharam uma dependência tipada nova (opcional) que eles não usam.
+
+Renderização (`StudioShowcaseBody`, `ShowcaseStripCard`, `app/(site)/work/page.tsx`):
+
+- `StudioShowcaseBody`: quando `disclosure` está presente, renderiza a mesma caixa de transparência conceitual já usada por `StandardCaseBody` (`Concept / Portfolio Showcase — ...`), visível na página de detalhe. Quando `externalDestination` está presente, o CTA final vira `<a target="_blank" rel="noopener noreferrer">` para a URL real em vez do `<Link>` interno para `/work/{slug}/experience` — mesmo padrão já usado por Standard Cases com destino externo. X01/X02/X03 não têm nenhum dos dois campos, então renderizam exatamente como antes.
+- `ShowcaseStripCard` não mudou — já era genérico (thumbnail + título + summary + "Ver projeto" para `/work/{slug}`), funciona para KOVA sem alteração.
+- Grid de Studio Showcases em `/work` (`app/(site)/work/page.tsx`): `sm:grid-cols-3` (dimensionado para exatamente 3 cards) virou `sm:grid-cols-2 lg:grid-cols-4` — com 4 showcases publicados agora, 3 colunas deixaria o 4º card órfão numa segunda linha. Único ajuste de layout desta gate; nenhum outro elemento de `/work` foi redesenhado.
+
+Decisão deliberada de **não tocar na Home**: a seção "Signature" da Home (`components/sections/portfolio.tsx`) é uma composição curada e já aprovada pelo Human Director (X03 como hero via `SignatureFeature`, X02+X01 secundários), com o eyebrow "Trabalho autoral, conduzido sem as restrições de um projeto comercial." KOVA é estruturalmente o oposto disso — é precisamente uma demonstração de capability *comercial* (e-commerce). Inserir KOVA ali confundiria duas categorias que o próprio Gabriel Studio distingue e desfaria uma composição humana já validada, sem que o gate tivesse pedido isso (a missão pediu "camada destinada a Studio Showcases", que é a grade genérica de `/work`, não a curadoria manual da Home). KOVA aparece apenas em `/work` e `/work/kova` — Home permanece byte-a-byte como estava, exceto pela dependência de tipos compartilhada.
+
+Asset:
+
+`Portfolio Lab/projects/commerce-001/prototype-002/public/products/aero.png` (já aprovado, já em 16:9 — 1672×941 — sem necessidade de crop) foi copiado para `public/images/kova/kova-aero.png` deste repositório, seguindo o padrão existente de asset local por showcase (`public/images/x0{1,2,3}/`). Nenhum derivado novo foi gerado.
+
+Resultado técnico:
+
+- 160/160 testes (152 pré-existentes + 8 novos, cobrindo o schema estendido e a integração do KOVA), typecheck, lint e `validate:registry` ("10 projetos, zero issues") limpos.
+- Build de produção gera `/work/kova` como SSG (10 paths sob `/work/[slug]`, contra 9 antes); nenhuma rota `/work/kova/experience` é criada (KOVA não usa `getTargetExperiencePath`).
+- QA visual real (Playwright, produção local via `next start`) em 1440/820/390px: overflow horizontal 0px nas três larguras, card do KOVA renderiza corretamente na grade e na página de detalhe, disclosure "Concept / Portfolio Showcase" visível, CTA "Ver showcase" abre `https://kova-portfolio-lab.vercel.app` numa nova aba (`target="_blank" rel="noopener noreferrer"`) — confirmado via evento de popup real do browser, não apenas inspeção do HTML.
+- Um 404 de console (`/_vercel/insights/script.js`) apareceu em todas as páginas testadas, incluindo a Home — confirmado como comportamento pré-existente do Vercel Web Analytics (só resolve em produção real na Vercel, não em `next start` local), não uma regressão desta gate.
+- Um primeiro screenshot da página de detalhe do KOVA saiu com a imagem em branco logo após uma navegação client-side (clique no card) seguida de captura `fullPage` imediata — investigado via `naturalWidth`/`complete` do elemento `<img>`: a imagem carrega com sucesso (960px, `complete: true`) numa navegação direta com uma espera real. Mesma classe de artefato de captura já documentada em `Portfolio Lab/projects/commerce-001/PUBLICATION-001.md` §4 — não é um bug do site.
+
+Continuam proibidos nesta gate (sem alteração de escopo):
+
+- Redesign de `/work`, da Home ou de qualquer Standard Case.
+- Qualquer alteração em X01/X02/X03 (código, dados, assets).
+- Deploy do site principal — mudanças commitadas localmente, sem `git push`, sem deploy Vercel.
+- Alteração do showcase KOVA em si (Portfolio Lab) — apenas leitura/cópia do asset aprovado.
+- Criação de novas features além do necessário para representar corretamente um showcase externo no schema existente.

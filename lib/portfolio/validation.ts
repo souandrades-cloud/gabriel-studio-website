@@ -111,16 +111,22 @@ function validateProjectSelf(project: Project): ValidationIssue[] {
     }
   }
 
-  if (
-    project.kind === "studio-showcase" &&
-    project.publication === "published" &&
-    !getLegacyShowcasePath(project.showcaseCode)
-  ) {
-    issues.push({
-      code: "showcase-published-without-legacy-path",
-      message: `Showcase "${id}" está publicado mas não possui rota legada resolvível para "${project.showcaseCode}".`,
-      projectId: id,
-    });
+  if (project.kind === "studio-showcase" && project.publication === "published") {
+    if (project.externalDestination) {
+      if (!hasAllowedExternalDestinationScheme(project.externalDestination.url)) {
+        issues.push({
+          code: "invalid-external-destination",
+          message: `Showcase "${id}" possui external destination com URL inválida ou scheme não permitido ("${project.externalDestination.url}").`,
+          projectId: id,
+        });
+      }
+    } else if (!getLegacyShowcasePath(project.showcaseCode)) {
+      issues.push({
+        code: "showcase-published-without-legacy-path",
+        message: `Showcase "${id}" está publicado mas não possui rota legada resolvível para "${project.showcaseCode}" nem externalDestination.`,
+        projectId: id,
+      });
+    }
   }
 
   if (
