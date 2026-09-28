@@ -581,3 +581,36 @@ Verificar o estado real da integração do KOVA (relatada como publicada em prod
 ## Resultado
 
 KOVA agora tem presença descobrível na Home — sub-seção "Fora do repositório principal" entre Signature e Websites, card claro distinto do tratamento escuro da Signature Strip, disclosure sempre visível. Signature Strip (X01/X02/X03) intocada. Nenhum redesign geral da Home. Mudanças commitadas localmente — sem `git push`, sem deploy do site principal (hard stop do gate, aguardando autorização do Gabriel Studio — Mentor).
+---
+
+# Sprint 19 — ARMAZENA Website Integration 002
+
+## Objetivo
+
+Integrar ARMAZENA (Portfolio Lab, INVENTORY-001, CONCEPT/SHOWCASE) como Capability Showcase, ao lado do KOVA, conforme D1/D2/D3 aprovadas no Gate 001, com texto exclusivamente do `INTEGRATION-HANDOFF.md` do Lab.
+
+## TASK 19.1 — Dados e schema
+
+- [x] `ShowcaseCode` + `"ARMAZENA"`; `StudioShowcaseProject.category?`
+- [x] Entrada `armazena` em `data/projects/studio-showcases.ts` (externalDestination `https://armazena-case.vercel.app/`, disclosure, capabilities, stack, SEO)
+- [x] KOVA com `category: "Commerce Experience"` (badge inalterado)
+- [x] Assets: `public/images/armazena/armazena-bloqueio.webp` (1920×1200) e `armazena-og.png` (1200×630, sha256 conferido)
+
+## TASK 19.2 — Home e /work
+
+- [x] `CapabilityShowcaseFeature` (renomeado de `CommerceShowcaseFeature`), badge parametrizado
+- [x] Home: bloco "Capability Showcases" KOVA + ARMAZENA, 1 coluna mobile / 2 colunas >= sm
+- [x] `/work`: subgrupos Signature (3-up) e Capability Showcases (2-up, disclosure visível)
+- [x] `/work/armazena` com CTA "Ver estudo de caso" para o case standalone
+- [x] CTA externo com "(abre em nova aba)" acessível
+
+## TASK 19.3 — Validação
+
+- [x] typecheck, lint, format, test (177/177), validate:registry (11/0), build
+- [x] QA real 1440/820/390 × 4 rotas: overflow 0, imagens ok, popups reais, teclado
+- [x] Regressão KOVA contra baseline de produção
+- [x] Auditoria de claims no texto renderizado
+
+## Resultado
+
+PASS local. Commit local — sem push, sem deploy (aguarda Gate 003 — Production Publication).

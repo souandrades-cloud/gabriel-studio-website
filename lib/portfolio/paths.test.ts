@@ -28,4 +28,8 @@ describe("getLegacyShowcasePath", () => {
   it("retorna undefined para KOVA — showcase externo, sem rota legada interna", () => {
     expect(getLegacyShowcasePath("KOVA")).toBeUndefined();
   });
+
+  it("retorna undefined para ARMAZENA — showcase externo, sem rota legada interna", () => {
+    expect(getLegacyShowcasePath("ARMAZENA")).toBeUndefined();
+  });
 });

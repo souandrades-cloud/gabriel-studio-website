@@ -170,6 +170,7 @@ export const STUDIO_SHOWCASE_PROJECTS: readonly StudioShowcaseProject[] = [
       "E-commerce premium de áudio pessoal (fones, earbuds, speaker) com catálogo filtrável, página de produto completa e carrinho persistente — showcase de capability em frontend de e-commerce, não uma loja real.",
     disclosure:
       "Concept / Portfolio Showcase — marca e catálogo fictícios, sem cliente real, sem checkout/pagamento real.",
+    category: "Commerce Experience",
     lifecycle: "production",
     publication: "published",
     visibility: "public",
@@ -205,6 +206,73 @@ export const STUDIO_SHOWCASE_PROJECTS: readonly StudioShowcaseProject[] = [
       description:
         "E-commerce premium de áudio pessoal com catálogo, página de produto e carrinho funcionais. Concept / Portfolio Showcase, sem cliente real.",
       ogImage: "/images/kova/kova-aero.png",
+    },
+  },
+  /**
+   * ARMAZENA (Portfolio Lab, INVENTORY-001). Todo texto abaixo vem de
+   * `Portfolio Lab/projects/inventory-001/INTEGRATION-HANDOFF.md` (commit
+   * `2c59a14`), rastreado linha a linha ao `case/final/CLAIMS.md` do case —
+   * não editar sem atualizar o handoff primeiro. Sem números do spike/testes
+   * como métrica pública. O thumbnail é uma captura local contra o banco de
+   * teste (CLAIMS C0.2), nunca descrita como tela de produção.
+   */
+  {
+    id: "armazena",
+    slug: "armazena",
+    kind: "studio-showcase",
+    showcaseCode: "ARMAZENA",
+    title: "ARMAZENA — Inventory Operations Control System",
+    shortTitle: "ARMAZENA",
+    summary:
+      "Estoque multi-depósito por lote e validade, com três papéis e trilha de auditoria: saída de lote vencido é recusada, o saldo não fica negativo e toda tentativa — concluída ou bloqueada — é registrada.",
+    disclosure:
+      "Concept / Showcase — sem cliente, operação ou dado real. Nome de trabalho, sem marca real.",
+    category: "Operations System",
+    lifecycle: "production",
+    publication: "published",
+    visibility: "public",
+    capabilities: [
+      "Lote e validade com fila FEFO",
+      "Três papéis com escopo checado no servidor",
+      "Trilha de auditoria com concluídas e bloqueadas",
+      "Baixa condicional numa única transação",
+    ],
+    technologies: [
+      "Next.js 16",
+      "React 19",
+      "TypeScript",
+      "Tailwind CSS 4",
+      "Prisma 6.19",
+      "Postgres 18.6 (Neon)",
+      "Vercel",
+    ],
+    media: [
+      {
+        src: "/images/armazena/armazena-bloqueio.webp",
+        alt: "Tela real do ARMAZENA, showcase conceitual: saída de 1 frasco do lote L-REA-0091 bloqueada na 3ª validação por lote vencido, saldo 40 → 40 inalterado, tentativa registrada na trilha #0070. Dados fictícios.",
+        role: "thumbnail",
+        width: 1920,
+        height: 1200,
+      },
+      {
+        src: "/images/armazena/armazena-og.png",
+        alt: "Imagem social do estudo de caso do ARMAZENA (Concept / Showcase).",
+        role: "og",
+        width: 1200,
+        height: 630,
+      },
+    ],
+    relations: { relatedSlugs: [] },
+    featured: false,
+    externalDestination: {
+      url: "https://armazena-case.vercel.app/",
+      label: "Ver estudo de caso",
+    },
+    seo: {
+      title: "ARMAZENA — Inventory Operations Control System",
+      description:
+        "Estoque por lote e validade com três papéis e trilha de auditoria: saída de lote vencido recusada, saldo íntegro e toda tentativa registrada. Concept / Showcase, sem cliente, operação ou dado real.",
+      ogImage: "/images/armazena/armazena-og.png",
     },
   },
 ];

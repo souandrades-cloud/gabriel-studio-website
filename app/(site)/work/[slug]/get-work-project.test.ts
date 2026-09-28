@@ -35,16 +35,21 @@ describe("getWorkProject", () => {
   it("resolve kova (studio-showcase externo, published/public) pelo lookup público — KOVA Commerce Showcase Integration 001", () => {
     expect(getWorkProject("kova")?.slug).toBe("kova");
   });
+
+  it("resolve armazena (studio-showcase externo, published/public) pelo lookup público — ARMAZENA Website Integration 002", () => {
+    expect(getWorkProject("armazena")?.slug).toBe("armazena");
+  });
 });
 
 describe("estado público do registry real", () => {
-  it("os seis standard cases + x01 + x02 + x03 + kova são publicamente elegíveis hoje", () => {
+  it("os seis standard cases + x01 + x02 + x03 + kova + armazena são publicamente elegíveis hoje", () => {
     expect(getPublishedProjects(ALL_PROJECTS).map((project) => project.slug)).toEqual([
       ...PUBLIC_STANDARD_CASE_SLUGS,
       "x01",
       "x02",
       "x03",
       "kova",
+      "armazena",
     ]);
   });
 });

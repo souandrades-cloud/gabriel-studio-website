@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { generateMetadata, generateStaticParams, resolveOgImage } from "./page";
 
 describe("generateStaticParams", () => {
-  it("inclui exatamente os seis standard cases + x01 + x02 + x03 + kova publicamente elegíveis", async () => {
+  it("inclui exatamente os seis standard cases + x01 + x02 + x03 + kova + armazena publicamente elegíveis", async () => {
     const params = await generateStaticParams();
     expect(params).toEqual([
       { slug: "cora" },
@@ -16,6 +16,7 @@ describe("generateStaticParams", () => {
       { slug: "x02" },
       { slug: "x03" },
       { slug: "kova" },
+      { slug: "armazena" },
     ]);
   });
 
@@ -37,6 +38,25 @@ describe("generateStaticParams", () => {
   it("inclui kova (studio-showcase externo, published/public — KOVA Commerce Showcase Integration 001)", async () => {
     const params = await generateStaticParams();
     expect(params).toContainEqual({ slug: "kova" });
+  });
+
+  it("inclui armazena (studio-showcase externo, published/public — ARMAZENA Website Integration 002)", async () => {
+    const params = await generateStaticParams();
+    expect(params).toContainEqual({ slug: "armazena" });
+  });
+});
+
+describe("generateMetadata — armazena", () => {
+  it("usa o OG próprio do case (1200×630), com canonical em /work/armazena", async () => {
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ slug: "armazena" }),
+      searchParams: Promise.resolve({}),
+    });
+
+    expect(metadata.alternates?.canonical).toBe("/work/armazena");
+    expect(metadata.openGraph?.images).toEqual([
+      { url: "/images/armazena/armazena-og.png", width: 1200, height: 630 },
+    ]);
   });
 });
 

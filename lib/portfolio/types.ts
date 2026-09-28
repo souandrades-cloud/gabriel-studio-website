@@ -11,11 +11,12 @@ export type MediaRole = "thumbnail" | "poster" | "og" | "gallery";
 /**
  * X01/X02/X03 são experiências cinematográficas internas (scroll-narrative,
  * GSAP/Three.js), cada uma com rota legada própria (`getLegacyShowcasePath`).
- * KOVA é o primeiro Studio Showcase hospedado externamente (deploy isolado,
- * fora deste repositório) — nunca ganhará uma rota interna `/showcase/*`, por
- * isso não tem entrada em `LEGACY_SHOWCASE_PATHS`. Ver `StudioShowcaseProject.externalDestination`.
+ * KOVA e ARMAZENA são Studio Showcases hospedados externamente (deploy
+ * isolado, fora deste repositório) — nunca ganharão uma rota interna
+ * `/showcase/*`, por isso não têm entrada em `LEGACY_SHOWCASE_PATHS`. Ver
+ * `StudioShowcaseProject.externalDestination`.
  */
-export type ShowcaseCode = "X01" | "X02" | "X03" | "KOVA";
+export type ShowcaseCode = "X01" | "X02" | "X03" | "KOVA" | "ARMAZENA";
 
 export interface ProjectMedia {
   readonly src: string;
@@ -86,6 +87,8 @@ export interface StudioShowcaseProject extends ProjectBase {
   readonly externalDestination?: ExternalDestination;
   /** Rótulo de transparência conceitual (ex. "Concept / Portfolio Showcase — sem cliente real."), exibido na página de detalhe quando presente. Mesma função do `disclosure` de `StandardCaseProject`, opcional aqui porque X01/X02/X03 são trabalho autoral, não uma simulação de projeto comercial. */
   readonly disclosure?: string;
+  /** Categoria de capability exibida no badge ao lado do `showcaseCode` (ex. "Commerce Experience"). Só os showcases externos (capability showcases) usam hoje. */
+  readonly category?: string;
 }
 
 export interface InternalSystemEligibility {

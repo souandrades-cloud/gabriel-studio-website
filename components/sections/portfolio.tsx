@@ -1,4 +1,4 @@
-import { CommerceShowcaseFeature } from "@/components/portfolio/commerce-showcase-feature";
+import { CapabilityShowcaseFeature } from "@/components/portfolio/capability-showcase-feature";
 import { PortfolioCta } from "@/components/portfolio/portfolio-cta";
 import { withPrototypeThumbnail } from "@/components/portfolio/project-overrides";
 import { PROTOTYPE_THUMBNAILS } from "@/components/portfolio/prototype-thumbnails";
@@ -19,6 +19,7 @@ const x03 = withPrototypeThumbnail(x03raw, PROTOTYPE_THUMBNAILS.x03);
 const x02 = withPrototypeThumbnail(x02raw, PROTOTYPE_THUMBNAILS.x02);
 const x01 = withPrototypeThumbnail(x01raw, PROTOTYPE_THUMBNAILS.x01);
 const kova = getPublishedProjectBySlug("kova") as StudioShowcaseProject;
+const armazena = getPublishedProjectBySlug("armazena") as StudioShowcaseProject;
 const cora = getPublishedProjectBySlug("cora") as StandardCaseProject;
 const lume = getPublishedProjectBySlug("lume") as StandardCaseProject;
 const vidra = getPublishedProjectBySlug("vidra") as StandardCaseProject;
@@ -53,8 +54,14 @@ function FamilyHeader({ eyebrow, heading }: { eyebrow: string; heading: string }
  * restrições comerciais" e KOVA é o oposto — uma demonstração de capability
  * comercial hospedada fora deste repositório. Por isso ganha um pequeno bloco
  * dedicado entre Signature e Websites, com linguagem visual própria
- * (`CommerceShowcaseFeature`, tratamento claro como `WorkProjectCard`, não o
+ * (`CapabilityShowcaseFeature`, tratamento claro como `WorkProjectCard`, não o
  * tratamento escuro do Signature) e disclosure sempre visível.
+ *
+ * ARMAZENA (Gate ARMAZENA WEBSITE INTEGRATION 002, D1) entra no mesmo bloco,
+ * que passa a ser "Capability Showcases": 2 cards (1 coluna mobile, 2 colunas
+ * >= sm), mesmo rótulo usado no subgrupo equivalente de `/work` (D2). Não vai
+ * para Systems: FIS/Outbound são sistemas reais do estúdio e um conceito ao
+ * lado deles sugeriria uso operacional real.
  */
 function Portfolio() {
   return (
@@ -73,16 +80,20 @@ function Portfolio() {
         </div>
       </Section>
 
-      <Section background="default" className="py-10 sm:py-12">
+      <Section background="default" className="py-10 sm:py-12" data-qa="capability-showcases">
         <div className="mx-auto max-w-lg text-center">
           <Badge variant="outline" className="tracking-wide uppercase">
-            Fora do repositório principal
+            Capability Showcases
           </Badge>
           <p className="text-muted-foreground mt-4 text-sm text-balance">
-            Também demonstramos capability em e-commerce como Studio Showcase independente.
+            Também demonstramos capability em e-commerce e em gestão de estoque, como Studio
+            Showcases independentes.
           </p>
         </div>
-        <div className="mt-6">{kova ? <CommerceShowcaseFeature project={kova} /> : null}</div>
+        <div className="mx-auto mt-6 grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-2">
+          {kova ? <CapabilityShowcaseFeature project={kova} /> : null}
+          {armazena ? <CapabilityShowcaseFeature project={armazena} /> : null}
+        </div>
       </Section>
 
       <Section background="muted" className="dark bg-muted">

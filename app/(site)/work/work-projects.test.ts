@@ -7,7 +7,13 @@ import { describe, expect, it } from "vitest";
 import { ALL_PROJECTS } from "@/data/projects/registry";
 import type { StandardCaseProject } from "@/lib/portfolio/types";
 
-import { getShowcaseProjects, getStandardCaseProjects, getWorkProjects } from "./work-projects";
+import {
+  getCapabilityShowcaseProjects,
+  getShowcaseProjects,
+  getSignatureShowcaseProjects,
+  getStandardCaseProjects,
+  getWorkProjects,
+} from "./work-projects";
 
 function buildCase(overrides: Partial<StandardCaseProject> = {}): StandardCaseProject {
   return {
@@ -47,7 +53,7 @@ describe("getWorkProjects", () => {
     expect(getWorkProjects([])).toEqual([]);
   });
 
-  it("os seis standard cases + x01 + x02 + x03 + kova (publicados) estão publicamente elegíveis, em ordem determinística", () => {
+  it("os seis standard cases + x01 + x02 + x03 + kova + armazena (publicados) estão publicamente elegíveis, em ordem determinística", () => {
     expect(getWorkProjects(ALL_PROJECTS).map((project) => project.slug)).toEqual([
       "cora",
       "toledo-prado",
@@ -59,6 +65,7 @@ describe("getWorkProjects", () => {
       "x02",
       "x03",
       "kova",
+      "armazena",
     ]);
   });
 
@@ -77,15 +84,20 @@ describe("getWorkProjects", () => {
   it("kova (studio-showcase externo, published/public) aparece em /work — KOVA Commerce Showcase Integration 001", () => {
     expect(getWorkProjects(ALL_PROJECTS).map((project) => project.slug)).toContain("kova");
   });
+
+  it("armazena (studio-showcase externo, published/public) aparece em /work — ARMAZENA Website Integration 002", () => {
+    expect(getWorkProjects(ALL_PROJECTS).map((project) => project.slug)).toContain("armazena");
+  });
 });
 
 describe("getShowcaseProjects", () => {
-  it("retorna exatamente x01, x02, x03, kova, em ordem determinística (Featured Strip)", () => {
+  it("retorna exatamente x01, x02, x03, kova, armazena, em ordem determinística (Featured Strip)", () => {
     expect(getShowcaseProjects(ALL_PROJECTS).map((project) => project.slug)).toEqual([
       "x01",
       "x02",
       "x03",
       "kova",
+      "armazena",
     ]);
   });
 
@@ -136,6 +148,40 @@ describe("fronteira pública de /work", () => {
     for (const file of ["work-projects.ts", "page.tsx"]) {
       const source = readFileSync(path.join(workDir, file), "utf-8");
       expect(source).not.toContain("getRawProjectBySlug");
+    }
+  });
+});
+
+describe("getSignatureShowcaseProjects / getCapabilityShowcaseProjects (ARMAZENA Website Integration 002, D2)", () => {
+  it("Signature = x01, x02, x03 (sem externalDestination), em ordem", () => {
+    expect(getSignatureShowcaseProjects(ALL_PROJECTS).map((project) => project.slug)).toEqual([
+      "x01",
+      "x02",
+      "x03",
+    ]);
+  });
+
+  it("Capability Showcases = kova, armazena (com externalDestination), em ordem", () => {
+    expect(getCapabilityShowcaseProjects(ALL_PROJECTS).map((project) => project.slug)).toEqual([
+      "kova",
+      "armazena",
+    ]);
+  });
+
+  it("os dois grupos particionam os showcases publicados, sem sobra nem sobreposição", () => {
+    const signature = getSignatureShowcaseProjects(ALL_PROJECTS).map((project) => project.slug);
+    const capability = getCapabilityShowcaseProjects(ALL_PROJECTS).map((project) => project.slug);
+    expect([...signature, ...capability].sort()).toEqual(
+      getShowcaseProjects(ALL_PROJECTS)
+        .map((project) => project.slug)
+        .sort(),
+    );
+    expect(signature.filter((slug) => capability.includes(slug))).toEqual([]);
+  });
+
+  it("todo Capability Showcase tem disclosure — o card de /work o exibe sempre", () => {
+    for (const project of getCapabilityShowcaseProjects(ALL_PROJECTS)) {
+      expect(project.disclosure?.trim().length ?? 0).toBeGreaterThan(0);
     }
   });
 });

@@ -82,6 +82,7 @@ function StudioShowcaseBody({ project }: StudioShowcaseBodyProps) {
             className="group/cta text-brand focus-visible:ring-brand/50 inline-flex items-center gap-1.5 rounded-md text-sm font-medium outline-none focus-visible:ring-3"
           >
             {project.externalDestination.label ?? "Ver showcase"}
+            <span className="sr-only"> (abre em nova aba)</span>
             <ArrowUpRight
               className="size-4 transition-transform duration-300 group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5"
               aria-hidden="true"

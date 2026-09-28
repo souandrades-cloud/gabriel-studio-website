@@ -181,4 +181,82 @@ describe("STUDIO_SHOWCASE_PROJECTS — kova (KOVA Commerce Showcase Integration 
   it("possui disclosure de transparência conceitual (concept/showcase, sem cliente real)", () => {
     expect(kova?.disclosure?.trim().length ?? 0).toBeGreaterThan(0);
   });
+
+  it("badge de categoria preservado ('Commerce Experience') — ARMAZENA Website Integration 002", () => {
+    expect(kova?.category).toBe("Commerce Experience");
+  });
+});
+
+describe("STUDIO_SHOWCASE_PROJECTS — armazena (ARMAZENA Website Integration 002)", () => {
+  const armazena = STUDIO_SHOWCASE_PROJECTS.find((p) => p.slug === "armazena");
+
+  it("existe e usa kind/showcaseCode corretos", () => {
+    expect(armazena?.kind).toBe("studio-showcase");
+    expect(armazena?.showcaseCode).toBe("ARMAZENA");
+  });
+
+  it("está publicado, com lifecycle production", () => {
+    expect(armazena?.publication).toBe("published");
+    expect(armazena?.visibility).toBe("public");
+    expect(armazena?.lifecycle).toBe("production");
+  });
+
+  it("possui exatamente 1 thumbnail com width/height reais (> 0)", () => {
+    const thumbnails = armazena?.media.filter((media) => media.role === "thumbnail") ?? [];
+    expect(thumbnails).toHaveLength(1);
+    expect(thumbnails[0]?.width ?? 0).toBeGreaterThan(0);
+    expect(thumbnails[0]?.height ?? 0).toBeGreaterThan(0);
+  });
+
+  it("usa o OG próprio do case como seo.ogImage, declarado em media com dimensões reais", () => {
+    const og = armazena?.media.find((media) => media.src === armazena.seo.ogImage);
+    expect(og?.role).toBe("og");
+    expect([og?.width, og?.height]).toEqual([1200, 630]);
+  });
+
+  it("aponta para o case standalone e não tem rota legada", () => {
+    expect(armazena?.externalDestination?.url).toBe("https://armazena-case.vercel.app/");
+    expect(getLegacyShowcasePath("ARMAZENA")).toBeUndefined();
+  });
+
+  it("disclosure declara Concept / Showcase, sem cliente, operação ou dado real (CLAIMS C0.1)", () => {
+    expect(armazena?.disclosure).toContain("Concept / Showcase");
+    expect(armazena?.disclosure).toContain("sem cliente, operação ou dado real");
+  });
+
+  /**
+   * Guarda do INTEGRATION-HANDOFF §6 (Portfolio Lab `inventory-001`): nada de
+   * cliente/produção/validação humana, nem números do spike ou dos testes
+   * como métrica pública. O alt text do thumbnail fica de fora de propósito:
+   * descreve a tela (#0070, 40 → 40), como C1.2–C1.4 do case.
+   */
+  it("texto público não contém claims proibidos", () => {
+    const publicText = [
+      armazena?.title,
+      armazena?.summary,
+      armazena?.disclosure,
+      armazena?.category,
+      armazena?.seo.title,
+      armazena?.seo.description,
+      armazena?.externalDestination?.label,
+      ...(armazena?.capabilities ?? []),
+    ]
+      .join("\n")
+      // Única menção permitida a cliente: a negação obrigatória do disclosure (C0.1).
+      .replaceAll("sem cliente, operação ou dado real", "");
+
+    const forbidden = [
+      /cliente/i,
+      /em produção|em operação|usuários reais|resultado comercial|depoimento/i,
+      /validad[oa] (com|por)|percepção validada|teste com pessoas/i,
+      /imutáv/i,
+      /\d+\s*\/\s*\d+/,
+      /rodadas?|repetições|instantes|benchmark|escala/i,
+      /\d+\s*(testes|requisições|retiradas)/i,
+    ];
+
+    for (const pattern of forbidden) {
+      expect(publicText).not.toMatch(pattern);
+    }
+  });
 });

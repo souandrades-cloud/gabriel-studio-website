@@ -413,3 +413,38 @@ QA de produção (contra a URL real, não localhost):
 Resultado:
 
 **PASS.** KOVA agora tem presença descobrível na Home em produção real, sem misturar com a Signature Strip autoral, sem redesenho geral. Nenhuma regressão encontrada. Encerra o ciclo desta gate; próximos passos dependem de nova autorização do Gabriel Studio — Mentor.
+
+## 2026-09-28 — ARMAZENA Website Integration 002 (V2 — Portfolio System) — PASS local / AGUARDANDO PUBLICAÇÃO
+
+Decisão:
+
+ARMAZENA (Portfolio Lab, INVENTORY-001) entra como o quinto Studio Showcase, segundo hospedado fora deste repositório (case standalone: `https://armazena-case.vercel.app/`). Fonte única do texto: `Portfolio Lab/projects/inventory-001/INTEGRATION-HANDOFF.md` (commit `2c59a14` do Lab), rastreado linha a linha ao `case/final/CLAIMS.md` do case. Decisões aprovadas pelo Mentor no Gate 001 (Discovery):
+
+- **D1 — Home:** o bloco do KOVA virou "Capability Showcases" com KOVA + ARMAZENA (1 coluna mobile, 2 colunas >= sm, `max-w-5xl`). Signature (X01/X02/X03) e Systems (FIS/Outbound) intocados. ARMAZENA não vai para Systems: FIS/Outbound são sistemas reais do estúdio e um conceito ao lado deles sugeriria uso operacional real.
+- **D2 — `/work`:** a grade única de 4 colunas (que deixaria um card órfão com 5 showcases) virou dois subgrupos: **Signature** (X01–X03, `ShowcaseStripCard`, 3-up) e **Capability Showcases** (KOVA + ARMAZENA, mesmo card da Home, 2-up, disclosure visível). A partição é derivada de `externalDestination` (`getSignatureShowcaseProjects` / `getCapabilityShowcaseProjects`), não de lista de slugs.
+- **D3 — Asset:** thumbnail = still real `d-k2-bloqueio-1440.png` do case (2880×1800), reduzido para `armazena-bloqueio.webp` 1920×1200 (2× do hero de 960px, 218 KB), sem recorte nem redesenho. `seo.ogImage` = OG do próprio case (`armazena-og.png`, 1200×630, sha256 idêntico ao publicado), declarado em `media` com `role: "og"` para o `resolveOgImage` reportar as dimensões reais.
+
+Schema/componentes:
+
+- `ShowcaseCode` ganhou `"ARMAZENA"` (sem entrada em `LEGACY_SHOWCASE_PATHS`, como KOVA).
+- `StudioShowcaseProject.category?` (opcional) substitui o "Commerce Experience" fixo no badge; KOVA recebeu `category: "Commerce Experience"` (badge idêntico ao anterior).
+- `commerce-showcase-feature.tsx` → `capability-showcase-feature.tsx` (`git mv`): badge parametrizado, largura controlada pelo grid pai, `h-full`/`mt-auto` para alinhar as faixas de disclosure lado a lado.
+- A mudança 10 do gate ("disclosure visível ao card de /work") foi atendida usando o próprio `CapabilityShowcaseFeature` em `/work`, em vez de acrescentar disclosure condicional ao `ShowcaseStripCard` (que continuaria sem uso, porque X01–X03 não têm disclosure). `ShowcaseStripCard` não mudou.
+- `StudioShowcaseBody`: CTA externo ganhou `<span class="sr-only"> (abre em nova aba)</span>` — vale para KOVA e ARMAZENA. Os demais `target="_blank"` do site (navbar, final CTA, standard case) ficaram fora do escopo deste gate.
+
+Claims:
+
+- Título "ARMAZENA — Inventory Operations Control System" (definido pelo Mentor); summary, disclosure, capabilities e stack exatamente como no handoff. Nenhum número do spike/testes como métrica; nenhum "cliente", "produção", "validação humana" ou "imutável". Alt text do thumbnail descreve a tela (#0070, 40 → 40, 3ª validação — C1.2–C1.4), com "Dados fictícios".
+- Teste novo em `studio-showcases.test.ts` falha se algum desses termos entrar no texto público do ARMAZENA.
+
+Validação:
+
+- `typecheck`, `lint`, `format:check:changed`, `test` (177/177; 160 antes + 17 novos), `validate:registry` (11 projetos, zero issues) e `build` (11 paths SSG em `/work/[slug]`) limpos.
+- QA real (Playwright + Chrome do sistema contra `next start`), 1440/820/390 × `/`, `/work`, `/work/armazena`, `/work/kova`: overflow horizontal 0px nas 12 combinações; imagens do KOVA e do ARMAZENA carregadas (`naturalWidth > 0`); único console error = 404 de `/_vercel/insights/script.js`, artefato local já documentado (zero erros na produção).
+- Popups reais: `/work/armazena` → `https://armazena-case.vercel.app/`, `/work/kova` → `https://kova-portfolio-lab.vercel.app/`, ambos com `window.opener === null`. Card do ARMAZENA na Home alcançável por teclado (Tab) e Enter navega para `/work/armazena`.
+- Contraste do disclosure: mesmo token `muted-foreground` já em produção no KOVA (≈4,6:1 sobre o fundo).
+- Regressão KOVA contra a produção atual (baseline capturado antes de qualquer mudança): `/work/kova` com texto idêntico (exceto o `sr-only` novo) e pixels idênticos em 820/390; em 1440 a única diferença é a faixa da navbar fixa (y 0–64, estado translúcido dependente do scroll na captura). Na Home, o card do KOVA mantém badge, título, resumo e disclosure; muda só a largura (de `max-w-lg` centrado para meia grade `max-w-5xl`, ~500px vs 512px).
+
+Resultado:
+
+**PASS local.** Commit local em `v2/foundation` — sem `git push`, sem `vercel --prod`. Publicação depende do Gate ARMAZENA WEBSITE INTEGRATION 003 — PRODUCTION PUBLICATION.
