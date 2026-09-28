@@ -25,15 +25,19 @@ interface CapabilityShowcaseFeatureProps {
  * two cards with summaries of different lengths sit side by side. The
  * disclosure is always visible, outside the link, so it is never skipped as
  * part of the link's accessible name.
+ *
+ * The focus ring lives on the wrapper (`has-[:focus-visible]`), not on the
+ * link: the wrapper's `overflow-hidden` (needed for the rounded image corners)
+ * clips anything drawn on its children, while its own box-shadow is not.
  */
 function CapabilityShowcaseFeature({ project }: CapabilityShowcaseFeatureProps) {
   const thumbnail = project.media.find((media) => media.role === "thumbnail");
 
   return (
-    <div className="border-border flex h-full flex-col overflow-hidden rounded-2xl border">
+    <div className="border-border has-[:focus-visible]:ring-brand/50 flex h-full flex-col overflow-hidden rounded-2xl border has-[:focus-visible]:ring-3">
       <Link
         href={getProjectEntryPath(project.slug)}
-        className="group focus-visible:ring-brand/50 flex flex-1 flex-col outline-none focus-visible:ring-3"
+        className="group flex flex-1 flex-col outline-none"
       >
         <div className="bg-muted relative aspect-[8/5] w-full overflow-hidden">
           {thumbnail ? (
