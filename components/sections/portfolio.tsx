@@ -5,6 +5,7 @@ import { PROTOTYPE_THUMBNAILS } from "@/components/portfolio/prototype-thumbnail
 import { ShowcaseStripCard } from "@/components/portfolio/showcase-strip-card";
 import { SignatureFeature } from "@/components/portfolio/signature-feature";
 import { SystemsOfficial } from "@/components/portfolio/systems-official";
+import { WEBSITE_THUMBNAILS } from "@/components/portfolio/website-thumbnails";
 import { WorkProjectCard } from "@/components/portfolio/work-project-card";
 import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/ui/heading";
@@ -20,9 +21,12 @@ const x02 = withPrototypeThumbnail(x02raw, PROTOTYPE_THUMBNAILS.x02);
 const x01 = withPrototypeThumbnail(x01raw, PROTOTYPE_THUMBNAILS.x01);
 const kova = getPublishedProjectBySlug("kova") as StudioShowcaseProject;
 const armazena = getPublishedProjectBySlug("armazena") as StudioShowcaseProject;
-const cora = getPublishedProjectBySlug("cora") as StandardCaseProject;
-const lume = getPublishedProjectBySlug("lume") as StandardCaseProject;
-const vidra = getPublishedProjectBySlug("vidra") as StandardCaseProject;
+const coraRaw = getPublishedProjectBySlug("cora") as StandardCaseProject;
+const lumeRaw = getPublishedProjectBySlug("lume") as StandardCaseProject;
+const vidraRaw = getPublishedProjectBySlug("vidra") as StandardCaseProject;
+const cora = withPrototypeThumbnail(coraRaw, WEBSITE_THUMBNAILS.cora);
+const lume = withPrototypeThumbnail(lumeRaw, WEBSITE_THUMBNAILS.lume);
+const vidra = withPrototypeThumbnail(vidraRaw, WEBSITE_THUMBNAILS.vidra);
 const vao = getPublishedProjectBySlug("vao") as StandardCaseProject;
 
 function FamilyHeader({ eyebrow, heading }: { eyebrow: string; heading: string }) {

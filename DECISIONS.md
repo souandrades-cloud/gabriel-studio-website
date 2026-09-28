@@ -448,3 +448,27 @@ Validação:
 Resultado:
 
 **PASS local.** Commit local em `v2/foundation` — sem `git push`, sem `vercel --prod`. Publicação depende do Gate ARMAZENA WEBSITE INTEGRATION 003 — PRODUCTION PUBLICATION.
+
+## 2026-09-28 — Portfolio Thumbnail Selection 002 — Production (Home / Websites) — PASS local
+
+Decisão:
+
+Capas dedicadas 8:5 (1120×700, 2× do card) para Cora, Vidra e Lume, substituindo na Home o zoom via `crop` sobre o screenshot do hero (Discovery 001: faixas vazias do fundo da página em Cora/Vidra, headline da Lume cortada no meio da palavra). Direções aprovadas pelo Gabriel: Cora A "A agenda como assinatura", Vidra A "Matéria", Lume C "Brasa". Vão não mudou (benchmark).
+
+- **Cora:** composição HTML/CSS — foto real `hero-clinica-ambiente.png` + card de horários capturado do site publicado (pixels reais do componente, DPR 3) sobre campo `pine`, wordmark em Instrument Sans. Primeira versão (foto à direita) deixava a cadeira clínica sob o card; invertida (foto à esquerda) para manter clínica + produto digital no mesmo quadro — mesma direção, só posicionamento.
+- **Vidra:** captura real da seção Matéria de `portfolio-lp-estetica.vercel.app` (viewport 1280×941, DPR 2); a faixa da foto mede exatamente 1280×800 (8:5) e foi recortada nela — nada adicionado.
+- **Lume:** composição HTML/CSS — `menu-lume-materia.png` de ponta a ponta + cunha `marfim` com o mesmo `clip-path` da fenda do hero (`polygon(0 0,100% 0,82% 100%,0 100%)`) + wordmark da Navbar (Newsreader itálico, `carvao`).
+- Nenhuma imagem gerada; nenhum claim novo.
+
+Integração:
+
+- `components/portfolio/website-thumbnails.ts` + `withPrototypeThumbnail` em `components/sections/portfolio.tsx` — mesmo padrão Home-only já usado por X01/X02/X03. Registry, `/work` e `/work/[slug]` intocados: o hero do case usa a mídia `thumbnail` do registry, e trocá-la mudaria o conteúdo dos cases (proibido neste gate). Consequência: a grade de `/work` e o hero dos três cases continuam com o `crop` antigo — pendência para gate próprio.
+
+Validação:
+
+- `typecheck`, `lint`, `format:check:changed`, `test` (177/177), `validate:registry` (11 projetos, zero issues), `build` limpos.
+- QA real (Playwright + Chrome contra `next start`) em 1440/820/390: overflow 0px; as 4 imagens carregadas; nenhum `transform` nos três cards novos; `/work` e `/work/{cora,vidra,lume}` confirmados com as mídias originais.
+
+Resultado:
+
+**PASS local.** Commit local em `v2/foundation` — sem push, sem deploy.
