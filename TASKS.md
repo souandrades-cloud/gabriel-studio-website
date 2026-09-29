@@ -614,3 +614,30 @@ Integrar ARMAZENA (Portfolio Lab, INVENTORY-001, CONCEPT/SHOWCASE) como Capabili
 ## Resultado
 
 PASS local. Commit local — sem push, sem deploy (aguarda Gate 003 — Production Publication).
+
+---
+
+# Sprint 20 — SONDA Website Integration 001
+
+## Objetivo
+
+Integrar SONDA (Portfolio Lab, ANALYTICS-001, CONCEPT/SHOWCASE · SYNTHETIC DATA) como terceiro Capability Showcase, com texto restrito ao que o projeto demonstra.
+
+## Tarefas
+
+- [x] `ShowcaseCode` + `"SONDA"`; entrada `sonda` no registry (externalDestination `https://sonda-analytics.vercel.app`, disclosure, capabilities, stack, SEO)
+- [x] Assets recortados da captura de produção: `sonda-pergunta-receita.webp` (1440×900) e `sonda-og.jpg` (1200×630)
+- [x] Grade compartilhada `CAPABILITY_SHOWCASE_GRID` (1 / 2 com terceiro centralizado / 3 colunas) na Home e em `/work`
+- [x] `/work/sonda` com CTA "Abrir demonstração" (nova aba, acessível)
+- [x] Testes: registry, rotas, metadata, guarda de claims proibidos (189/189)
+- [x] QA real: 12 rotas × 6 larguras, grade, teclado, axe, reduced motion, popup, sitemap
+- [x] Human Visual Gate APPROVED por Gabriel (Home, `/work`, `/work/sonda`, demo ao vivo)
+- [x] Título mantém "Question-Driven" junto (`ProjectTitle`, `inline-block`), card e página; regressão 192/192 + 80 combinações sem overflow
+
+## Resultado
+
+CLOSED. Commit local dedicado; sem push, sem deploy.
+
+## Backlog (fora deste sprint)
+
+- [ ] Contraste do navbar no topo das páginas `/work*` (logo `#fafafa` e links `#a1a1a1` sobre `#fcfcfb`), pré-existente, afeta também KOVA e ARMAZENA. Gate próprio.

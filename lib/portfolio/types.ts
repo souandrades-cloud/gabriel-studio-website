@@ -11,12 +11,12 @@ export type MediaRole = "thumbnail" | "poster" | "og" | "gallery";
 /**
  * X01/X02/X03 são experiências cinematográficas internas (scroll-narrative,
  * GSAP/Three.js), cada uma com rota legada própria (`getLegacyShowcasePath`).
- * KOVA e ARMAZENA são Studio Showcases hospedados externamente (deploy
- * isolado, fora deste repositório) — nunca ganharão uma rota interna
+ * KOVA, ARMAZENA e SONDA são Studio Showcases hospedados externamente
+ * (deploy isolado, fora deste repositório) — nunca ganharão uma rota interna
  * `/showcase/*`, por isso não têm entrada em `LEGACY_SHOWCASE_PATHS`. Ver
  * `StudioShowcaseProject.externalDestination`.
  */
-export type ShowcaseCode = "X01" | "X02" | "X03" | "KOVA" | "ARMAZENA";
+export type ShowcaseCode = "X01" | "X02" | "X03" | "KOVA" | "ARMAZENA" | "SONDA";
 
 export interface ProjectMedia {
   readonly src: string;

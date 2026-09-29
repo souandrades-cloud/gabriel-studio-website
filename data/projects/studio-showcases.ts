@@ -275,4 +275,75 @@ export const STUDIO_SHOWCASE_PROJECTS: readonly StudioShowcaseProject[] = [
       ogImage: "/images/armazena/armazena-og.png",
     },
   },
+  /**
+   * SONDA (Portfolio Lab, ANALYTICS-001). Todo texto abaixo se apoia só no que
+   * o projeto demonstra (`projects/analytics-001/README.md`, `DEPLOY-001.md`,
+   * `CLOSURE-001.md`): métricas de catálogo fechado, motor determinístico
+   * executado a cada pergunta, proveniência de cada número, esclarecimento e
+   * recusa. Interpretações são preparadas (replay) — nunca descrever como IA,
+   * modelo interpretando perguntas ou "converse com seus dados". Sem números
+   * de testes/desempenho como métrica pública. As imagens são recortes da
+   * captura de produção `app/evidence/producao/D1-1440.png` (sha256 d672707e…);
+   * o valor exibido é o do motor sobre o dataset sintético, idêntico ao ao vivo.
+   */
+  {
+    id: "sonda",
+    slug: "sonda",
+    kind: "studio-showcase",
+    showcaseCode: "SONDA",
+    title: "SONDA — Question-Driven Analytics",
+    shortTitle: "SONDA",
+    summary:
+      "Análise de dados orientada por perguntas: cada pergunta preparada vira uma métrica de catálogo fechado, calculada na hora por um motor determinístico sobre dados sintéticos, e todo número mostra de onde veio.",
+    disclosure:
+      "Concept / Showcase — empresa fictícia (Linha Doze) e dados sintéticos, sem cliente real. Interpretações preparadas para demonstração; nenhum modelo de linguagem roda nesta versão.",
+    category: "Analytics Experience",
+    lifecycle: "production",
+    publication: "published",
+    visibility: "public",
+    capabilities: [
+      "Métricas de catálogo fechado",
+      "Consulta determinística a cada pergunta",
+      "Proveniência de cada número",
+      "Esclarecimento e recusa com guardrails",
+      "Interpretação separada do cálculo",
+    ],
+    technologies: [
+      "Next.js 16",
+      "React 19",
+      "TypeScript",
+      "Tailwind CSS 4",
+      "Node 24 (node:sqlite)",
+      "Zod",
+      "Vercel",
+    ],
+    media: [
+      {
+        src: "/images/sonda/sonda-pergunta-receita.webp",
+        alt: "Tela real do SONDA publicado, showcase conceitual: pergunta preparada 01, “Qual foi a receita faturada em março de 2026?”, com a faixa Pergunta → Métrica → Consulta → Resultado e o valor R$ 1.016.695 calculado pelo motor sobre dados sintéticos da Linha Doze, empresa fictícia.",
+        role: "thumbnail",
+        width: 1440,
+        height: 900,
+      },
+      {
+        src: "/images/sonda/sonda-og.jpg",
+        alt: "Imagem social do SONDA (Concept / Showcase), recortada da mesma tela real com dados sintéticos.",
+        role: "og",
+        width: 1200,
+        height: 630,
+      },
+    ],
+    relations: { relatedSlugs: [] },
+    featured: false,
+    externalDestination: {
+      url: "https://sonda-analytics.vercel.app",
+      label: "Abrir demonstração",
+    },
+    seo: {
+      title: "SONDA — Question-Driven Analytics",
+      description:
+        "Análise de dados orientada por perguntas, com métricas de catálogo fechado, consulta determinística a cada pergunta e a origem de cada número. Concept / Showcase com dados sintéticos de empresa fictícia; nenhum modelo de linguagem roda.",
+      ogImage: "/images/sonda/sonda-og.jpg",
+    },
+  },
 ];

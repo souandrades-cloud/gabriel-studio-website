@@ -53,7 +53,7 @@ describe("getWorkProjects", () => {
     expect(getWorkProjects([])).toEqual([]);
   });
 
-  it("os seis standard cases + x01 + x02 + x03 + kova + armazena (publicados) estão publicamente elegíveis, em ordem determinística", () => {
+  it("os seis standard cases + x01 + x02 + x03 + kova + armazena + sonda (publicados) estão publicamente elegíveis, em ordem determinística", () => {
     expect(getWorkProjects(ALL_PROJECTS).map((project) => project.slug)).toEqual([
       "cora",
       "toledo-prado",
@@ -66,6 +66,7 @@ describe("getWorkProjects", () => {
       "x03",
       "kova",
       "armazena",
+      "sonda",
     ]);
   });
 
@@ -88,16 +89,21 @@ describe("getWorkProjects", () => {
   it("armazena (studio-showcase externo, published/public) aparece em /work — ARMAZENA Website Integration 002", () => {
     expect(getWorkProjects(ALL_PROJECTS).map((project) => project.slug)).toContain("armazena");
   });
+
+  it("sonda (studio-showcase externo, published/public) aparece em /work — SONDA Website Integration 001", () => {
+    expect(getWorkProjects(ALL_PROJECTS).map((project) => project.slug)).toContain("sonda");
+  });
 });
 
 describe("getShowcaseProjects", () => {
-  it("retorna exatamente x01, x02, x03, kova, armazena, em ordem determinística (Featured Strip)", () => {
+  it("retorna exatamente x01, x02, x03, kova, armazena, sonda, em ordem determinística (Featured Strip)", () => {
     expect(getShowcaseProjects(ALL_PROJECTS).map((project) => project.slug)).toEqual([
       "x01",
       "x02",
       "x03",
       "kova",
       "armazena",
+      "sonda",
     ]);
   });
 
@@ -161,10 +167,11 @@ describe("getSignatureShowcaseProjects / getCapabilityShowcaseProjects (ARMAZENA
     ]);
   });
 
-  it("Capability Showcases = kova, armazena (com externalDestination), em ordem", () => {
+  it("Capability Showcases = kova, armazena, sonda (com externalDestination), em ordem", () => {
     expect(getCapabilityShowcaseProjects(ALL_PROJECTS).map((project) => project.slug)).toEqual([
       "kova",
       "armazena",
+      "sonda",
     ]);
   });
 

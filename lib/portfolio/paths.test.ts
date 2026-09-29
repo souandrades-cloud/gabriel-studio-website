@@ -32,4 +32,8 @@ describe("getLegacyShowcasePath", () => {
   it("retorna undefined para ARMAZENA — showcase externo, sem rota legada interna", () => {
     expect(getLegacyShowcasePath("ARMAZENA")).toBeUndefined();
   });
+
+  it("retorna undefined para SONDA — showcase externo, sem rota legada interna", () => {
+    expect(getLegacyShowcasePath("SONDA")).toBeUndefined();
+  });
 });

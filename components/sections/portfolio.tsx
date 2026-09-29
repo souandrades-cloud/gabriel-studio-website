@@ -1,4 +1,7 @@
-import { CapabilityShowcaseFeature } from "@/components/portfolio/capability-showcase-feature";
+import {
+  CAPABILITY_SHOWCASE_GRID,
+  CapabilityShowcaseFeature,
+} from "@/components/portfolio/capability-showcase-feature";
 import { PortfolioCta } from "@/components/portfolio/portfolio-cta";
 import { withPrototypeThumbnail } from "@/components/portfolio/project-overrides";
 import { PROTOTYPE_THUMBNAILS } from "@/components/portfolio/prototype-thumbnails";
@@ -21,6 +24,7 @@ const x02 = withPrototypeThumbnail(x02raw, PROTOTYPE_THUMBNAILS.x02);
 const x01 = withPrototypeThumbnail(x01raw, PROTOTYPE_THUMBNAILS.x01);
 const kova = getPublishedProjectBySlug("kova") as StudioShowcaseProject;
 const armazena = getPublishedProjectBySlug("armazena") as StudioShowcaseProject;
+const sonda = getPublishedProjectBySlug("sonda") as StudioShowcaseProject;
 const coraRaw = getPublishedProjectBySlug("cora") as StandardCaseProject;
 const lumeRaw = getPublishedProjectBySlug("lume") as StandardCaseProject;
 const vidraRaw = getPublishedProjectBySlug("vidra") as StandardCaseProject;
@@ -66,6 +70,10 @@ function FamilyHeader({ eyebrow, heading }: { eyebrow: string; heading: string }
  * >= sm), mesmo rótulo usado no subgrupo equivalente de `/work` (D2). Não vai
  * para Systems: FIS/Outbound são sistemas reais do estúdio e um conceito ao
  * lado deles sugeriria uso operacional real.
+ *
+ * SONDA (Gate WEBSITE INTEGRATION 001 — SONDA) entra no mesmo bloco pelo mesmo
+ * motivo: 3 cards (1 coluna mobile, 2 colunas >= sm com o terceiro
+ * centralizado, 3 colunas >= lg), grade compartilhada com `/work`.
  */
 function Portfolio() {
   return (
@@ -90,13 +98,14 @@ function Portfolio() {
             Capability Showcases
           </Badge>
           <p className="text-muted-foreground mt-4 text-sm text-balance">
-            Também demonstramos capability em e-commerce e em gestão de estoque, como Studio
-            Showcases independentes.
+            Também demonstramos capability em e-commerce, gestão de estoque e análise de dados, como
+            Studio Showcases independentes.
           </p>
         </div>
-        <div className="mx-auto mt-6 grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-2">
+        <div className={`mx-auto mt-6 max-w-6xl ${CAPABILITY_SHOWCASE_GRID}`}>
           {kova ? <CapabilityShowcaseFeature project={kova} /> : null}
           {armazena ? <CapabilityShowcaseFeature project={armazena} /> : null}
+          {sonda ? <CapabilityShowcaseFeature project={sonda} /> : null}
         </div>
       </Section>
 

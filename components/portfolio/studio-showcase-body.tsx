@@ -2,6 +2,7 @@ import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { ProjectTitle } from "@/components/portfolio/project-title";
 import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/ui/heading";
 import { Section } from "@/components/ui/section";
@@ -30,7 +31,7 @@ function StudioShowcaseBody({ project }: StudioShowcaseBodyProps) {
           {project.showcaseCode}
         </Badge>
         <Heading as="h1" size="display" className="mt-6">
-          {project.title}
+          <ProjectTitle title={project.title} />
         </Heading>
       </div>
 

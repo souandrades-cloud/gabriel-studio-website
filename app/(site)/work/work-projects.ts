@@ -27,7 +27,7 @@ export function getSignatureShowcaseProjects(
   return getShowcaseProjects(projects).filter((project) => !project.externalDestination);
 }
 
-/** Capability Showcases (KOVA, ARMAZENA) — hospedados fora deste repositório, ordem preservada. */
+/** Capability Showcases (KOVA, ARMAZENA, SONDA) — hospedados fora deste repositório, ordem preservada. */
 export function getCapabilityShowcaseProjects(
   projects: readonly Project[] = ALL_PROJECTS,
 ): StudioShowcaseProject[] {

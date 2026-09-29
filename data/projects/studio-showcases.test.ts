@@ -260,3 +260,88 @@ describe("STUDIO_SHOWCASE_PROJECTS — armazena (ARMAZENA Website Integration 00
     }
   });
 });
+
+describe("STUDIO_SHOWCASE_PROJECTS — sonda (SONDA Website Integration 001)", () => {
+  const sonda = STUDIO_SHOWCASE_PROJECTS.find((p) => p.slug === "sonda");
+
+  it("existe e usa kind/showcaseCode corretos", () => {
+    expect(sonda?.kind).toBe("studio-showcase");
+    expect(sonda?.showcaseCode).toBe("SONDA");
+  });
+
+  it("está publicado, com lifecycle production", () => {
+    expect(sonda?.publication).toBe("published");
+    expect(sonda?.visibility).toBe("public");
+    expect(sonda?.lifecycle).toBe("production");
+  });
+
+  it("possui exatamente 1 thumbnail com width/height reais (> 0)", () => {
+    const thumbnails = sonda?.media.filter((media) => media.role === "thumbnail") ?? [];
+    expect(thumbnails).toHaveLength(1);
+    expect([thumbnails[0]?.width, thumbnails[0]?.height]).toEqual([1440, 900]);
+  });
+
+  it("usa um OG 1200×630 declarado em media", () => {
+    const og = sonda?.media.find((media) => media.src === sonda.seo.ogImage);
+    expect(og?.role).toBe("og");
+    expect([og?.width, og?.height]).toEqual([1200, 630]);
+  });
+
+  it("aponta para a demonstração publicada (https, alias canônico) e não tem rota legada", () => {
+    expect(sonda?.externalDestination?.url).toBe("https://sonda-analytics.vercel.app");
+    expect(getLegacyShowcasePath("SONDA")).toBeUndefined();
+  });
+
+  it("disclosure mantém as fronteiras de honestidade do projeto", () => {
+    expect(sonda?.disclosure).toContain("Concept / Showcase");
+    expect(sonda?.disclosure).toContain("empresa fictícia (Linha Doze)");
+    expect(sonda?.disclosure).toContain("dados sintéticos");
+    expect(sonda?.disclosure).toContain("sem cliente real");
+    expect(sonda?.disclosure).toContain("Interpretações preparadas para demonstração");
+    expect(sonda?.disclosure).toContain("nenhum modelo de linguagem roda");
+  });
+
+  it("o alt text do thumbnail identifica a tela como showcase com dados sintéticos", () => {
+    const alt = sonda?.media.find((media) => media.role === "thumbnail")?.alt ?? "";
+    expect(alt).toContain("showcase conceitual");
+    expect(alt).toContain("dados sintéticos");
+    expect(alt).toContain("empresa fictícia");
+  });
+
+  /**
+   * SONDA não roda modelo de linguagem: interpretações são preparadas (replay)
+   * e todo número vem do motor determinístico. Nada de IA/"AI-powered"/
+   * "converse com seus dados", cliente, produto em operação, nem números de
+   * testes ou desempenho como métrica pública. As únicas menções permitidas a
+   * cliente e a modelo são as negações obrigatórias do disclosure.
+   */
+  it("texto público não contém claims proibidos", () => {
+    const publicText = [
+      sonda?.title,
+      sonda?.summary,
+      sonda?.disclosure,
+      sonda?.category,
+      sonda?.seo.title,
+      sonda?.seo.description,
+      sonda?.externalDestination?.label,
+      ...(sonda?.capabilities ?? []),
+      ...(sonda?.media.map((media) => media.alt) ?? []),
+    ]
+      .join("\n")
+      .replaceAll("sem cliente real", "")
+      .replaceAll("nenhum modelo de linguagem roda", "");
+
+    const forbidden = [
+      /\bIA\b|\bAI\b|intelig[eê]ncia artificial|AI-powered|machine learning/i,
+      /modelo|LLM|GPT|Claude|Anthropic|chat|converse com/i,
+      /cliente/i,
+      /em produção|em operação|SaaS|usuários reais|resultado comercial|depoimento/i,
+      /\d+\s*\/\s*\d+/,
+      /\d+\s*(ms|testes|requisições)\b/i,
+    ];
+
+    for (const pattern of forbidden) {
+      expect(publicText).not.toMatch(pattern);
+    }
+  });
+});

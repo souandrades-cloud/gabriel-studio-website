@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 
-import { CapabilityShowcaseFeature } from "@/components/portfolio/capability-showcase-feature";
+import {
+  CAPABILITY_SHOWCASE_GRID,
+  CapabilityShowcaseFeature,
+} from "@/components/portfolio/capability-showcase-feature";
 import { ShowcaseStripCard } from "@/components/portfolio/showcase-strip-card";
 import { WorkProjectCard } from "@/components/portfolio/work-project-card";
 import { Footer } from "@/components/sections/footer";
@@ -69,7 +72,8 @@ export default function WorkPage() {
               dividem em Signature (autorais, experiência interna, 3-up) e
               Capability Showcases (externos, 2-up, com disclosure visível no
               card) — mesmo par de rótulos da Home. Evita o card órfão que 5
-              showcases gerariam na antiga grade única de 4 colunas.
+              showcases gerariam na antiga grade única de 4 colunas. SONDA
+              (Website Integration 001) leva Capability a 3 cards: 3-up >= lg.
             */}
             {signatureShowcases.length > 0 ? (
               <div className="mt-16">
@@ -89,7 +93,7 @@ export default function WorkPage() {
                 <Badge variant="outline" className="tracking-wide uppercase">
                   Capability Showcases
                 </Badge>
-                <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div className={`mt-6 ${CAPABILITY_SHOWCASE_GRID}`}>
                   {capabilityShowcases.map((project) => (
                     <CapabilityShowcaseFeature key={project.slug} project={project} />
                   ))}

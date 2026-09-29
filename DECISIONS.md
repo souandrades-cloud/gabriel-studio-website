@@ -320,7 +320,7 @@ Renderização (`StudioShowcaseBody`, `ShowcaseStripCard`, `app/(site)/work/page
 - `ShowcaseStripCard` não mudou — já era genérico (thumbnail + título + summary + "Ver projeto" para `/work/{slug}`), funciona para KOVA sem alteração.
 - Grid de Studio Showcases em `/work` (`app/(site)/work/page.tsx`): `sm:grid-cols-3` (dimensionado para exatamente 3 cards) virou `sm:grid-cols-2 lg:grid-cols-4` — com 4 showcases publicados agora, 3 colunas deixaria o 4º card órfão numa segunda linha. Único ajuste de layout desta gate; nenhum outro elemento de `/work` foi redesenhado.
 
-Decisão deliberada de **não tocar na Home**: a seção "Signature" da Home (`components/sections/portfolio.tsx`) é uma composição curada e já aprovada pelo Human Director (X03 como hero via `SignatureFeature`, X02+X01 secundários), com o eyebrow "Trabalho autoral, conduzido sem as restrições de um projeto comercial." KOVA é estruturalmente o oposto disso — é precisamente uma demonstração de capability *comercial* (e-commerce). Inserir KOVA ali confundiria duas categorias que o próprio Gabriel Studio distingue e desfaria uma composição humana já validada, sem que o gate tivesse pedido isso (a missão pediu "camada destinada a Studio Showcases", que é a grade genérica de `/work`, não a curadoria manual da Home). KOVA aparece apenas em `/work` e `/work/kova` — Home permanece byte-a-byte como estava, exceto pela dependência de tipos compartilhada.
+Decisão deliberada de **não tocar na Home**: a seção "Signature" da Home (`components/sections/portfolio.tsx`) é uma composição curada e já aprovada pelo Human Director (X03 como hero via `SignatureFeature`, X02+X01 secundários), com o eyebrow "Trabalho autoral, conduzido sem as restrições de um projeto comercial." KOVA é estruturalmente o oposto disso — é precisamente uma demonstração de capability _comercial_ (e-commerce). Inserir KOVA ali confundiria duas categorias que o próprio Gabriel Studio distingue e desfaria uma composição humana já validada, sem que o gate tivesse pedido isso (a missão pediu "camada destinada a Studio Showcases", que é a grade genérica de `/work`, não a curadoria manual da Home). KOVA aparece apenas em `/work` e `/work/kova` — Home permanece byte-a-byte como estava, exceto pela dependência de tipos compartilhada.
 
 Asset:
 
@@ -472,3 +472,35 @@ Validação:
 Resultado:
 
 **PASS local.** Commit local em `v2/foundation` — sem push, sem deploy.
+
+## 2026-09-29 — Website Integration 001 — SONDA (Capability Showcase) — CLOSED (Human Visual Gate APPROVED)
+
+Gate autorizado pelo Mentor V4; autoridade final: Gabriel. SONDA (Portfolio Lab `ANALYTICS-001`, CONCEPT / SHOWCASE · SYNTHETIC DATA, publicado em `https://sonda-analytics.vercel.app`, `noindex`) entra como terceiro Capability Showcase, ao lado de KOVA e ARMAZENA.
+
+Decisão:
+
+- **Mesmo contrato dos showcases externos:** `ShowcaseCode` + `"SONDA"`; entrada `sonda` em `data/projects/studio-showcases.ts` com `externalDestination` (CTA "Abrir demonstração", nova aba, `noopener noreferrer`), `category: "Analytics Experience"`, disclosure sempre visível. Nenhum componente novo; `/work/sonda` usa o `StudioShowcaseBody` existente. Não vai para Systems (mesmo motivo do ARMAZENA).
+- **Grade:** com 3 cards, `CAPABILITY_SHOWCASE_GRID` (exportado de `capability-showcase-feature.tsx`, compartilhado por Home e `/work`): 1 coluna no celular, 2 colunas ≥ sm com o terceiro card centralizado em largura de coluna (sem órfão à esquerda), 3 colunas ≥ lg. Home: largura do bloco `max-w-5xl` → `max-w-6xl` para os 3 cards; frase do bloco passa a citar "análise de dados".
+- **Texto:** só o que o projeto demonstra (README, CLOSURE-001, DEPLOY-001 do Lab): métricas de catálogo fechado, consulta determinística a cada pergunta, proveniência de cada número, esclarecimento e recusa, interpretação separada do cálculo. Nenhuma menção a IA, "AI-powered", modelo interpretando perguntas, cliente, produto em operação ou número de teste/desempenho. Disclosure mantém as fronteiras do SONDA: empresa fictícia (Linha Doze), dados sintéticos, sem cliente real, interpretações preparadas, nenhum modelo de linguagem roda. Teste novo em `studio-showcases.test.ts` falha se isso mudar.
+- **Assets:** recortes da captura de produção do próprio SONDA (`projects/analytics-001/app/evidence/producao/D1-1440.png`, sha256 `d672707e…ab873`), sem composição nova: `public/images/sonda/sonda-pergunta-receita.webp` (1440×900, 8:5) e `sonda-og.jpg` (1200×630). O valor visível (R$ 1.016.695) é o do motor sobre o dataset sintético, igual ao ao vivo.
+- **Fora do escopo, mantido:** SONDA/`analytics-001` intocado, `noindex` do SONDA ativo (conferido: `X-Robots-Tag: noindex, nofollow`), nenhum redeploy.
+
+Validação:
+
+- `clean-gate` completo: typecheck, lint, format, test **189/189** (177 antes + 12 novos), `validate:registry`, build (12 paths SSG em `/work/[slug]`).
+- QA real (Playwright + Chrome do sistema contra `next start`): 12 rotas (`/`, `/work`, `/work/{sonda,armazena,kova,x01,x02,x03,cora}`, `/showcase/{x01,x02,x03}`) × 6 larguras (320–1920) = 72 combinações com status 200, overflow 0, zero erros de página/console (exceto o 404 local já conhecido de `/_vercel/insights/script.js`). Grade verificada em 8 larguras × Home e `/work`. Popup real para `https://sonda-analytics.vercel.app/` com `window.opener === null`. Teclado: card do SONDA na Home e em `/work` e o CTA de `/work/sonda` alcançáveis, com anel visível. Reduced motion: sem erro nem overflow. `sitemap.xml` inclui `/work/sonda`.
+- axe (WCAG 2.1 A/AA): conteúdo novo limpo. Único achado, **pré-existente e fora deste gate**: `color-contrast` no navbar das páginas `/work*` (logo `#fafafa` e links `#a1a1a1` sobre `#fcfcfb` no topo da página), idêntico em `/work/kova` e `/work/armazena`.
+
+Resultado:
+
+PASS local. Aguardando a revisão visual humana de Gabriel; sem push, sem deploy.
+
+### Human Visual Closure
+
+Gabriel revisou Home, `/work`, `/work/sonda` e a demonstração ao vivo: **Human Visual Gate APPROVED** (composição KOVA + ARMAZENA + SONDA, página do SONDA e assets aprovados, sem redesign nem troca de screenshots). Único ajuste pedido: o título quebrava em "Question-" / "Driven".
+
+- **Correção:** `components/portfolio/project-title.tsx` (`ProjectTitle`) envolve cada composto hifenizado do título em `<span class="inline-block">`, usado em `CapabilityShowcaseFeature` (card, `h3`) e `StudioShowcaseBody` (`h1`). `inline-block` e não `whitespace-nowrap`: a caixa atômica desce inteira para a linha seguinte, mas ainda quebra por dentro se um dia ficar mais larga que a linha, então nunca causa overflow. Sem hífen inseparável (U+2011) na copy: texto, SEO e leitores de tela ficam idênticos. A divisão é a função pura `getTitleSegments` (`lib/portfolio/title-segments.ts`, 3 testes). Efeito colateral inofensivo: "E-commerce" (KOVA) e "PL-1" (X03) também deixam de quebrar no hífen.
+- **Regressão:** `clean-gate` completo, **192/192** testes, registry com 12 projetos e zero issues, build OK. 8 rotas (`/`, `/work`, `/work/{sonda,kova,armazena,x01,x02,x03}`) × 10 larguras (320–1920) = 80 combinações: status 200, overflow 0, zero erros, nenhum composto partido em duas linhas nem mais largo que o título.
+- **Backlog separado, não tratado aqui:** contraste do navbar no topo das páginas `/work*` (pré-existente, ver acima).
+
+**CLOSED.** Commit local dedicado; sem push, sem deploy (Deployment Gate próprio).

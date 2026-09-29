@@ -2,6 +2,7 @@ import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { ProjectTitle } from "@/components/portfolio/project-title";
 import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/ui/heading";
 import { getProjectEntryPath } from "@/lib/portfolio/paths";
@@ -12,17 +13,26 @@ interface CapabilityShowcaseFeatureProps {
 }
 
 /**
+ * Grid shared by Home and `/work` (SONDA Website Integration 001): 1 column
+ * mobile, 2 columns >= sm, 3 columns >= lg. Between sm and lg an odd last card
+ * is centred at single-column width (half the row minus half the `gap-6`)
+ * instead of sitting orphaned on the left.
+ */
+const CAPABILITY_SHOWCASE_GRID =
+  "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 sm:max-lg:*:last:odd:col-span-2 sm:max-lg:*:last:odd:mx-auto sm:max-lg:*:last:odd:w-[calc(50%-0.75rem)]";
+
+/**
  * Treatment for a Studio Showcase hosted outside this repository (KOVA,
- * ARMAZENA — see `StudioShowcaseProject.externalDestination`). Reuses the
+ * ARMAZENA, SONDA — see `StudioShowcaseProject.externalDestination`). Reuses the
  * light card language of `WorkProjectCard` rather than the dark
  * `SignatureFeature` / `ShowcaseStripCard` treatment, which is reserved for
  * the curated authorial strip — this keeps a commercial-capability demo
  * visually distinct from "trabalho autoral, sem restrições comerciais"
  * instead of blending in.
  *
- * Width is set by the parent grid (Home and `/work`, 1 column mobile / 2
- * columns >= sm); `h-full` + `mt-auto` keep the disclosure bars aligned when
- * two cards with summaries of different lengths sit side by side. The
+ * Width is set by the parent grid (`CAPABILITY_SHOWCASE_GRID`); `h-full` +
+ * `mt-auto` keep the disclosure bars aligned when cards with summaries of
+ * different lengths sit side by side. The
  * disclosure is always visible, outside the link, so it is never skipped as
  * part of the link's accessible name.
  *
@@ -58,7 +68,7 @@ function CapabilityShowcaseFeature({ project }: CapabilityShowcaseFeatureProps) 
               : project.showcaseCode}
           </Badge>
           <Heading as="h3" size="h4" className="mt-3">
-            {project.title}
+            <ProjectTitle title={project.title} />
           </Heading>
           <p className="text-muted-foreground mt-2 text-sm text-balance">{project.summary}</p>
 
@@ -81,4 +91,4 @@ function CapabilityShowcaseFeature({ project }: CapabilityShowcaseFeatureProps) 
   );
 }
 
-export { CapabilityShowcaseFeature };
+export { CAPABILITY_SHOWCASE_GRID, CapabilityShowcaseFeature };

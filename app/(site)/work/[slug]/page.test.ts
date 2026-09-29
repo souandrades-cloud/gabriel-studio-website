@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { generateMetadata, generateStaticParams, resolveOgImage } from "./page";
 
 describe("generateStaticParams", () => {
-  it("inclui exatamente os seis standard cases + x01 + x02 + x03 + kova + armazena publicamente elegíveis", async () => {
+  it("inclui exatamente os seis standard cases + x01 + x02 + x03 + kova + armazena + sonda publicamente elegíveis", async () => {
     const params = await generateStaticParams();
     expect(params).toEqual([
       { slug: "cora" },
@@ -17,6 +17,7 @@ describe("generateStaticParams", () => {
       { slug: "x03" },
       { slug: "kova" },
       { slug: "armazena" },
+      { slug: "sonda" },
     ]);
   });
 
@@ -57,6 +58,22 @@ describe("generateMetadata — armazena", () => {
     expect(metadata.openGraph?.images).toEqual([
       { url: "/images/armazena/armazena-og.png", width: 1200, height: 630 },
     ]);
+  });
+});
+
+describe("generateMetadata — sonda (SONDA Website Integration 001)", () => {
+  it("usa o OG recortado da tela real (1200×630), com canonical em /work/sonda", async () => {
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ slug: "sonda" }),
+      searchParams: Promise.resolve({}),
+    });
+
+    expect(metadata.title).toBe("SONDA — Question-Driven Analytics · Gabriel Studio");
+    expect(metadata.alternates?.canonical).toBe("/work/sonda");
+    expect(metadata.openGraph?.images).toEqual([
+      { url: "/images/sonda/sonda-og.jpg", width: 1200, height: 630 },
+    ]);
+    expect(metadata.description).toContain("Concept / Showcase");
   });
 });
 

@@ -39,10 +39,14 @@ describe("getWorkProject", () => {
   it("resolve armazena (studio-showcase externo, published/public) pelo lookup público — ARMAZENA Website Integration 002", () => {
     expect(getWorkProject("armazena")?.slug).toBe("armazena");
   });
+
+  it("resolve sonda (studio-showcase externo, published/public) pelo lookup público — SONDA Website Integration 001", () => {
+    expect(getWorkProject("sonda")?.slug).toBe("sonda");
+  });
 });
 
 describe("estado público do registry real", () => {
-  it("os seis standard cases + x01 + x02 + x03 + kova + armazena são publicamente elegíveis hoje", () => {
+  it("os seis standard cases + x01 + x02 + x03 + kova + armazena + sonda são publicamente elegíveis hoje", () => {
     expect(getPublishedProjects(ALL_PROJECTS).map((project) => project.slug)).toEqual([
       ...PUBLIC_STANDARD_CASE_SLUGS,
       "x01",
@@ -50,6 +54,7 @@ describe("estado público do registry real", () => {
       "x03",
       "kova",
       "armazena",
+      "sonda",
     ]);
   });
 });
