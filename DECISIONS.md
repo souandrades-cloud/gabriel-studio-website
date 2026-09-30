@@ -414,7 +414,7 @@ Resultado:
 
 **PASS.** KOVA agora tem presença descobrível na Home em produção real, sem misturar com a Signature Strip autoral, sem redesenho geral. Nenhuma regressão encontrada. Encerra o ciclo desta gate; próximos passos dependem de nova autorização do Gabriel Studio — Mentor.
 
-## 2026-09-28 — ARMAZENA Website Integration 002 (V2 — Portfolio System) — PASS local / AGUARDANDO PUBLICAÇÃO
+## 2026-09-28 — ARMAZENA Website Integration 002 (V2 — Portfolio System) — PASS local → PUBLICADO (Gate 003, ver entrada de 2026-09-30)
 
 Decisão:
 
@@ -473,7 +473,7 @@ Resultado:
 
 **PASS local.** Commit local em `v2/foundation` — sem push, sem deploy.
 
-## 2026-09-29 — Website Integration 001 — SONDA (Capability Showcase) — CLOSED (Human Visual Gate APPROVED)
+## 2026-09-29 — Website Integration 001 — SONDA (Capability Showcase) — CLOSED / PRODUCTION (ver entrada de 2026-09-30)
 
 Gate autorizado pelo Mentor V4; autoridade final: Gabriel. SONDA (Portfolio Lab `ANALYTICS-001`, CONCEPT / SHOWCASE · SYNTHETIC DATA, publicado em `https://sonda-analytics.vercel.app`, `noindex`) entra como terceiro Capability Showcase, ao lado de KOVA e ARMAZENA.
 
@@ -504,3 +504,15 @@ Gabriel revisou Home, `/work`, `/work/sonda` e a demonstração ao vivo: **Human
 - **Backlog separado, não tratado aqui:** contraste do navbar no topo das páginas `/work*` (pré-existente, ver acima).
 
 **CLOSED.** Commit local dedicado; sem push, sem deploy (Deployment Gate próprio).
+
+## 2026-09-30 — Capability Showcases em produção: reconciliação de documentação (ARMAZENA + SONDA) — CLOSED / PRODUCTION
+
+Gate SHOWCASE PROGRAM CLOSURE — DOCUMENTATION RECONCILIATION (Mentor V4; autoridade final: Gabriel). Só documentação: nenhum código do Website mudou neste registro.
+
+Estado real registrado:
+
+- **ARMAZENA:** `55e56aa` (integração) publicado em produção pelo Gate ARMAZENA WEBSITE INTEGRATION 003 em 2026-09-28 (`dpl_9yRzCUtfKQ1egkv72pK4iL2gzjae`, QA de produção PASS: 4 rotas × 3 larguras, `/work/armazena` no sitemap, KOVA sem regressão). A correção do anel de foco dos cards (`0605883`) e as miniaturas 8:5 da Home (`b8c274a`) chegaram à produção junto com o SONDA.
+- **SONDA:** `fbc9eb9` (Website Integration 001, Human Visual Gate APPROVED) enviado para `origin/v2/foundation` e publicado em produção pelo Website Deployment Gate. Deploy de produção observado em 2026-09-30: `dpl_CuLYd3738nJ1wxigMARNFBPdT932` (alias `gabriel-studio-website.vercel.app`); `/work/sonda` responde 200 e mostra a correção do título. A demo externa continua com `noindex`.
+- **Ciclo:** KOVA, ARMAZENA e SONDA completam o ciclo atual de Capability Showcases, fechado no Portfolio Lab (`registry/showcases.json`, `showcase_cycles`). Nenhum quarto card está previsto.
+
+Backlog que continua aberto: contraste do navbar no topo das páginas `/work*` (pré-existente, gate próprio).

@@ -615,6 +615,8 @@ Integrar ARMAZENA (Portfolio Lab, INVENTORY-001, CONCEPT/SHOWCASE) como Capabili
 
 PASS local. Commit local — sem push, sem deploy (aguarda Gate 003 — Production Publication).
 
+Atualização 2026-09-30: publicado em produção pelo Gate 003 em 2026-09-28 (`dpl_9yRzCUtfKQ1egkv72pK4iL2gzjae`).
+
 ---
 
 # Sprint 20 — SONDA Website Integration 001
@@ -636,7 +638,7 @@ Integrar SONDA (Portfolio Lab, ANALYTICS-001, CONCEPT/SHOWCASE · SYNTHETIC DATA
 
 ## Resultado
 
-CLOSED. Commit local dedicado; sem push, sem deploy.
+CLOSED / PRODUCTION. Commit `fbc9eb9` enviado para `origin/v2/foundation` e publicado (deploy de produção observado em 2026-09-30: `dpl_CuLYd3738nJ1wxigMARNFBPdT932`). Ciclo de Capability Showcases (KOVA, ARMAZENA, SONDA) fechado.
 
 ## Backlog (fora deste sprint)
 
