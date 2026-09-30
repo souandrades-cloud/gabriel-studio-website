@@ -4,6 +4,7 @@ import { track } from "@vercel/analytics";
 import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -22,6 +23,10 @@ const NAV_LINKS: NavLink[] = [
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  // O header transparente (tema escuro) só funciona sobre a Hero escura da
+  // Home. Nas demais rotas o topo é claro — logo e links sumiriam — então o
+  // header já nasce no estado "rolado".
+  const overDarkHero = usePathname() === "/";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -54,7 +59,7 @@ function Navbar() {
       <header
         className={cn(
           "dark fixed inset-x-0 top-0 z-50 w-full border-b transition-colors duration-300",
-          scrolled || mobileOpen
+          scrolled || mobileOpen || !overDarkHero
             ? "bg-background/80 border-border/60 backdrop-blur-md"
             : "border-transparent bg-transparent",
         )}
